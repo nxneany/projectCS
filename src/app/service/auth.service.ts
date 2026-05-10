@@ -1,0 +1,49 @@
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
+
+export interface AuthUser {
+  member_id: number;
+  username: string;
+  email: string;
+}
+
+@Injectable({ providedIn: 'root' })
+export class AuthService {
+  private _isLoggedIn$ = new BehaviorSubject<boolean>(localStorage.getItem('isLoggedIn') === 'true');
+  isLoggedIn$ = this._isLoggedIn$.asObservable();
+
+  // แมปหน้า -m -> หน้า public
+  private readonly toPublic: Record<string, string> = {
+    '/clothing-m': '/clothing',
+    '/accessories-m': '/accessories',
+  };
+
+  constructor(private router: Router) {}
+
+  login(user: AuthUser) {
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('member_id', String(user.member_id));
+    localStorage.setItem('username', user.username);
+    localStorage.setItem('email', user.email);
+    this._isLoggedIn$.next(true);
+  }
+
+  logout() {
+    // 1) เคลียร์สถานะ
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('member_id');
+    localStorage.removeItem('username');
+    localStorage.removeItem('email');
+    this._isLoggedIn$.next(false);
+
+    // 2) รีไดเรกต์จากหน้า -m ไปหน้า public ที่คู่กัน (ถ้าไม่แมป ให้กลับหน้าแรก)
+    const current = this.router.url.split('?')[0];
+    const target = this.toPublic[current] ?? '/';
+    this.router.navigateByUrl(target, { replaceUrl: true });
+  }
+
+  get isLoggedInSync(): boolean {
+    return this._isLoggedIn$.value;
+  }
+}

@@ -1,0 +1,49 @@
+<div class="profile-wrapper" *ngIf="!loading">
+  <div class="profile-header">
+    <button mat-icon-button class="icon-left" disabled><mat-icon>person</mat-icon></button>
+    <button mat-icon-button class="icon-close" (click)="close()"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <div class="avatar">
+    <img [src]="imageUrl" alt="profile" (error)="onImgError($event)" />
+  </div>
+
+  <div class="name">{{ member.username }}</div>
+
+  <!-- phone -->
+  <div class="field">
+    <div class="field-label"><mat-icon class="field-icon">call</mat-icon><span>phone :</span></div>
+    <mat-form-field appearance="fill" class="w-100 flat-field">
+      <input matInput placeholder="099-999-9999" [(ngModel)]="member.phone" [disabled]="!editMode">
+    </mat-form-field>
+  </div>
+
+  <!-- email -->
+  <div class="field">
+    <div class="field-label"><mat-icon class="field-icon">mail</mat-icon><span>Email :</span></div>
+    <mat-form-field appearance="fill" class="w-100 flat-field">
+      <input matInput placeholder="your@email.com" [(ngModel)]="member.email" [disabled]="!editMode">
+    </mat-form-field>
+  </div>
+
+  <!-- address -->
+  <div class="field">
+    <div class="field-label"><mat-icon class="field-icon">home</mat-icon><span>ที่อยู่ :</span></div>
+    <mat-form-field appearance="fill" class="w-100 flat-field">
+      <textarea matInput rows="2" [(ngModel)]="member.address" [disabled]="!editMode"></textarea>
+    </mat-form-field>
+  </div>
+
+  <!-- Actions -->
+  <div class="actions" *ngIf="!editMode">
+    <button mat-stroked-button class="btn-edit" (click)="toggleEdit()">
+      แก้ไขข้อมูลส่วนตัว
+      <mat-icon class="mat-mdc-button-trailing-icon">edit_square</mat-icon>
+    </button>
+
+    <button mat-raised-button class="btn-logout" (click)="logout()">
+      ออกจากระบบ
+      <mat-icon class="mat-mdc-button-trailing-icon">logout</mat-icon>
+    </button>
+  </div>
+</div>

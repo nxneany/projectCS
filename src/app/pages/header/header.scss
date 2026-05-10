@@ -1,0 +1,156 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #d9c5b0 !important;
+  padding: 50px 100px;
+  color: #3e2723;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  font-family: 'Inter', sans-serif !important;
+}
+
+/* โลโก้ */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .logo-img {
+    height: 100px;
+    width: auto;
+  }
+}
+
+/* เมนูหลัก */
+.nav-links {
+  display: flex;
+  margin-left: 20px;
+  gap: 50px;
+
+  a {
+    color: #3e2723;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+/* ส่วนค้นหา + ปุ่มเข้าสู่ระบบ */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+}
+
+.search-box {
+  margin-left: 30px;
+  display: flex;
+  align-items: center;
+  background-color: #f8f1ed;
+  border-radius: 30px;
+  padding: 10px 15px;
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
+
+  .search-icon {
+    color: #b89a7e;
+    margin-right: 8px;
+    font-size: 20px;
+  }
+
+  input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-family: inherit;
+    font-size: 15px;
+  }
+}
+.login-btn {
+  background-color: #603813 !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 8px;
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  padding: 10px 16px;
+
+  mat-icon {
+    font-size: 20px;
+  }
+
+  &:hover {
+    background-color: #4b2a0e !important;
+  }
+}
+
+
+
+/* ไอคอนเมนูมือถือ */
+.menu-icon {
+  display: none;
+  color: #3e2723;
+
+  .material-icons {
+    font-size: 28px;
+  }
+}
+
+/* เมนูมือถือ */
+.mobile-menu {
+  display: none;
+  flex-direction: column;
+  background: #d9c5b0;
+  padding: 10px 20px;
+
+  a {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color: #3e2723;
+    text-decoration: none;
+  }
+}
+
+/* ---------- Responsive ---------- */
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .nav-links {
+    gap: 15px;
+  }
+  .search-box {
+    width: 180px;
+  }
+}
+
+/* มือถือ */
+@media (max-width: 768px) {
+  .nav-links,
+  .actions {
+    display: none;
+  }
+
+  .menu-icon {
+    display: block;
+  }
+
+  .mobile-menu {
+    display: flex;
+  }
+
+  .header {
+    padding: 15px 20px;
+  }
+
+  .logo .logo-img {
+    height: 50px;
+  }
+}

@@ -1,0 +1,251 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined');
+
+.main-container {
+  font-family: 'Prompt', sans-serif;
+  padding: 20px;
+}
+
+/* ------------------- STEPS SECTION ------------------- */
+.steps {
+  text-align: center;
+  margin-bottom: 50px;
+  font-family: 'Inter', sans-serif;
+  color: #3e2723;
+
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  p {
+    font-size: 18px;
+    font-weight: 400;
+    margin-bottom: 30px;
+    color: #131110;
+  }
+
+  .step-cards {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    flex-wrap: wrap;
+  }
+
+  .step-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #d6d1cb1f;
+    border: 1px solid #5d3e2876; 
+    border-radius: 15px;
+    padding: 20px;
+    width: 150px;
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+
+  .step-card:hover {
+    transform: scale(1.05);
+    border-color: #603813; 
+  }
+
+  img {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 10px;
+  }
+
+  .arrow-icon {
+    font-family: 'Material Symbols Outlined';
+    font-size: 42px;
+    color: #b08968;
+  }
+
+  @media (max-width: 768px) {
+    .step-cards {
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .arrow-icon {
+      transform: rotate(90deg);
+    }
+
+    .step-card img {
+      width: 70px;
+      height: 70px;
+    }
+  }
+}
+
+/* ------------------- ตัวอย่างชุด ------------------- */
+.example-dress {
+  text-align: center;
+  margin: 40px 0;
+
+  h3 {
+    font-size: 20px;
+    color: #603813;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .underline {
+    width: 900px;
+    height: 1px;
+    background-color: #81755baf;
+    margin: 0 auto 25px;
+    border-radius: 2px;
+  }
+
+
+  .nav-btn {
+    font-family: 'Material Symbols Outlined';
+    font-size: 40px;
+    color: #b08968;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s ease;
+  }
+
+  .nav-btn:hover {
+    color: #603813;
+  }
+  
+  .carousel-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 50px;
+  }
+
+  .dress-carousel {
+    display: flex;
+    gap: 120px;
+    width: 900px; 
+  }
+
+  .dress-card img {
+    width: 220px;
+    height: 320px;
+    overflow: hidden;
+    object-fit: cover;
+    object-position: center;
+    box-shadow: 5px 5px 20px rgba(35, 34, 32, 0.214);
+    transition: transform 0.25s ease;
+  }
+
+  .dress-card img:hover {
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 768px) {
+    .dress-carousel {
+      width: 300px;
+    }
+
+    .dress-card img {
+      width: 100px;
+      height: 150px;
+    }
+  }
+}
+
+/* ------------------- สินค้ายอดนิยม ------------------- */
+.popular {
+  text-align: center;
+  margin: 50px;
+}
+
+.popular-cards {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+}
+
+.popular-cards img {
+  border: 1px solid #6b4f3c3c; 
+  width: 900px;
+}
+
+.popular-banner {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 520px; /* ความสูงของแบนเนอร์ */
+  margin-top: 40px;
+
+  .banner-items {
+    display: flex;
+    animation: slide 20s linear infinite; /* 👈 เพิ่มแอนิเมชันให้เลื่อน */
+  }
+
+  img {
+    width: 420px;
+    height: 520px;
+    object-fit: cover;
+  }
+
+  .banner-text {
+  position: absolute;
+  top: 190px; /* ปรับตามต้องการ */
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  text-align: center; /* จัดข้อความตรงกลาง */
+  font-weight: 700;
+  color: #fffefe;
+  background: rgba(28, 27, 27, 0.682);
+  padding: 50px 60px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column; /* ทำให้ข้อความซ้อนบรรทัด */
+  gap: 10px; /* ช่องว่างระหว่างบรรทัด */
+}
+
+.banner-text .title {
+  font-size: 26px;
+}
+
+.banner-text a.view-all {
+  font-size: 18px;
+  font-weight: 500;
+  color: #fffefe;
+  text-decoration: underline;
+}
+
+}
+
+/* 🔄 Animation keyframes */
+@keyframes slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%); /* เลื่อนครึ่งหนึ่งของความยาวภาพทั้งหมด */
+  }
+}
+
+/* ------------------- Responsive ------------------- */
+@media (max-width: 768px) {
+  .step-cards,
+  .dress-carousel,
+  .popular-cards,
+  .banner-items {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .step-card img,
+  .dress-carousel img,
+  .popular-cards img,
+  .banner-items img {
+    width: 150px;
+  }
+
+  .banner-text {
+    font-size: 20px;
+  }
+}

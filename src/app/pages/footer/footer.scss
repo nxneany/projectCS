@@ -1,0 +1,65 @@
+.site-footer {
+  background-color: #d9d2c9;
+  color: #000;
+  padding: 40px 20px 30px 20px;
+  font-family: 'Inter', sans-serif;
+
+  .footer-container {
+    display: flex;
+    justify-content: center; // จัดคอลัมน์ทั้งหมดให้อยู่กลางแนวนอน
+    align-items: center;     // จัดคอลัมน์ให้อยู่กลางแนวตั้งถ้าสูงไม่เท่ากัน
+    gap: 60px;               // ระยะห่างระหว่างคอลัมน์
+
+    .footer-column {
+      text-align: center;    // โลโก้และข้อความอยู่กลางคอลัมน์
+      flex: 0 1 auto;        // ไม่ขยายเต็ม แต่ขนาดตามเนื้อหา
+      width: 380px;
+
+      h4 {
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+
+      p {
+        font-weight: 400;
+        line-height: 1.6;
+        font-size: 14px;
+        margin: 0 auto;
+      }
+
+      .footer-logo {
+        width: 100%;
+        max-width: 320px;
+        height: auto;
+        margin: 0 auto 20px auto;
+        display: block;
+      }
+    }
+  }
+
+  .footer-bottom {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 12px;
+  }
+}
+
+/* Responsive สำหรับมือถือ */
+@media (max-width: 768px) {
+  .footer-container {
+    flex-direction: column; // เรียงคอลัมน์กลางจอ
+    gap: 30px;
+
+    .footer-column {
+      max-width: 90%;
+
+      .footer-logo {
+        width: 60%; // ปรับขนาด proportional
+      }
+    }
+  }
+
+  .footer-bottom {
+    margin-top: 20px;
+  }
+}

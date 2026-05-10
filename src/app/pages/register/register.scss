@@ -1,0 +1,96 @@
+.register-container {
+  display: flex;
+  height: 100vh;
+  
+
+  .logo-section {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+    
+    img {
+      width: 500px;
+    }
+  }
+.form-section {
+  flex: 1;
+  background-color: #d9c7b5;
+  padding: 50px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; /* จัดเนื้อหากึ่งกลางแนวนอน */
+  box-shadow: -5px 0 20px rgba(0, 0, 0, 0.348);
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  h2 {
+    
+    text-align: center;
+    font-size: 38px;
+    margin-bottom: 40px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    width: 100%;        /* ให้ form กว้างเต็ม form-section */
+    max-width: 600px;   /* แต่จำกัดความกว้าง form เพื่อให้อยู่กลาง */
+    
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+
+      label {
+        font-size: 18px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+
+      input {
+        font-size: 18px;
+        padding: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        width: 100%;      /* ช่อง input กว้างเต็มกล่อง input-group */
+        box-sizing: border-box;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.137);
+      }
+    }
+
+    .submit-btn {
+      margin-top: 25px;
+      font-size: 18px;
+      padding: 15px;
+      background-color: #4d2b00;
+      color: white;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 40%;      /* ปุ่มกว้างเต็ม form */
+      box-sizing: border-box;
+      align-self: center; /* ✅ จัดกึ่งกลางแนวนอน */
+      box-sizing: border-box;
+      
+    }
+  }
+
+  }
+}

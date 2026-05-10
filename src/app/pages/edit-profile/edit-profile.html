@@ -1,0 +1,61 @@
+<div class="register-container" *ngIf="!loading">
+  <!-- โลโก้ -->
+  <div class="logo-section">
+    <img src="assets/logob.png" alt="DRESS ME UP" />
+  </div>
+
+  <!-- ฟอร์ม -->
+  <div class="form-section">
+    <button class="close-btn material-symbols-outlined" (click)="close()">close</button>
+
+   
+<div class="avatar-edit">
+  <img [src]="imageUrl" alt="Profile" (error)="onImgError($event)" />
+  <label class="upload-btn" title="เปลี่ยนรูปโปรไฟล์">
+    <input type="file" accept="image/*" (change)="onFileSelected($event)" />
+    <span class="material-symbols-outlined">photo_camera</span>
+  </label>
+</div>
+
+
+
+    <h2>แก้ไขข้อมูลส่วนตัว</h2>
+
+    <form (ngSubmit)="save()">
+      
+        <!-- <div class="input-group">
+          <label><span class="material-symbols-outlined">person</span> User name :</label>
+          <input type="text" [(ngModel)]="member.username" name="username" placeholder="ชื่อผู้ใช้" />
+        </div> -->
+
+        <div class="input-group">
+          <label><span class="material-symbols-outlined">call</span> phone :</label>
+          <input type="tel" [(ngModel)]="member.phone" name="phone" placeholder="099-999-9999" />
+        </div>
+      
+
+      <!-- <div class="input-group">
+        <label><span class="material-symbols-outlined">mail</span> Email :</label>
+        <input type="email" [(ngModel)]="member.email" name="email" placeholder="name@email.com" />
+      </div> -->
+
+      <div class="input-group">
+        <label><span class="material-symbols-outlined">home</span> ที่อยู่ :</label>
+        <textarea rows="3" [(ngModel)]="member.address" name="address" placeholder="บ้านเลขที่..."></textarea>
+      </div>
+
+      <!-- <div class="input-group">
+        <label><span class="material-symbols-outlined">lock</span> Password :</label>
+        <input type="password" [(ngModel)]="password" name="password" placeholder="password" />
+      </div>
+
+      <div class="input-group">
+        <label><span class="material-symbols-outlined">lock</span> Confirm password :</label>
+        <input type="password" [(ngModel)]="confirmPassword" name="confirmPassword" placeholder="confirm password" />
+        <div class="help error" *ngIf="passMismatch">รหัสผ่านไม่ตรงกัน</div>
+      </div> -->
+
+      <button class="submit-btn" type="submit" [disabled]="passMismatch">บันทึกข้อมูล</button>
+    </form>
+  </div>
+</div>

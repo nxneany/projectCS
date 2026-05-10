@@ -1,0 +1,40 @@
+<div class="register-container">
+  <div class="logo-section">
+    <img src="assets/logob.png" alt="Dress Me Up Logo" />
+  </div>
+
+  <div class="form-section">
+    <span class="close-btn material-symbols-outlined" (click)="closeRegister()">close</span>
+
+    <h2>Welcome !</h2>
+
+    <form (ngSubmit)="onSubmit()">
+      <div class="input-group">
+        <label><mat-icon>person</mat-icon> User name :</label>
+        <input type="text" [(ngModel)]="user.name" name="name" placeholder="ชื่อของคุณ" required />
+      </div>
+
+      <div class="input-group">
+        <label><mat-icon>phone</mat-icon> phone :</label>
+        <input type="text" [(ngModel)]="user.phone" name="phone" placeholder="099-999-9999" required />
+      </div>
+
+      <div class="input-group">
+        <label><mat-icon>email</mat-icon> Email :</label>
+        <input type="email" [(ngModel)]="user.email" name="email" placeholder="example@gmail.com" required />
+      </div>
+
+      <div class="input-group">
+        <label><mat-icon>lock</mat-icon> Password :</label>
+        <input type="password" [(ngModel)]="user.password" name="password" placeholder="password" required />
+      </div>
+
+      <div class="input-group">
+        <label>Confirm Password :</label>
+        <input type="password" [(ngModel)]="user.confirmPassword" name="confirmPassword" placeholder="confirm password" required />
+      </div>
+
+      <button type="submit" class="submit-btn">สมัครใช้งาน</button>
+    </form>
+  </div>
+</div>

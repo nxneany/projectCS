@@ -1,0 +1,68 @@
+
+<app-header></app-header>
+<router-outlet></router-outlet>
+<div class="main-container">
+
+  <!-- ------------------- ขั้นตอนบริการ ------------------- -->
+  <section class="steps">
+    <h2>บริการเช่าชุดราตรี ชุดออกงาน เสื้อผ้าแฟนซี</h2>
+    <p>เข้าชมง่ายเพียง 3 ขั้นตอน เลือก - เช่า - ดำเนินการ</p>
+
+    <div class="step-cards">
+      <div class="step-card">
+        <img src="assets/select.png" alt="เลือก">
+      </div>
+
+      <span class="material-symbols-outlined arrow-icon">arrow_right_alt</span>
+
+      <div class="step-card">
+        <img src="assets/cart.png" alt="เช่า">
+      </div>
+
+      <span class="material-symbols-outlined arrow-icon">arrow_right_alt</span>
+
+      <div class="step-card">
+        <img src="assets/process.png" alt="ดำเนินการ">
+      </div>
+    </div>
+  </section>
+
+  <!-- ------------------- ตัวอย่างชุด ------------------- -->
+  <section class="example-dress">
+    <h3>ตัวอย่างชุด</h3>
+    <div class="underline"></div>
+
+    <div class="carousel-container">
+      <span class="material-symbols-outlined nav-btn" (click)="prevSlide()">arrow_back_ios</span>
+
+      <div class="dress-carousel">
+        <div class="dress-card" *ngFor="let img of visibleDresses">
+          <img [src]="img" alt="dress" />
+        </div>
+      </div>
+
+      <span class="material-symbols-outlined nav-btn" (click)="nextSlide()">arrow_forward_ios</span>
+    </div>
+  </section>
+
+  <!-- ------------------- สินค้ายอดนิยม ------------------- -->
+  <section class="popular">
+    <div class="popular-cards">
+      <img src="assets/pm.png" alt="">
+    </div>
+  </section>
+  <!-- ------------------- แบนเนอร์ ------------------- -->
+<section class="popular-banner">
+  <div class="banner-items">
+  <img *ngFor="let dress of dresses.concat(dresses).slice(0, 18)" [src]="dress" alt="popular dress">
+</div>
+<div class="banner-text">
+  <span class="title">สินค้ายอดนิยม</span>
+  <a routerLink="/products" class="view-all">ดูทั้งหมด</a>
+</div>
+  
+</section>
+
+
+</div>
+<app-footer></app-footer>

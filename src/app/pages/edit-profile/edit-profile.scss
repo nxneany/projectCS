@@ -1,0 +1,248 @@
+/* ---------- สี & ตัวแปร ---------- */
+$bg-cream: #ffffff;
+$brand-brown: #4d2b00;
+$brand-brown-dark: #3a1f00;
+$ink: #3e2723;
+$muted: #9a8b80;
+$border: #cfc4ba;
+$danger: #d32f2f;
+$ok: #2e7d32;
+
+/* วางไว้ภายใน .register-container .form-section { ... } */
+.avatar-edit {
+  position: relative;
+  width: clamp(120px, 16vw, 140px);
+  height: clamp(120px, 16vw, 140px);
+  margin: 0 auto 20px;
+  border-radius: 999px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0,0,0,.18);
+  border: 4px solid #fff;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;      /* ✅ ครอบรูปให้เต็มวงกลม */
+    display: block;
+    background: #f1ece7;    /* เผื่อโหลดภาพช้า */
+  }
+
+  .upload-btn {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    background: #fff;
+    border-radius: 999px;
+    padding: 8px;
+    display: inline-grid;
+    place-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,.25);
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+
+    input[type="file"] { display: none; }
+
+    .material-symbols-outlined {
+      font-size: 22px;
+      line-height: 22px;
+      color: $brand-brown;
+    }
+
+    &:hover { transform: scale(1.04); box-shadow: 0 8px 22px rgba(0,0,0,.3); }
+    &:active { transform: scale(.98); }
+  }
+}
+
+
+.register-container {
+  display: flex;
+  min-height: 100vh;
+  color: $ink;
+  background: #fff;
+
+  /* โลโก้ซ้าย */
+  .logo-section {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    background-color: #d9c7b5;
+
+    img {
+      width: clamp(220px, 50%, 520px);
+      height: auto;
+      filter: grayscale(100%) contrast(110%);
+      user-select: none;
+      pointer-events: none;
+    }
+  }
+
+  /* ฟอร์มขวา */
+  .form-section {
+    flex: 1;
+    background-color: $bg-cream;
+    padding: clamp(24px, 5vw, 56px);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: -8px 0 28px rgba(0, 0, 0, 0.25);
+
+    .close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-size: 28px;
+      background: none;
+      border: none;
+      color: $ink;
+      cursor: pointer;
+      transition: transform .15s ease, opacity .15s ease;
+
+      &:hover { transform: scale(1.05); opacity: .85; }
+      &:active { transform: scale(.98); }
+    }
+
+    h2 {
+      font-size: clamp(24px, 3.2vw, 28px);
+      margin: 0 0 24px;
+      font-weight: 800;
+      text-align: center;
+      letter-spacing: .5px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+
+      .row-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+
+        label {
+          font-size: 16px;
+          font-weight: 700;
+          margin: 0 0 10px;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          color: $ink;
+
+          .material-symbols-outlined { font-size: 24px; }
+        }
+
+        input,
+        textarea {
+          font-size: 16px;
+          padding: 14px 16px;
+          border-radius: 10px;
+          border: 1px solid $border;
+          width: 100%;
+          box-sizing: border-box;
+          outline: none;
+          background: #fff;
+          color: $ink;
+          box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.12);
+          transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+
+          &::placeholder { color: $muted; }
+
+          &:hover {
+            border-color: darken($border, 8%);
+            box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.16);
+          }
+
+          &:focus {
+            border-color: $brand-brown;
+            box-shadow:
+              0 0 0 3px rgba($brand-brown, .12),
+              6px 6px 14px rgba(0, 0, 0, 0.18);
+          }
+
+          &:disabled {
+            background: #f3eee9;
+            cursor: not-allowed;
+            color: #816e61;
+          }
+
+          &.is-invalid {
+            border-color: $danger;
+            box-shadow: 0 0 0 3px rgba($danger, .12);
+          }
+        }
+
+        textarea { resize: vertical; min-height: 96px; }
+
+        .help {
+          margin-top: 8px;
+          font-size: 13px;
+          color: $muted;
+
+          &.error { color: $danger; }
+          &.ok { color: $ok; }
+        }
+      }
+
+      .submit-btn {
+        margin: 20px auto 0;
+        margin-top: 10px;
+        font-size: 16px;
+        padding: 14px 18px;
+        background-color: $brand-brown;
+        color: #fff;
+        font-weight: 800;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        width: min(260px, 60%);
+        align-self: center;
+        letter-spacing: .3px;
+        box-shadow:
+          0 6px 14px rgba(0, 0, 0, 0.22),
+          inset 0 -2px 0 rgba(255,255,255,.15);
+        transition: transform .15s ease, box-shadow .15s ease, background-color .15s ease;
+
+        &:hover {
+          background-color: $brand-brown-dark;
+          box-shadow:
+            0 8px 18px rgba(0, 0, 0, 0.28),
+            inset 0 -2px 0 rgba(255,255,255,.2);
+          transform: translateY(-1px);
+        }
+
+        &:active {
+          transform: translateY(0);
+          box-shadow: 0 5px 12px rgba(0,0,0,.2);
+        }
+
+        &:disabled {
+          opacity: .6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+  /* Responsive */
+  @media (max-width: 860px) {
+    flex-direction: column;
+
+    .logo-section { padding: 20px 0; img { width: clamp(180px, 40%, 320px); } }
+    .form-section { padding: 28px 20px 40px; box-shadow: none; }
+
+    .form-section form .row-2 { grid-template-columns: 1fr; }
+    .form-section form .submit-btn { width: 70%; }
+  }
+}

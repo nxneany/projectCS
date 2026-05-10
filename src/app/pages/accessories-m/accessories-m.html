@@ -1,0 +1,30 @@
+<app-header></app-header>
+<router-outlet></router-outlet>
+<section class="dress-list">
+  <h2>รายการชุด</h2>
+
+  <ng-container *ngFor="let dress of dresses; let i = index">
+    <!-- แสดงเส้นคั่นก่อนทุกแถว -->
+    <div *ngIf="i % 3 === 0" class="underline"></div>
+
+    <!-- การ์ดสินค้า -->
+    <div class="grid-container" *ngIf="i % 3 === 0">
+      <div
+        class="dress-card"
+        *ngFor="let item of dresses.slice(i, i + 3)"
+      >
+        <img [src]="item.image" [alt]="item.name" />
+        <p class="dress-name">{{ item.name }}</p>
+        <p class="dress-price">{{ item.price }} บาท</p>
+        <button class="select-btn">เลือกเช่า</button>
+        
+      </div>
+    </div>
+  </ng-container>
+
+  <div class="more-link">
+    <a href="/dresses">ดูรายการเพิ่มเติม</a>
+  </div>
+</section>
+
+<app-footer></app-footer>

@@ -1,0 +1,69 @@
+<mat-toolbar color="primary" class="header">
+  <!-- โลโก้ -->
+  <div class="logo" routerLink="/">
+    <img src="assets/logob.png" alt="Dress Logo" class="logo-img" />
+  </div>
+
+  <!-- เมนูหลัก -->
+  <nav class="nav-links">
+    <a mat-button routerLink="/">หน้าหลัก</a>
+    <a mat-button [routerLink]="(isLoggedIn$ | async) ? '/clothing-m' : '/clothing'">
+      รายการชุด
+    </a>
+    <a mat-button [routerLink]="(isLoggedIn$ | async) ? '/accessories-m' : '/accessories'">
+      Accessories
+    </a>
+    <a mat-button (click)="scrollToFooter()">เกี่ยวกับเรา</a>
+  </nav>
+
+  <!-- กล่องค้นหา + ปุ่ม -->
+  <div class="actions">
+    <div class="search-box">
+      <i class="fas fa-search search-icon"></i>
+      <input type="text" placeholder="ค้นหา..." />
+    </div>
+
+    <!-- 🔹 ยังไม่ล็อกอิน -->
+    <ng-container *ngIf="!(isLoggedIn$ | async); else loggedInIcons">
+      <button
+        mat-raised-button
+        color="accent"
+        class="login-btn"
+        (click)="openLoginDialog()">
+        เข้าสู่ระบบ <i class="fas fa-sign-in-alt"></i>
+      </button>
+    </ng-container>
+
+    <!-- 🔹 ล็อกอินแล้ว -->
+    <!-- ช่วงไอคอนตอนล็อกอิน -->
+<ng-template #loggedInIcons>
+  <button mat-icon-button class="icon-btn" aria-label="Profile" (click)="openProfile()">
+    <mat-icon>account_circle</mat-icon>
+  </button>
+  <button mat-icon-button class="icon-btn" aria-label="Cart" routerLink="/cart">
+    <mat-icon>shopping_cart</mat-icon>
+  </button>
+  <button mat-icon-button class="icon-btn" aria-label="Menu" (click)="openCategories()">
+  <mat-icon>list</mat-icon>
+</button>
+
+
+</ng-template>
+
+  </div>
+</mat-toolbar>
+
+<!-- เมนูสำหรับมือถือ -->
+<div class="mobile-menu" *ngIf="isMenuOpen">
+  <a routerLink="/">หน้าหลัก</a>
+  <a [routerLink]="(isLoggedIn$ | async) ? '/clothing-m' : '/clothing'">รายการชุด</a>
+  <a [routerLink]="(isLoggedIn$ | async) ? '/accessories-m' : '/accessories'">Accessories</a>
+  <a (click)="scrollToFooter()">เกี่ยวกับเรา</a>
+
+  <ng-container *ngIf="!(isLoggedIn$ | async); else loggedMobile">
+    <a (click)="openLoginDialog()">เข้าสู่ระบบ</a>
+  </ng-container>
+  <ng-template #loggedMobile>
+    <a (click)="logout()">ออกจากระบบ</a>
+  </ng-template>
+</div>

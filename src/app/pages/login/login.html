@@ -1,0 +1,37 @@
+
+<div class="login-modal">
+  <div class="login-header">
+    <img src="assets/logob.png" alt="logo" class="logo" />
+  </div>
+
+  <h2>Login !</h2>
+  <p>กรุณาลงชื่อเพื่อเข้าสู่ระบบของคุณ</p>
+
+  <form (ngSubmit)="login()">
+    <label>Email :</label>
+    <input type="email" [(ngModel)]="email" name="email" required />
+
+    <label>Password :</label>
+    <input type="password" [(ngModel)]="password" name="password" required />
+
+    <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
+  </form>
+
+  <div class="links">
+    <a href="#">ลืมรหัสผ่าน</a>
+    <a [routerLink]="['/register']" (click)="closeDialog()">สมัครบัญชีผู้ใช้ใหม่</a>
+
+  </div>
+
+  <div class="divider">หรือ</div>
+
+  <div id="gsi-btn"class="google-btn" (click)="loginWithGoogle()">
+  <img src="assets/googlelogo.png" alt="Google" />
+  Continue with Google
+</div>
+
+<span class="close-btn material-symbols-outlined" (click)="closeDialog()">
+  close
+</span>
+
+</div>

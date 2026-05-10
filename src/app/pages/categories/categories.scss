@@ -1,0 +1,56 @@
+/* ฉากจางด้านหลัง */
+.backdrop{
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(2px);
+}
+
+/* แผงเลื่อนด้านขวา */
+.drawer{
+  position: fixed; top: 0; right: 0; height: 100vh;
+  width: min(360px, 90vw);
+  background: #fff; box-shadow: -8px 0 28px rgba(0,0,0,.25);
+  display: flex; flex-direction: column;
+  padding: 16px 0 12px;
+}
+
+/* ปุ่มปิด */
+.icon-close{
+  position: absolute; top: 10px; right: 12px;
+  border: 0; background: transparent; cursor: pointer;
+  font-size: 22px; color: #333;
+}
+
+/* หัวข้อ */
+h3{
+  font-weight: 800; font-size: 18px; text-align: center;
+  padding: 8px 16px 14px; margin: 0; border-bottom: 1px solid #eee;
+}
+
+/* รายการ */
+.list{ overflow: auto; padding: 8px 10px; }
+.item{
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 10px; text-decoration: none; color: #1f1f1f;
+  border-bottom: 1px solid #eee; transition: background .15s ease;
+  .name{ font-weight: 600; }
+  .chev{ font-size: 20px; color: #9a9a9a; }
+  &:hover{ background: #faf7f4; }
+}
+
+/* โครงกระดูกโหลด */
+.skeleton{
+  height: 40px; margin: 6px 0; border-radius: 8px;
+  background: linear-gradient(90deg,#eee 25%,#f4f4f4 37%,#eee 63%);
+  background-size: 400% 100%; animation: sh 1.3s ease infinite;
+}
+@keyframes sh { 0%{background-position:100% 0} 100%{background-position:0 0} }
+
+.empty{ text-align:center; color:#888; padding: 16px 0; }
+
+/* ท้ายรายการ */
+.footer{
+  margin-top: auto; padding: 10px 16px; color:#6c6c6c; display:flex; align-items:center; gap:6px;
+  border-top: 1px solid #eee; font-size: 13px;
+  .clock{ font-size: 18px; color:#9a9a9a; }
+}

@@ -1,0 +1,28 @@
+
+
+<aside class="drawer">
+  <button class="icon-close material-symbols-outlined" (click)="close()">close</button>
+
+  <h3>หมวดหมู่</h3>
+
+  <div class="list">
+    <ng-container *ngIf="!loading; else skel">
+      <a class="item" *ngFor="let c of categories"
+         [routerLink]="['/products']" [queryParams]="{ category_id: c.category_id }"
+         (click)="close()">
+        <span class="name">{{ c.name }}</span>
+        <span class="chev material-symbols-outlined">chevron_right</span>
+      </a>
+      <div *ngIf="categories.length === 0" class="empty">ไม่มีหมวดหมู่</div>
+    </ng-container>
+
+    <ng-template #skel>
+      <div class="skeleton" *ngFor="let _ of [1,2,3,4,5,6,7,8,9,10,11]"></div>
+    </ng-template>
+  </div>
+
+  <div class="footer">
+    <span class="material-symbols-outlined clock">schedule</span>
+    นโยบายการใช้งาน
+  </div>
+</aside>
