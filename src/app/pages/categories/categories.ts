@@ -1,5 +1,4 @@
 import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { RouterLink } from '@angular/router';
@@ -8,7 +7,7 @@ import { Category, CategoryService } from '../../service/category.service';
 @Component({
   selector: 'app-category-drawer',
   standalone: true,
-  imports: [CommonModule, RouterLink, HttpClientModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './Categories.html',
   styleUrls: ['./Categories.scss']
 })
@@ -31,4 +30,3 @@ export class Categories {
 
   close() { this.dialogRef.close(); } 
 }
-

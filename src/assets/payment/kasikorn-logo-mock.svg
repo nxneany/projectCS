@@ -1,0 +1,6 @@
+<svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Kasikorn bank logo mock">
+  <rect width="96" height="96" rx="18" fill="#138f3d"/>
+  <rect x="16" y="16" width="64" height="64" rx="12" fill="#ffffff"/>
+  <rect x="23" y="23" width="50" height="50" rx="8" fill="#138f3d"/>
+  <path d="M35 28h10v16l14-16h12L54 47l18 21H59L45 51v17H35V28z" fill="#ffffff"/>
+</svg>

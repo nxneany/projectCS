@@ -1,0 +1,67 @@
+<app-header></app-header>
+
+<main class="category-page">
+
+  <div class="category-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar-area">
+
+      <section class="category-header">
+        <div>
+          <p>รายการสินค้า</p>
+          <h1>{{ categoryTitle }}</h1>
+          <span>เลือกขนาดเพื่อกรองสินค้าภายในหมวดหมู่นี้</span>
+        </div>
+      </section>
+
+      <section class="filter-panel">
+        <h2>กรองตามไซส์</h2>
+
+        <div class="size-filter">
+          <button
+            type="button"
+            *ngFor="let size of sizeOptions"
+            [class.active]="selectedSize === size"
+            (click)="selectSize(size)">
+            {{ size }}
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- RIGHT CONTENT -->
+    <div class="content-area">
+
+      <section class="product-grid" *ngIf="filteredProducts.length > 0; else emptyState">
+        <article class="product-card" *ngFor="let product of filteredProducts">
+          <img [src]="product.image" [alt]="product.name" />
+
+          <div class="product-info">
+            <h2>{{ product.name }}</h2>
+            <p>ราคาเช่า {{ formatPrice(product.price) }}</p>
+            <span>ไซส์: {{ product.sizes.join(', ') }}</span>
+          </div>
+
+          <a [routerLink]="detailLink(product)">เลือกเช่า</a>
+        </article>
+      </section>
+
+      <ng-template #emptyState>
+        <section class="empty-state">
+          <h2>ไม่พบสินค้าในไซส์นี้</h2>
+          <p>ลองเลือกไซส์อื่น หรือกลับไปดูสินค้าทั้งหมดในหมวดหมู่นี้</p>
+          <button type="button" (click)="selectSize('ทั้งหมด')">
+            ดูทั้งหมด
+          </button>
+        </section>
+      </ng-template>
+
+    </div>
+
+  </div>
+
+</main>
+
+<app-footer></app-footer>

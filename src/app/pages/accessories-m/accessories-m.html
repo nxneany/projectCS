@@ -16,7 +16,7 @@
         <img [src]="item.image" [alt]="item.name" />
         <p class="dress-name">{{ item.name }}</p>
         <p class="dress-price">{{ item.price }} บาท</p>
-        <button class="select-btn">เลือกเช่า</button>
+        <button class="select-btn" [routerLink]="['/accessories-m', item.id]">เลือกเช่า</button>
         
       </div>
     </div>

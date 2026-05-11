@@ -1,0 +1,102 @@
+<app-header></app-header>
+
+<main class="rental-page">
+  <section class="rental-layout" *ngIf="accessory; else notFound">
+    <div class="item-preview">
+      <img [src]="accessory.image" [alt]="accessory.name" />
+    </div>
+
+    <section class="rental-detail">
+      <a routerLink="/accessories-m" class="back-link">กลับไปหน้ารายการ Accessories</a>
+
+      <div class="title-block">
+        <h1>{{ accessory.name }}</h1>
+        <strong>{{ formatPrice(accessory.price) }}</strong>
+      </div>
+
+      <p class="item-detail">{{ accessory.detail }}</p>
+
+      <div class="option-block">
+        <h2>ระยะเวลาการเช่า</h2>
+        <div class="segmented-control">
+          <button type="button" [class.active]="selectedDuration === 4" (click)="selectDuration(4)">4 วัน</button>
+          <button type="button" [class.active]="selectedDuration === 8" (click)="selectDuration(8)">8 วัน</button>
+        </div>
+      </div>
+
+      <div class="date-range-block">
+        <h2>เลือกวันที่เช่า</h2>
+        <div class="date-grid">
+          <label>
+            วันที่เริ่มเช่า
+            <input type="date" name="rentalStartDate" [(ngModel)]="rentalStartDate" />
+          </label>
+
+          <label>
+            วันที่คืนสินค้า
+            <input type="date" name="rentalEndDate" [(ngModel)]="rentalEndDate" />
+          </label>
+        </div>
+      </div>
+
+      <div class="stock-row">
+        <span>จำนวนสินค้าที่คงเหลือ</span>
+        <strong>{{ accessory.stock }} ชิ้น</strong>
+      </div>
+
+      <div class="quantity-block">
+        <h2>จำนวนสินค้า</h2>
+        <div class="quantity-control">
+          <button type="button" (click)="decreaseQuantity()" [disabled]="quantity === 1">−</button>
+          <strong>{{ quantity }}</strong>
+          <button type="button" (click)="increaseQuantity()" [disabled]="quantity === accessory.stock">+</button>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span>ยอดรวม</span>
+        <strong>{{ formatPrice(totalPrice) }}</strong>
+      </div>
+
+      <div class="rental-actions">
+        <button type="button" class="rent-now-btn" (click)="rentNow()">เช่าเลย</button>
+        <button type="button" class="add-cart-btn" (click)="addToCart()">เพิ่มไปในตะกร้า</button>
+      </div>
+
+      <p class="cart-message" *ngIf="cartMessage">{{ cartMessage }}</p>
+    </section>
+
+    <section class="related-section">
+      <div class="related-heading">
+        <h2>รายการสินค้าใกล้เคียง</h2>
+        <div class="related-controls">
+          <button type="button" aria-label="รายการก่อนหน้า" (click)="previousRelated()">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button type="button" aria-label="รายการถัดไป" (click)="nextRelated()">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="related-list">
+        <article class="related-card" *ngFor="let item of visibleRelatedAccessories">
+          <img [src]="item.image" [alt]="item.name" />
+          <h3>{{ item.name }}</h3>
+          <p>ราคาเช่า {{ formatPrice(item.price) }}</p>
+          <a [routerLink]="['/accessories-m', item.id]">ดูรายละเอียด</a>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <ng-template #notFound>
+    <section class="not-found">
+      <h1>ไม่พบรายการ Accessories</h1>
+      <p>กรุณากลับไปเลือกสินค้าจากหน้ารายการอีกครั้ง</p>
+      <a routerLink="/accessories-m">กลับไปหน้ารายการ Accessories</a>
+    </section>
+  </ng-template>
+</main>
+
+<app-footer></app-footer>

@@ -1,0 +1,318 @@
+.cart-page {
+  min-height: 70vh;
+  padding: 48px 8%;
+  background: #faf7f4;
+  color: #2d2420;
+}
+
+.cart-header {
+  margin-bottom: 32px;
+
+  h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  p {
+    margin: 0;
+    color: #6f625c;
+  }
+}
+
+.empty-cart {
+  display: flex;
+  min-height: 320px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  border: 1px solid #eadfd8;
+  border-radius: 8px;
+  background: #ffffff;
+  text-align: center;
+
+  .material-symbols-outlined {
+    font-size: 56px;
+    color: #b5856f;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 24px;
+  }
+
+  p {
+    max-width: 420px;
+    margin: 0;
+    color: #746861;
+    line-height: 1.6;
+  }
+}
+
+.cart-list {
+  overflow: hidden;
+  border: 1px solid #eadfd8;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.cart-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 2fr) 1fr 1fr 1fr 88px;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 24px;
+  border-bottom: 1px solid #f0e7e1;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.cart-row-head {
+  padding-top: 14px;
+  padding-bottom: 14px;
+  background: #f4ece7;
+  color: #746861;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.product-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+
+  img {
+    width: 72px;
+    height: 88px;
+    flex: 0 0 auto;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  strong {
+    line-height: 1.4;
+  }
+}
+
+.booking-cell,
+.date-cell {
+  color: #51443f;
+}
+
+.remove-btn {
+  justify-self: end;
+  min-width: 64px;
+  padding: 8px 14px;
+  border: 1px solid #cf9b8d;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #9f4638;
+  cursor: pointer;
+  font: inherit;
+
+  &:hover {
+    background: #fff2ef;
+  }
+}
+
+.cart-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 24px;
+  background: #ffffff;
+}
+
+.confirm-btn,
+.payment-btn,
+.edit-btn {
+  min-height: 42px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  font: inherit;
+  text-decoration: none;
+}
+
+.confirm-btn,
+.payment-btn {
+   display: flex;
+  justify-content: center;
+  align-items: center;
+
+  text-decoration: none;
+  border: 0;
+  background: #2d2420;
+  color: #ffffff;
+
+  &:hover {
+    background: green;
+  }
+}
+
+.popup-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgb(45 36 32 / 55%);
+}
+
+.confirm-popup {
+  width: min(680px, 100%);
+  max-height: min(720px, 90vh);
+  overflow: auto;
+  border-radius: 8px;
+  background: #ffffff;
+  box-shadow: 0 24px 60px rgb(45 36 32 / 28%);
+}
+
+.popup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 24px 18px;
+  border-bottom: 1px solid #f0e7e1;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 24px;
+  }
+
+  p {
+    margin: 0;
+    color: #746861;
+  }
+}
+
+.close-popup {
+  display: inline-flex;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  background: #f4ece7;
+  color: #2d2420;
+  cursor: pointer;
+}
+
+.popup-list {
+  padding: 8px 24px;
+}
+
+.popup-item {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0e7e1;
+
+  &:last-child {
+    border-bottom: 0;
+  }
+
+  img {
+    width: 72px;
+    height: 88px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  span {
+    color: #665850;
+  }
+}
+
+.popup-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 18px 24px 24px;
+}
+
+.edit-btn {
+  border: 1px solid #cf9b8d;
+  background: #ffffff;
+  color: #9f4638;
+
+  &:hover {
+    background: #fff2ef;
+  }
+}
+
+.shop-link {
+  margin-top: 8px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  background: #2d2420;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+@media (max-width: 760px) {
+  .cart-page {
+    padding: 32px 16px;
+  }
+
+  .cart-row-head {
+    display: none;
+  }
+
+  .cart-row {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .booking-cell::before {
+    content: 'การจอง: ';
+    font-weight: 700;
+  }
+
+  .date-cell:nth-of-type(3)::before {
+    content: 'วันที่จอง: ';
+    font-weight: 700;
+  }
+
+  .date-cell:nth-of-type(4)::before {
+    content: 'วันที่คืน: ';
+    font-weight: 700;
+  }
+
+  .remove-btn {
+    justify-self: stretch;
+  }
+
+  .cart-actions,
+  .popup-actions {
+    flex-direction: column;
+  }
+
+  .confirm-btn,
+  .payment-btn,
+  .edit-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .popup-backdrop {
+    align-items: flex-end;
+    padding: 16px;
+  }
+}

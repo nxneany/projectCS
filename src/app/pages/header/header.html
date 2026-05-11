@@ -37,11 +37,14 @@
     <!-- 🔹 ล็อกอินแล้ว -->
     <!-- ช่วงไอคอนตอนล็อกอิน -->
 <ng-template #loggedInIcons>
-  <button mat-icon-button class="icon-btn" aria-label="Profile" (click)="openProfile()">
-    <mat-icon>account_circle</mat-icon>
-  </button>
   <button mat-icon-button class="icon-btn" aria-label="Cart" routerLink="/cart">
     <mat-icon>shopping_cart</mat-icon>
+  </button>
+  <button mat-icon-button class="icon-btn" aria-label="Order status" routerLink="/order-status">
+    <mat-icon>receipt_long</mat-icon>
+  </button>
+   <button mat-icon-button class="icon-btn" aria-label="Profile" (click)="openProfile()">
+    <mat-icon>account_circle</mat-icon>
   </button>
   <button mat-icon-button class="icon-btn" aria-label="Menu" (click)="openCategories()">
   <mat-icon>list</mat-icon>
@@ -64,6 +67,7 @@
     <a (click)="openLoginDialog()">เข้าสู่ระบบ</a>
   </ng-container>
   <ng-template #loggedMobile>
+    <a routerLink="/order-status">สถานะรายการ</a>
     <a (click)="logout()">ออกจากระบบ</a>
   </ng-template>
 </div>

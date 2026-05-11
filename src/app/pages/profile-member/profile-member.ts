@@ -25,7 +25,6 @@ export class ProfileMember implements OnInit {
 
   // ✅ base URL โฟลเดอร์อัปโหลดจาก backend + รูป fallback
   imageUrl = 'assets/default-avatar.png';
-  private uploadsBase = 'http://localhost:3000/uploads';
 
   constructor(
     private dialogRef: MatDialogRef<ProfileMember>,
@@ -42,9 +41,7 @@ export class ProfileMember implements OnInit {
         next: (res) => {
           this.member = res;
           // ถ้ามีชื่อไฟล์รูปใน DB ให้ชี้ไปที่ /uploads/<filename> ไม่งั้นใช้ default
-          this.imageUrl = res.image_profile
-            ? `${this.uploadsBase}/${res.image_profile}`
-            : 'assets/default-avatar.png';
+          this.imageUrl = this.memberService.getProfileImageUrl(res.image_profile);
           this.loading = false;
         },
         error: (err) => {

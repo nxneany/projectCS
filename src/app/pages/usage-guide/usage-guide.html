@@ -1,0 +1,95 @@
+<app-header></app-header>
+
+<main class="usage-page">
+  <section class="usage-panel">
+    <div class="usage-heading">
+      <h1><span>Dress Me Up</span> มีขั้นตอนอย่างไรบ้าง</h1>
+    </div>
+
+    <div class="usage-steps">
+      <article class="usage-card" *ngFor="let step of steps; let i = index">
+        <span class="step-number">{{ i + 1 }}</span>
+        <h2>{{ step.title }}</h2>
+        <p>{{ step.detail }}</p>
+      </article>
+    </div>
+
+    <section class="rent-guide-section">
+      <div class="rent-guide-image">
+        <img src="assets/guide/Screenshot 2569-05-11 at 13.13.47.png" alt="ภาพประกอบการเช่าชุด Dress Me Up" />
+      </div>
+
+      <div class="rent-guide-content">
+        <h2>เช่า</h2>
+        <p>ชุดที่ต้องการใช้ในงานต่างๆ</p>
+        <ul>
+          <li>ค้นหาชุดในราคาที่คุณยืมได้</li>
+          <li>คุณสามารถค้นหาเสื้อผ้าโดยเลือกประเภทงาน และไซส์ที่ต้องการ</li>
+          <li>กำหนดเวลาการเช่าได้อย่างอิสระ</li>
+          <li>คุณสามารถเลือกระยะเวลาการเช่า 4 วันหรือ 8 วัน</li>
+          <li>เมื่อคุณเลือกระยะเวลาการเช่าได้แล้ว คุณสามารถกำหนดรูปแบบการจัดส่งได้ตามความสะดวก เลือกการใช้บริการได้ตามใจชอบ</li>
+          <li>คุณสามารถเช่าสินค้าผ่านทางหน้าเว็บไซต์ หรือหน้าร้าน Dress Me Up ในวันและเวลาทำการ</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="wear-guide-section">
+      <div class="wear-guide-content">
+        <h2>สวมใส่</h2>
+        <p>สะดวกในการรับและใช้งาน</p>
+        <ul class="wear-points">
+          <li>คุณสามารถเลือกวันที่ต้องการจัดส่งและสถานที่สำหรับจัดส่งได้ตามที่ต้องการ</li>
+          <li>ข้อแนะนำสำหรับการเช่า 4 วัน</li>
+        </ul>
+
+        <div class="wear-timeline">
+          <div>
+            <strong>วันที่ 1</strong>
+            <span>ชุดส่งมอบมาถึงมือคุณ</span>
+          </div>
+
+          <div>
+            <strong>วันที่ 2</strong>
+            <span>ทดลองสวมใส่และหาเครื่องประดับที่เข้ากับชุดคุณ</span>
+          </div>
+
+          <div>
+            <strong>วันที่ 3</strong>
+            <span>สวมใส่ชุดเข้าร่วมงาน</span>
+          </div>
+
+          <div>
+            <strong>วันที่ 4</strong>
+            <span>ส่งชุดคืน</span>
+          </div>
+        </div>
+
+        <ul class="wear-note">
+          <li>หากคุณทดลองสวมใส่ดูแล้วไม่ถูกใจหรือไม่ชอบรูปแบบ สามารถติดต่อศูนย์บริการของเรา</li>
+        </ul>
+      </div>
+
+      <div class="wear-guide-image">
+        <img src="assets/guide/Screenshot 2569-05-11 at 13.12.55.png" alt="ภาพประกอบการสวมใส่ Dress Me Up" />
+      </div>
+    </section>
+
+    <section class="return-guide-section">
+      <div class="return-guide-image">
+        <img src="assets/guide/Screenshot 2569-05-11 at 13.13.03.png" alt="ภาพประกอบการส่งคืนชุด Dress Me Up" />
+      </div>
+
+      <div class="return-guide-content">
+        <h2>ส่งคืนฟรี</h2>
+        <p>สะดวกสบาย</p>
+      <ul>
+          <li>คืนชุดง่ายๆ ไม่เสียค่าใช้จ่ายผ่านทางไปรษณีย์ไทย ที่หน้าร้าน Dress Me Up หรือบริการ Grab (ในเขตมหาสารคาม)</li>
+          <li>คุณไม่ต้องกังวลเรื่องการทำความสะอาด เพราะเราจะดูแลทำความสะอาดชุดให้คุณเอง รวมเปื้อนหรือความเสียหาย</li>
+          <li>รอยเปื้อนหรือความเสียหายเล็กน้อยนั้นอยู่ในการรับประกันทุกการสั่งเช่าชุด ดังนั้นคุณไม่ต้องกังวล เพียงแค่คุณสนุกกับกิจกรรมให้เต็มที่</li>
+      </ul>
+      </div>
+    </section>
+  </section>
+</main>
+
+<app-footer></app-footer>

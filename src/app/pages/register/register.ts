@@ -2,15 +2,16 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthApiService } from '../../service/auth-api.service';
 import { LoginService } from '../../service/login.service';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, MatIconModule, HttpClientModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
   templateUrl: './register.html',
   styleUrls: ['./register.scss']
 })
@@ -24,12 +25,11 @@ export class Register {
   };
 
   isLoading = false;
-  private apiBase = 'http://localhost:3000/api';
 
   constructor(
     private router: Router,
     private loginService: LoginService,
-    private http: HttpClient
+    private authApi: AuthApiService
   ) {}
 
   closeRegister() {
@@ -77,7 +77,7 @@ export class Register {
 
     this.isLoading = true;
 
-    this.http.post<{ message: string; member_id: number }>(`${this.apiBase}/register`, payload)
+    this.authApi.register(payload)
       .subscribe({
         next: (res) => {
           this.isLoading = false;

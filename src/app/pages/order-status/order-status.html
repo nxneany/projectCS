@@ -1,0 +1,99 @@
+<app-header></app-header>
+
+<main class="order-status-page">
+  <section class="status-panel">
+    <div class="status-heading">
+      <p>สถานะรายการ</p>
+      <h1>ตรวจสอบรายการเช่าของฉัน</h1>
+      <span>ดูสถานะการตรวจสอบสลิปและรายละเอียดการชำระเงิน</span>
+    </div>
+
+    <div class="order-list">
+      <section class="status-card" *ngFor="let order of orders" [class.is-expanded]="isExpanded(order.orderNo)">
+        <button
+          type="button"
+          class="order-summary"
+          (click)="toggleOrder(order.orderNo)"
+          [attr.aria-expanded]="isExpanded(order.orderNo)">
+          <div>
+            <span>เลขที่รายการ</span>
+            <strong>{{ order.orderNo }}</strong>
+          </div>
+
+          <div class="summary-right">
+            <div class="status-badge">
+              <span class="material-symbols-outlined">{{ statusIcon(order) }}</span>
+              {{ statusLabel(order) }}
+            </div>
+
+            <span class="material-symbols-outlined expand-icon">
+              {{ isExpanded(order.orderNo) ? 'expand_less' : 'expand_more' }}
+            </span>
+          </div>
+        </button>
+
+        <div class="status-content" *ngIf="isExpanded(order.orderNo)">
+          <div class="status-steps" aria-label="ขั้นตอนสถานะรายการ">
+            <div class="step-item is-done">
+              <span class="material-symbols-outlined">receipt_long</span>
+              <strong>ส่งรายการ</strong>
+            </div>
+
+            <div class="step-line is-active"></div>
+
+            <div class="step-item" [class.is-active]="order.paymentSlip.status === 'pending'" [class.is-done]="order.paymentSlip.status === 'approved'">
+              <span class="material-symbols-outlined">manage_search</span>
+              <strong>ตรวจสลิป</strong>
+            </div>
+
+            <div class="step-line" [class.is-active]="order.paymentSlip.status === 'approved'"></div>
+
+            <div class="step-item" [class.is-done]="order.paymentSlip.status === 'approved'">
+              <span class="material-symbols-outlined">check_circle</span>
+              <strong>ยืนยันสำเร็จ</strong>
+            </div>
+          </div>
+
+          <div class="status-message">
+            <span class="material-symbols-outlined">info</span>
+            <p>{{ statusDetail(order) }}</p>
+          </div>
+
+          <div class="detail-grid">
+            <div>
+              <span>สินค้า</span>
+              <strong>{{ order.productName }}</strong>
+            </div>
+
+            <div>
+              <span>ยอดมัดจำ</span>
+              <strong>{{ formatPrice(order.depositAmount) }}</strong>
+            </div>
+
+            <div>
+              <span>วันรับชุด</span>
+              <strong>{{ order.rentalStart }}</strong>
+            </div>
+
+            <div>
+              <span>วันคืนชุด</span>
+              <strong>{{ order.rentalEnd }}</strong>
+            </div>
+
+            <div>
+              <span>ไฟล์สลิป</span>
+              <strong>{{ order.paymentSlip.slipFileName }}</strong>
+            </div>
+
+            <div>
+              <span>เวลาโอน</span>
+              <strong>{{ order.paymentSlip.transferTime }}</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </section>
+</main>
+
+<app-footer></app-footer>

@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { environment } from '../../environments/environment';
 
 export interface Category {
   category_id: number;
@@ -8,7 +9,7 @@ export interface Category {
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private apiBase = 'http://localhost:3000/api';
+  private apiBase = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
 

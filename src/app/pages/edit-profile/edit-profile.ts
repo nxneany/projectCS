@@ -35,9 +35,7 @@ export class EditProfile implements OnInit {
       this.memberService.getMemberById(+id).subscribe({
         next: (res) => {
           this.member = res;
-          this.imageUrl = res.image_profile
-            ? `http://localhost:3000/uploads/${res.image_profile}`
-            : 'assets/default-avatar.png';
+          this.imageUrl = this.memberService.getProfileImageUrl(res.image_profile);
           this.loading = false;
         },
         error: (err) => {

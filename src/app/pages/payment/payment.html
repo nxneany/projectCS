@@ -1,0 +1,155 @@
+<app-header></app-header>
+
+<main class="payment-page">
+  <div class="payment-layout">
+    <section class="payment-forms">
+      <form class="payment-card" (ngSubmit)="saveBillingInfo()">
+        <div class="card-title">
+          <h1>Add one address of yours for Billing</h1>
+          <p>กรอกข้อมูลสำหรับออกบิลและติดต่อกลับ</p>
+        </div>
+
+        <div class="form-grid">
+          <label>
+            ชื่อ
+            <input type="text" name="firstName" [(ngModel)]="billingInfo.firstName" required />
+          </label>
+
+          <label>
+            นามสกุล
+            <input type="text" name="lastName" [(ngModel)]="billingInfo.lastName" required />
+          </label>
+
+          <label>
+            เบอร์โทร
+            <input type="tel" name="phone" [(ngModel)]="billingInfo.phone" required />
+          </label>
+
+          <label>
+            อีเมล
+            <input type="email" name="email" [(ngModel)]="billingInfo.email" required />
+          </label>
+        </div>
+
+        <div class="card-actions">
+          <span class="save-status" *ngIf="isBillingSaved">บันทึกข้อมูลแล้ว</span>
+          <button type="submit">บันทึกข้อมูล</button>
+        </div>
+      </form>
+
+      <form class="payment-card" (ngSubmit)="saveShippingInfo()">
+        <div class="card-title">
+          <h2>ข้อมูลการรับและส่งคืน</h2>
+          <p>เลือกช่องทางรับสินค้าและส่งคืนสินค้า</p>
+        </div>
+
+        <label class="full-field">
+          ชื่อผู้รับสินค้า
+          <input type="text" name="recipientName" [(ngModel)]="shippingInfo.recipientName" required />
+        </label>
+
+        <div class="delivery-options">
+          <div class="delivery-row">
+            <div>
+              <strong>การจัดส่ง</strong>
+              <span>ให้ไปรับที่ร้าน</span>
+            </div>
+            <strong>ฟรี</strong>
+          </div>
+
+          <div class="delivery-row">
+            <div>
+              <strong>ช่องทางการส่งคืน</strong>
+              <span>ที่ร้าน</span>
+            </div>
+            <strong>ฟรี</strong>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <span class="save-status" *ngIf="isShippingSaved">บันทึกข้อมูลแล้ว</span>
+          <button type="submit">บันทึกข้อมูล</button>
+        </div>
+      </form>
+    </section>
+
+    <aside class="bill-card">
+      <h2>Summary</h2>
+
+      <div class="summary-line"></div>
+
+      <div class="bill-item" *ngFor="let item of billItems">
+        <div>
+          <h3>{{ item.brand }}</h3>
+          <p>{{ item.code }}</p>
+          <span>Retail Price: {{ formatPrice(item.retailPrice) }}</span>
+          <span>Size: {{ item.size }}</span>
+          <span>Arrival: {{ item.arrival }}</span>
+          <span>Return: {{ item.returnDate }}</span>
+        </div>
+
+        <strong>{{ formatPrice(item.price) }}</strong>
+      </div>
+
+      <div class="summary-line"></div>
+
+      <div class="bill-total-row">
+        <span>ราคาค่าเช่า</span>
+        <strong>{{ formatPrice(rentalTotal) }}</strong>
+      </div>
+
+      <div class="bill-total-row">
+        <span>ค่ามัดจำ 50%</span>
+        <strong>{{ formatPrice(depositTotal) }}</strong>
+      </div>
+
+      <div class="bill-total-row">
+        <span>จำนวนเงินที่ต้องชำระทั้งหมด</span>
+        <strong>{{ formatPrice(payableTotal) }}</strong>
+      </div>
+
+      <div class="summary-line final-line"></div>
+
+      <div class="grand-total">
+        <span>ยอดรวม</span>
+        <strong>{{ formatPrice(grandTotal) }}</strong>
+      </div>
+
+      <p class="rent-hint" *ngIf="!isPaymentInfoComplete">กรุณากรอกข้อมูลให้ครบก่อนกดเช่า</p>
+      <button type="button" class="rent-btn" [disabled]="!isPaymentInfoComplete" (click)="openAgreementPopup()">เช่า</button>
+    </aside>
+  </div>
+</main>
+
+<div class="agreement-backdrop" *ngIf="isAgreementPopupOpen" (click)="closeAgreementPopup()">
+  <section class="agreement-popup" (click)="$event.stopPropagation()">
+    <div class="agreement-header">
+      <div>
+        <h2>ข้อตกลงกับทางร้าน</h2>
+        <p>กรุณาอ่านรายละเอียดก่อนกดยืนยันการเช่า</p>
+      </div>
+
+      <button type="button" class="close-agreement" aria-label="Close" (click)="closeAgreementPopup()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <ul class="agreement-list">
+      <li>ลูกค้าต้องชำระค่ามัดจำ 50% ของราคาสินค้า</li>
+      <li>เมื่อมารับชุดให้ชำระอีก 50% ที่เหลือ</li>
+      <li>ลูกค้าต้องมารับชุดวันเริ่มต้นที่ลูกค้าเลือกเช่า และคืนชุดภายในวันที่สิ้นสุดที่ลูกค้าเลือกไว้</li>
+      <li>หากลูกค้าไม่มารับชุดตามวันที่กำหนด ทางร้านจะทำการยึดค่ามัดจำและยกเลิกการเช่าทันที</li>
+      <li>หากลูกค้าไม่คืนชุดตามวันที่กำหนด ทางร้านจะทำการคิดค่าปรับวันละ 20% ของราคาสินค้า</li>
+      <li>หากลูกค้ามีเจตนาไม่คืนชุด ทางร้านจะถือว่าเป็นการขโมย และทางร้านจะทำการดำเนินการทางกฎหมายทันที</li>
+    </ul>
+
+    <p class="agreement-note">หมายเหตุ: เมื่อชำระเงินแล้วลูกค้าไม่สามารถยกเลิกการเช่าและไม่สามารถขอเงินคืนได้</p>
+
+    <div class="agreement-actions">
+      <button type="button" class="cancel-agreement" (click)="closeAgreementPopup()">ยกเลิก</button>
+      <button type="button" class="confirm-agreement" (click)="confirmRental()">ยืนยัน</button>
+    </div>
+  </section>
+</div>
+
+<app-footer></app-footer>

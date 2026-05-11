@@ -1,0 +1,115 @@
+<app-header></app-header>
+
+<main class="rental-page">
+  <section class="rental-layout" *ngIf="dress; else notFound">
+    <div class="dress-preview">
+      <img [src]="dress.image" [alt]="dress.name" />
+    </div>
+
+    <section class="rental-detail">
+      <a routerLink="/clothing-m" class="back-link">กลับไปหน้ารายการชุด</a>
+
+      <div class="title-block">
+        <h1>{{ dress.name }}</h1>
+        <strong>{{ formatPrice(dress.price) }}</strong>
+      </div>
+
+      <p class="dress-detail">{{ dress.detail }}</p>
+
+      <div class="option-block">
+        <h2>ระยะเวลาการเช่า</h2>
+        <div class="segmented-control">
+          <button type="button" [class.active]="selectedDuration === 4" (click)="selectDuration(4)">4 วัน</button>
+          <button type="button" [class.active]="selectedDuration === 8" (click)="selectDuration(8)">8 วัน</button>
+        </div>
+      </div>
+
+      <div class="date-range-block">
+        <h2>เลือกวันที่เช่า</h2>
+        <div class="date-grid">
+          <label>
+            วันที่เริ่มเช่า
+            <input type="date" name="rentalStartDate" [(ngModel)]="rentalStartDate" />
+          </label>
+
+          <label>
+            วันที่คืนชุด
+            <input type="date" name="rentalEndDate" [(ngModel)]="rentalEndDate" />
+          </label>
+        </div>
+      </div>
+
+      <div class="stock-row">
+        <span>จำนวนชุดที่คงเหลือ</span>
+        <strong>{{ dress.stock }} ชุด</strong>
+      </div>
+
+      <div class="option-block">
+        <h2>เลือกไซส์</h2>
+        <div class="size-list">
+          <button
+            type="button"
+            *ngFor="let size of dress.sizes"
+            [class.active]="selectedSize === size"
+            (click)="selectSize(size)">
+            {{ size }}
+          </button>
+        </div>
+      </div>
+
+      <div class="quantity-block">
+        <h2>จำนวนชุด</h2>
+        <div class="quantity-control">
+          <button type="button" (click)="decreaseQuantity()" [disabled]="quantity === 1">−</button>
+          <strong>{{ quantity }}</strong>
+          <button type="button" (click)="increaseQuantity()" [disabled]="quantity === dress.stock">+</button>
+        </div>
+      </div>
+
+      <div class="total-row">
+        <span>ยอดรวม</span>
+        <strong>{{ formatPrice(totalPrice) }}</strong>
+      </div>
+
+      <div class="rental-actions">
+        <button type="button" class="rent-now-btn" (click)="rentNow()">เช่าเลย</button>
+        <button type="button" class="add-cart-btn" (click)="addToCart()">เพิ่มไปในตะกร้า</button>
+      </div>
+
+      <p class="cart-message" *ngIf="cartMessage">{{ cartMessage }}</p>
+    </section>
+
+    <section class="related-section">
+      <div class="related-heading">
+        <h2>รายการสินค้าใกล้เคียง</h2>
+        <div class="related-controls">
+          <button type="button" aria-label="รายการก่อนหน้า" (click)="previousRelated()">
+            <span class="material-symbols-outlined">chevron_left</span>
+          </button>
+          <button type="button" aria-label="รายการถัดไป" (click)="nextRelated()">
+            <span class="material-symbols-outlined">chevron_right</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="related-list">
+        <article class="related-card" *ngFor="let item of visibleRelatedDresses">
+          <img [src]="item.image" [alt]="item.name" />
+          <h3>{{ item.name }}</h3>
+          <p>ราคาเช่า {{ formatPrice(item.price) }}</p>
+          <a [routerLink]="['/clothing-m', item.id]">ดูรายละเอียด</a>
+        </article>
+      </div>
+    </section>
+  </section>
+
+  <ng-template #notFound>
+    <section class="not-found">
+      <h1>ไม่พบรายการชุด</h1>
+      <p>กรุณากลับไปเลือกชุดจากหน้ารายการอีกครั้ง</p>
+      <a routerLink="/clothing-m">กลับไปหน้ารายการชุด</a>
+    </section>
+  </ng-template>
+</main>
+
+<app-footer></app-footer>

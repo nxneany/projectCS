@@ -50,7 +50,25 @@ h3{
 
 /* ท้ายรายการ */
 .footer{
-  margin-top: auto; padding: 10px 16px; color:#6c6c6c; display:flex; align-items:center; gap:6px;
-  border-top: 1px solid #eee; font-size: 13px;
+  margin: auto 12px 18px;
+  padding: 12px 14px;
+  color:#6c6c6c;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, transform .15s ease;
+
   .clock{ font-size: 18px; color:#9a9a9a; }
+
+  &:hover{
+    background: #faf7f4;
+    color: #3e2723;
+    transform: translateY(-2px);
+  }
 }
