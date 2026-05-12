@@ -34,28 +34,112 @@
     <!-- RIGHT CONTENT -->
     <div class="content-area">
 
-      <section class="product-grid" *ngIf="filteredProducts.length > 0; else emptyState">
-        <article class="product-card" *ngFor="let product of filteredProducts">
-          <img [src]="product.image" [alt]="product.name" />
+     <ng-container *ngIf="!loadingProducts; else prodSkelLoading">
 
-          <div class="product-info">
-            <h2>{{ product.name }}</h2>
-            <p>ราคาเช่า {{ formatPrice(product.price) }}</p>
-            <span>ไซส์: {{ product.sizes.join(', ') }}</span>
-          </div>
+  <section
+    class="product-grid"
+    *ngIf="filteredProducts.length > 0; else emptyState"
+  >
 
-          <a [routerLink]="detailLink(product)">เลือกเช่า</a>
-        </article>
-      </section>
+    <article
+      class="product-card"
+      *ngFor="let product of filteredProducts"
+    >
 
-      <ng-template #emptyState>
-        <section class="empty-state">
-          <h2>ไม่พบสินค้าในไซส์นี้</h2>
-          <p>ลองเลือกไซส์อื่น หรือกลับไปดูสินค้าทั้งหมดในหมวดหมู่นี้</p>
-          <button type="button" (click)="selectSize('ทั้งหมด')">
-            ดูทั้งหมด
-          </button>
-        </section>
+      <img
+        [src]="product.image_front"
+        [alt]="product.name"
+      />
+
+      <div class="product-info">
+        <h2>{{ product.name }}</h2>
+
+        <p>
+          ราคาเช่า
+          {{ formatPrice(product.price) }}
+        </p>
+
+        <span>
+          ไซส์:
+          {{ getSizes(product) }}
+        </span>
+      </div>
+
+      <a [routerLink]="detailLink(product)">
+        เลือกเช่า
+      </a>
+
+    </article>
+
+  </section>
+
+  <!-- EMPTY -->
+  <ng-template #emptyState>
+
+    <section class="empty-state">
+
+      <h2>ไม่พบสินค้าในไซส์นี้</h2>
+
+      <p>
+        ลองเลือกไซส์อื่น
+        หรือกลับไปดูสินค้าทั้งหมด
+      </p>
+
+      <button
+        class="reset-btn"
+        type="button"
+        (click)="selectSize('ทั้งหมด')"
+      >
+        ดูทั้งหมด
+      </button>
+
+    </section>
+
+  </ng-template>
+
+  <!-- PAGINATION -->
+  <div
+    class="pagination"
+    *ngIf="totalPages > 1"
+  >
+
+    <button
+      class="page-btn"
+      (click)="prevPage()"
+      [disabled]="!hasPrevPage"
+    >
+      ก่อนหน้า
+    </button>
+
+    <button
+      class="page-number"
+      *ngFor="let page of pages"
+      [class.active]="page === currentPage"
+      (click)="goToPage(page)"
+    >
+      {{ page }}
+    </button>
+
+    <button
+      class="page-btn"
+      (click)="nextPage()"
+      [disabled]="!hasNextPage"
+    >
+      ถัดไป
+    </button>
+
+  </div>
+
+</ng-container>
+      <ng-template #prodSkelLoading>
+        <div class="product-grid">
+          <article class="product-card skeleton" *ngFor="let _ of [1,2,3,4,5,6]">
+            <div class="skeleton-image"></div>
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text" style="width: 70%"></div>
+            <div class="skeleton-button"></div>
+          </article>
+        </div>
       </ng-template>
 
     </div>
@@ -65,3 +149,4 @@
 </main>
 
 <app-footer></app-footer>
+

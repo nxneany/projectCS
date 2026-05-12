@@ -14,7 +14,7 @@
     <label>Password :</label>
     <input type="password" [(ngModel)]="password" name="password" required />
 
-    <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
+    <button type="submit" class="login-btn" [disabled]="isLoading">{{ isLoading ? 'กำลังโหลด...' : 'เข้าสู่ระบบ' }}</button>
   </form>
 
   <div class="links">
@@ -25,9 +25,9 @@
 
   <div class="divider">หรือ</div>
 
-  <div id="gsi-btn"class="google-btn" (click)="loginWithGoogle()">
+  <div id="gsi-btn" class="google-btn" (click)="loginWithGoogle()" [class.disabled]="isLoading">
   <img src="assets/googlelogo.png" alt="Google" />
-  Continue with Google
+  {{ isLoading ? 'กำลังโหลด...' : 'Continue with Google' }}
 </div>
 
 <span class="close-btn material-symbols-outlined" (click)="closeDialog()">

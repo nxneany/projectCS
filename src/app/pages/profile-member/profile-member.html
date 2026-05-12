@@ -1,4 +1,4 @@
-<div class="profile-wrapper" *ngIf="!loading">
+<div class="profile-wrapper" *ngIf="!loading; else profileSkelLoading">
   <div class="profile-header">
     <button mat-icon-button class="icon-left" disabled><mat-icon>person</mat-icon></button>
     <button mat-icon-button class="icon-close" (click)="close()"><mat-icon>close</mat-icon></button>
@@ -47,3 +47,30 @@
     </button>
   </div>
 </div>
+
+<ng-template #profileSkelLoading>
+  <div class="profile-wrapper skeleton-loading">
+    <div class="profile-header">
+      <button mat-icon-button class="icon-left" disabled><mat-icon>person</mat-icon></button>
+      <button mat-icon-button class="icon-close" disabled><mat-icon>close</mat-icon></button>
+    </div>
+
+    <div class="avatar skeleton"></div>
+    <div class="name skeleton" style="width: 60%; margin: 0 auto;"></div>
+
+    <div class="field">
+      <div class="field-label skeleton" style="height: 16px; width: 40%;"></div>
+      <div class="skeleton" style="height: 40px; width: 100%; margin-top: 8px;"></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label skeleton" style="height: 16px; width: 35%;"></div>
+      <div class="skeleton" style="height: 40px; width: 100%; margin-top: 8px;"></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label skeleton" style="height: 16px; width: 45%;"></div>
+      <div class="skeleton" style="height: 60px; width: 100%; margin-top: 8px;"></div>
+    </div>
+  </div>
+</ng-template>

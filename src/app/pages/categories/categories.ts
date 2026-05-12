@@ -8,8 +8,8 @@ import { Category, CategoryService } from '../../service/category.service';
   selector: 'app-category-drawer',
   standalone: true,
   imports: [CommonModule, RouterLink],
-  templateUrl: './Categories.html',
-  styleUrls: ['./Categories.scss']
+  templateUrl: './categories.html',
+  styleUrls: ['./categories.scss']
 })
 export class Categories {
   

@@ -7,13 +7,16 @@ export interface Category {
   name: string;
 }
 
+
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
   private apiBase = environment.apiBaseUrl;
 
   constructor(private http: HttpClient) {}
-
+  // ดึงข้อมูลหมวดหมู่ทั้งหมด
   getAll() {
     return this.http.get<Category[]>(`${this.apiBase}/categories`);
   }
+
+
 }

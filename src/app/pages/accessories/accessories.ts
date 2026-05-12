@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { RouterLink, RouterOutlet } from '@angular/router';
+import { RouterOutlet } from '@angular/router';
 import { Footer } from "../footer/footer";
 import { Header } from "../header/header";
 
 @Component({
   selector: 'app-accessories',
-  imports: [RouterLink, Header, Footer,CommonModule,RouterOutlet],
+  imports: [ Header, Footer,CommonModule,RouterOutlet],
   templateUrl: './accessories.html',
   styleUrl: './accessories.scss'
 })

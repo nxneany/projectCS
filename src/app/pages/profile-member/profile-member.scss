@@ -143,3 +143,34 @@ $muted-border: #e7ded6;
   box-shadow: 0 4px 12px rgba(0,0,0,.16) !important;
   border-color: #d4c3b6 !important;
 }
+
+// Skeleton loader styles
+.skeleton {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-loading {
+  .avatar.skeleton {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+  
+  .name.skeleton {
+    height: 20px;
+    margin: 12px auto;
+  }
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

@@ -3,27 +3,75 @@
 <section class="dress-list">
   <h2>รายการชุด</h2>
 
-  <ng-container *ngFor="let dress of dresses; let i = index">
-    <!-- แสดงเส้นคั่นก่อนทุกแถว -->
-    <div *ngIf="i % 3 === 0" class="underline"></div>
+  <ng-container *ngIf="!loading; else skelLoading">
+    <ng-container *ngIf="products.length === 0; else hasProducts">
+      <div class="empty-state">ไม่มีสินค้าด้วยขณะนี้</div>
+    </ng-container>
 
-    <!-- การ์ดสินค้า -->
-    <div class="grid-container" *ngIf="i % 3 === 0">
-      <div
-        class="dress-card"
-        *ngFor="let item of dresses.slice(i, i + 3)"
-      >
-        <img [src]="item.image" [alt]="item.name" />
-        <p class="dress-name">{{ item.name }}</p>
-        <p class="dress-price">{{ item.price }} บาท</p>
-        <button class="select-btn" [routerLink]="['/clothing-m', item.id]">เลือกเช่า</button>
-      </div>
-    </div>
+    <ng-template #hasProducts>
+      <ng-container *ngFor="let dress of products; let i = index">
+        <!-- แสดงเส้นคั่นก่อนทุกแถว -->
+        <div *ngIf="i % 3 === 0" class="underline"></div>
+
+        <!-- การ์ดสินค้า -->
+        <div class="grid-container" *ngIf="i % 3 === 0">
+          <div
+            class="dress-card"
+            *ngFor="let item of products.slice(i, i + 3)"
+          >
+            <img [src]="item.image_front" [alt]="item.name" />
+            <p class="dress-name">{{ item.name }}</p>
+            <p class="dress-price">{{ item.price }} บาท</p>
+            <button class="select-btn" [routerLink]="['/clothing-m', item.product_id]">เลือกเช่า</button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- Pagination -->
+<div
+  class="pagination"
+  *ngIf="totalPages > 1"
+>
+
+  <button
+    class="page-btn"
+    (click)="prevPage()"
+    [disabled]="!hasPrevPage"
+  >
+    ก่อนหน้า
+  </button>
+
+  <button
+    class="page-number"
+    *ngFor="let page of pages"
+    [class.active]="page === currentPage"
+    (click)="goToPage(page)"
+  >
+    {{ page }}
+  </button>
+
+  <button
+    class="page-btn"
+    (click)="nextPage()"
+    [disabled]="!hasNextPage"
+  >
+    ถัดไป
+  </button>
+</div>
+
+    </ng-template>
   </ng-container>
 
-  <div class="more-link">
-    <a href="/dresses">ดูรายการเพิ่มเติม</a>
-  </div>
+  <ng-template #skelLoading>
+    <div class="grid-container" *ngFor="let _ of [1,2,3]">
+      <div class="dress-card skeleton" *ngFor="let item of [1,2,3]">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-text"></div>
+        <div class="skeleton-text" style="width: 60%"></div>
+        <div class="skeleton-button"></div>
+      </div>
+    </div>
+  </ng-template>
 </section>
 
 <app-footer></app-footer>
