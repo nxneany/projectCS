@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { Footer } from "../footer/footer";
 import { Header } from "../header/header";
+import { PaginatedResponse, Product, ProductService } from '../../service/product.service';
 
 @Component({
   selector: 'app-accessories',
@@ -10,19 +11,64 @@ import { Header } from "../header/header";
   templateUrl: './accessories.html',
   styleUrl: './accessories.scss'
 })
-export class Accessories {
-dresses = [
-    { image: 'assets/accessories/m1.png', name: 'มงกุฎเพชรเจ้าหญิง', price: 1200 },
-    { image: 'assets/accessories/m2.jpg', name: 'มงกุฎคริสตัลราชินี', price: 1350 },
-    { image: 'assets/accessories/m3.jpg', name: 'มงกุฎดอกไม้ทองคำ', price: 1100 },
-    { image: 'assets/accessories/a1.jpg', name: 'สร้อยเพชรหรู', price: 900 },
-    { image: 'assets/accessories/a2.jpg', name: 'ต่างหูไข่มุกแท้', price: 850 },
-    { image: 'assets/accessories/m4.jpg', name: 'มงกุฎเจ้าสาววินเทจ', price: 1250 },
-    { image: 'assets/accessories/m6.jpg', name: 'มงกุฎแฟนซีประกายดาว', price: 1000 },
-    { image: 'assets/accessories/m5.png', name: 'มงกุฎมินิสีเงิน', price: 950 },
-    { image: 'assets/accessories/m6.jpg', name: 'มงกุฎมุกสีชมพู', price: 1200 },
-    { image: 'assets/accessories/a1.jpg', name: 'สร้อยคริสตัลเจ้าหญิง', price: 950 },
-    { image: 'assets/accessories/a1.jpg', name: 'ต่างหูเพชรเรียบหรู', price: 850 },
-    { image: 'assets/accessories/a1.jpg', name: 'เซ็ตมงกุฎและสร้อยหรู', price: 1500 },
-  ];
+export class Accessories implements OnInit {
+
+    products: Product[] = [];
+    loading = true;
+    limit = 9;
+    currentPage = 1;
+    totalPages = 1;
+    hasNextPage = false;
+  hasPrevPage = false;
+    showLoginPopup = false;
+
+
+    constructor(
+      private productService: ProductService,
+    ) { }
+    
+    ngOnInit(): void {
+      this.loadProducts();
+    }
+    
+    loadProducts(page: number = 1) {
+      this.loading = true;
+      this.currentPage = page;
+  
+      this.productService.getAccessories(page, this.limit).subscribe({
+        next: (res: PaginatedResponse<Product>) => {
+          console.log('products => ', res);
+         this.products = res.data;
+  
+          this.currentPage = res.page;
+  
+          this.totalPages = res.totalPages;
+  
+          this.hasNextPage = res.hasNextPage;
+  
+          this.hasPrevPage = res.hasPrevPage;
+  
+          this.loading = false;
+        },
+        error: (err) => {
+          console.log(err);
+          this.products = [];
+          this.loading = false;
+        }
+      });
+    }
+  
+  openLoginPopup() {
+    this.showLoginPopup = true;
+}
+
+closeLoginPopup() {
+  this.showLoginPopup = false;
+   window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+  
+  
 }

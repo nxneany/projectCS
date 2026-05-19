@@ -1,9 +1,30 @@
 <app-header></app-header>
 
 <main class="rental-page">
+  <section class="loading-state" *ngIf="loadingProduct; else productLoaded">
+    <h1>กำลังโหลดข้อมูลสินค้า...</h1>
+  </section>
+
+  <ng-template #productLoaded>
   <section class="rental-layout" *ngIf="dress; else notFound">
     <div class="dress-preview">
-      <img [src]="dress.image" [alt]="dress.name" />
+      <div class="gallery-shell">
+        <div class="thumbnail-list" aria-label="รูปสินค้าเพิ่มเติม">
+          <button
+            type="button"
+            class="thumbnail-btn"
+            *ngFor="let image of galleryImages"
+            [class.active]="previewImage === image.src"
+            (click)="selectGalleryImage(image.src)">
+            <img [src]="image.src" [alt]="dress.name + ' ' + image.label" />
+            <span>{{ image.label }}</span>
+          </button>
+        </div>
+
+        <div class="main-preview">
+          <img [src]="previewImage" [alt]="dress.name" />
+        </div>
+      </div>
     </div>
 
     <section class="rental-detail">
@@ -29,19 +50,34 @@
         <div class="date-grid">
           <label>
             วันที่เริ่มเช่า
-            <input type="date" name="rentalStartDate" [(ngModel)]="rentalStartDate" />
+            <input
+              type="date"
+              name="rentalStartDate"
+              [(ngModel)]="rentalStartDate"
+              [min]="minRentalStartDate"
+              (ngModelChange)="onStartDateChange()" />
           </label>
 
           <label>
             วันที่คืนชุด
-            <input type="date" name="rentalEndDate" [(ngModel)]="rentalEndDate" />
+            <input
+              type="date"
+              name="rentalEndDate"
+              [(ngModel)]="rentalEndDate"
+              [min]="rentalEndDate"
+              [max]="rentalEndDate"
+              [disabled]="!rentalStartDate"
+              (ngModelChange)="onEndDateChange()" />
           </label>
         </div>
+        <p class="date-help" *ngIf="rentalStartDate">
+          ระบบเลือกวันคืนให้อัตโนมัติ {{ selectedDuration }} วันหลังจากวันที่เริ่มเช่า
+        </p>
       </div>
 
       <div class="stock-row">
         <span>จำนวนชุดที่คงเหลือ</span>
-        <strong>{{ dress.stock }} ชุด</strong>
+        <strong>{{ currentStock }} ชุด</strong>
       </div>
 
       <div class="option-block">
@@ -62,7 +98,7 @@
         <div class="quantity-control">
           <button type="button" (click)="decreaseQuantity()" [disabled]="quantity === 1">−</button>
           <strong>{{ quantity }}</strong>
-          <button type="button" (click)="increaseQuantity()" [disabled]="quantity === dress.stock">+</button>
+          <button type="button" (click)="increaseQuantity()" [disabled]="quantity >= currentStock">+</button>
         </div>
       </div>
 
@@ -72,8 +108,8 @@
       </div>
 
       <div class="rental-actions">
-        <button type="button" class="rent-now-btn" (click)="rentNow()">เช่าเลย</button>
-        <button type="button" class="add-cart-btn" (click)="addToCart()">เพิ่มไปในตะกร้า</button>
+        <button type="button" class="rent-now-btn" [disabled]="!canSubmitRental" (click)="rentNow()">เช่าเลย</button>
+        <button type="button" class="add-cart-btn" [disabled]="!canSubmitRental" (click)="addToCart()">เพิ่มไปในตะกร้า</button>
       </div>
 
       <p class="cart-message" *ngIf="cartMessage">{{ cartMessage }}</p>
@@ -102,6 +138,7 @@
       </div>
     </section>
   </section>
+  </ng-template>
 
   <ng-template #notFound>
     <section class="not-found">

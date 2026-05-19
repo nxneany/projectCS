@@ -11,7 +11,7 @@ interface PaymentSlipStatus {
 
 interface RentalOrder {
   orderNo: string;
-  productName: string;
+  productNames: string[];
   depositAmount: number;
   rentalStart: string;
   rentalEnd: string;
@@ -31,7 +31,7 @@ export class OrderStatusComponent {
   orders: RentalOrder[] = [
     {
       orderNo: 'DMU-20260511-0001',
-      productName: 'Gucci GG4287/S',
+      productNames: ['Gucci GG4287/S', 'ชุดราตรีสีแดง'],
       depositAmount: 1990,
       rentalStart: '2026-05-12',
       rentalEnd: '2026-05-15',
@@ -39,7 +39,7 @@ export class OrderStatusComponent {
     },
     {
       orderNo: 'DMU-20260511-0002',
-      productName: 'ชุดเจ้าหญิงเบล',
+      productNames: ['ชุดเจ้าหญิงเบล'],
       depositAmount: 700,
       rentalStart: '2026-05-18',
       rentalEnd: '2026-05-20',
@@ -51,7 +51,7 @@ export class OrderStatusComponent {
     },
     {
       orderNo: 'DMU-20260511-0003',
-      productName: 'ชุดแฟนซีฟ้า',
+      productNames: ['ชุดแฟนซีฟ้า', 'มงกุฎเจ้าหญิง', 'รองเท้าส้นสูงสีเงิน'],
       depositAmount: 550,
       rentalStart: '2026-05-22',
       rentalEnd: '2026-05-24',

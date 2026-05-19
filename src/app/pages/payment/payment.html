@@ -3,50 +3,46 @@
 <main class="payment-page">
   <div class="payment-layout">
     <section class="payment-forms">
-      <form class="payment-card" (ngSubmit)="saveBillingInfo()">
+      <section class="payment-card">
         <div class="card-title">
-          <h1>Add one address of yours for Billing</h1>
-          <p>กรอกข้อมูลสำหรับออกบิลและติดต่อกลับ</p>
+          <h1>ข้อมูลลูกค้า</h1>
+          <p>ข้อมูลนี้ถูกดึงจากบัญชีผู้ใช้งานของคุณ</p>
         </div>
 
-        <div class="form-grid">
-          <label>
-            ชื่อ
-            <input type="text" name="firstName" [(ngModel)]="billingInfo.firstName" required />
-          </label>
-
-          <label>
-            นามสกุล
-            <input type="text" name="lastName" [(ngModel)]="billingInfo.lastName" required />
-          </label>
-
-          <label>
-            เบอร์โทร
-            <input type="tel" name="phone" [(ngModel)]="billingInfo.phone" required />
-          </label>
-
-          <label>
-            อีเมล
-            <input type="email" name="email" [(ngModel)]="billingInfo.email" required />
-          </label>
+        <div class="loading-info" *ngIf="isCustomerLoading; else customerDetail">
+          กำลังโหลดข้อมูลลูกค้า...
         </div>
 
-        <div class="card-actions">
-          <span class="save-status" *ngIf="isBillingSaved">บันทึกข้อมูลแล้ว</span>
-          <button type="submit">บันทึกข้อมูล</button>
-        </div>
-      </form>
+        <ng-template #customerDetail>
+          <div class="info-grid">
+            <div class="info-item">
+              <span>ชื่อ</span>
+              <strong>{{ customerInfo.name }}</strong>
+            </div>
 
-      <form class="payment-card" (ngSubmit)="saveShippingInfo()">
+            <div class="info-item">
+              <span>เบอร์โทร</span>
+              <strong>{{ customerInfo.phone }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span>อีเมล</span>
+              <strong>{{ customerInfo.email }}</strong>
+            </div>
+
+            <div class="info-item">
+              <span>ที่อยู่</span>
+              <strong>{{ customerInfo.address }}</strong>
+            </div>
+          </div>
+        </ng-template>
+      </section>
+
+      <section class="payment-card">
         <div class="card-title">
           <h2>ข้อมูลการรับและส่งคืน</h2>
-          <p>เลือกช่องทางรับสินค้าและส่งคืนสินค้า</p>
+          <p>ช่องทางรับสินค้าและส่งคืนสินค้าของรายการนี้</p>
         </div>
-
-        <label class="full-field">
-          ชื่อผู้รับสินค้า
-          <input type="text" name="recipientName" [(ngModel)]="shippingInfo.recipientName" required />
-        </label>
 
         <div class="delivery-options">
           <div class="delivery-row">
@@ -65,58 +61,72 @@
             <strong>ฟรี</strong>
           </div>
         </div>
-
-        <div class="card-actions">
-          <span class="save-status" *ngIf="isShippingSaved">บันทึกข้อมูลแล้ว</span>
-          <button type="submit">บันทึกข้อมูล</button>
-        </div>
-      </form>
+      </section>
     </section>
 
     <aside class="bill-card">
-      <h2>Summary</h2>
-
-      <div class="summary-line"></div>
-
-      <div class="bill-item" *ngFor="let item of billItems">
-        <div>
-          <h3>{{ item.brand }}</h3>
-          <p>{{ item.code }}</p>
-          <span>Retail Price: {{ formatPrice(item.retailPrice) }}</span>
-          <span>Size: {{ item.size }}</span>
-          <span>Arrival: {{ item.arrival }}</span>
-          <span>Return: {{ item.returnDate }}</span>
-        </div>
-
-        <strong>{{ formatPrice(item.price) }}</strong>
+      <div class="bill-card-header">
+        <h2>ใบสรุปออร์เดอร์</h2>
+        <p>Dress Me Up</p>
       </div>
 
-      <div class="summary-line"></div>
+      <div class="bill-order-meta">
+        <!-- <span>เลขที่รายการ</span>
+        <strong>#ORDER-MOCK</strong> -->
+        <span>จำนวนรายการ</span>
+        <strong>{{ summary.total_items }} รายการ</strong>
+      </div>
+
+      <div class="receipt-line"></div>
+
+      <div class="bill-items-list">
+        <div class="bill-item" *ngFor="let item of billItems; let i = index">
+          <div class="bill-item-main">
+            <div class="bill-item-title">
+              <span>{{ i + 1 }}.</span>
+              <h3>{{ item.name }}</h3>
+            </div>
+
+            <div class="bill-meta-grid">
+              <span>รหัสสินค้า {{ item.product_id }} / Variant {{ item.variant_id }}</span>
+              <span>ไซส์ {{ item.size }} | สี {{ item.color }}</span>
+              <span>{{ item.day_type }}: {{ formatDate(item.day_start) }} - {{ formatDate(item.day_end) }}</span>
+            </div>
+
+            <div class="bill-qty-row">
+              <span>{{ item.quantity }} x {{ formatPrice(item.price) }}</span>
+              <strong>{{ formatPrice(item.price_sum) }}</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="receipt-line"></div>
 
       <div class="bill-total-row">
         <span>ราคาค่าเช่า</span>
-        <strong>{{ formatPrice(rentalTotal) }}</strong>
+        <strong>{{ formatPrice(summary.subtotal) }}</strong>
       </div>
 
       <div class="bill-total-row">
         <span>ค่ามัดจำ 50%</span>
-        <strong>{{ formatPrice(depositTotal) }}</strong>
+        <strong>{{ formatPrice(summary.deposit) }}</strong>
       </div>
 
       <div class="bill-total-row">
-        <span>จำนวนเงินที่ต้องชำระทั้งหมด</span>
-        <strong>{{ formatPrice(payableTotal) }}</strong>
+        <span>ยอดรวมทั้งหมด</span>
+        <strong>{{ formatPrice(summary.grand_total) }}</strong>
       </div>
 
-      <div class="summary-line final-line"></div>
+      <div class="receipt-line final-line"></div>
 
       <div class="grand-total">
-        <span>ยอดรวม</span>
-        <strong>{{ formatPrice(grandTotal) }}</strong>
+        <span>ยอดที่ต้องชำระตอนนี้</span>
+        <strong>{{ formatPrice(summary.deposit) }}</strong>
       </div>
 
-      <p class="rent-hint" *ngIf="!isPaymentInfoComplete">กรุณากรอกข้อมูลให้ครบก่อนกดเช่า</p>
-      <button type="button" class="rent-btn" [disabled]="!isPaymentInfoComplete" (click)="openAgreementPopup()">เช่า</button>
+      <p class="rent-hint" *ngIf="isCustomerLoading">กรุณารอสักครู่ ระบบกำลังโหลดข้อมูลลูกค้า</p>
+      <button type="button" class="rent-btn" [disabled]="isCustomerLoading" (click)="openAgreementPopup()">เช่า</button>
     </aside>
   </div>
 </main>

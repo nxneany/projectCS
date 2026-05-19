@@ -5,55 +5,132 @@
     <h1>ตะกร้าของฉัน</h1>
     <p>รายการชุดและอุปกรณ์ที่คุณเลือกไว้จะแสดงที่นี่</p>
   </section>
+<!-- LOADING -->
+<section
+  class="cart-skeleton"
+  *ngIf="loadingCart"
+>
 
+  <div
+    class="skeleton-row"
+    *ngFor="let _ of [1,2,3]"
+  >
+
+    <div class="skeleton-checkbox"></div>
+
+    <div class="skeleton-product">
+
+      <div class="skeleton-image"></div>
+
+      <div class="skeleton-text-group">
+
+        <div class="skeleton-text title"></div>
+
+        <div class="skeleton-text short"></div>
+
+      </div>
+
+    </div>
+
+    <div class="skeleton-small"></div>
+
+    <div class="skeleton-small"></div>
+
+    <div class="skeleton-date"></div>
+
+    <div class="skeleton-date"></div>
+
+    <div class="skeleton-delete"></div>
+
+  </div>
+
+</section>
   <section class="empty-cart" *ngIf="cartItems.length === 0">
     <span class="material-symbols-outlined">shopping_cart</span>
     <h2>ยังไม่มีสินค้าในตะกร้า</h2>
-    <p>เลือกชุดหรือ accessories ที่ต้องการเช่าก่อน แล้วกลับมาดูรายการได้ที่หน้านี้</p>
+    <p>
+      เลือกชุดหรือ accessories ที่ต้องการเช่าก่อน
+      แล้วกลับมาดูรายการได้ที่หน้านี้
+    </p>
     <a routerLink="/clothing-m" class="shop-link">เลือกดูรายการชุด</a>
   </section>
 
-  <section class="cart-list" *ngIf="cartItems.length > 0">
+  <section class="cart-list" *ngIf="!loadingCart && cartItems.length > 0">
     <div class="cart-row cart-row-head">
+      <label class="select-cell select-all">
+        <input
+          type="checkbox"
+          [checked]="isAllSelected"
+          (change)="toggleAll($any($event.target).checked)"
+        />
+        <span>เลือก</span>
+      </label>
       <span>สินค้า</span>
       <span>การจอง</span>
+      <span>จำนวน</span>
       <span>วันที่จอง</span>
       <span>วันที่คืน</span>
       <span></span>
     </div>
 
     <div class="cart-row" *ngFor="let item of cartItems">
+      <label class="select-cell item-select" [class.checked]="item.selected">
+        <input
+          type="checkbox"
+          [checked]="item.selected"
+          (change)="toggleItem(item, $any($event.target).checked)"
+        />
+        <span class="checkmark">
+          <span class="material-symbols-outlined">check</span>
+        </span>
+      </label>
+
       <div class="product-cell">
-        <img [src]="item.image" [alt]="item.name" />
+        <img [src]="item.image_front" [alt]="item.name" />
         <strong>{{ item.name }}</strong>
       </div>
 
-      <div class="booking-cell">
-        {{ item.rentalDays }} วัน
+      <div class="booking-cell">{{ item.day_type }} วัน</div>
+
+      <div class="booking-cell">{{ item.quantity }} ชุด</div>
+
+      <div class="date-cell">
+        {{ item.day_start | date: "dd/MM/yyyy" }}
       </div>
 
       <div class="date-cell">
-        {{ item.startDate }}
+        {{ item.day_end | date: "dd/MM/yyyy" }}
       </div>
 
-      <div class="date-cell">
-        {{ item.returnDate }}
-      </div>
-
-      <button type="button" class="remove-btn" (click)="removeItem(item.id)">
-        ลบ
+      <button
+        type="button"
+        class="remove-btn"
+        (click)="removeItem(item.cart_item_id)"
+        aria-label="Remove item"
+      >
+        <span class="material-symbols-outlined"> delete </span>
       </button>
     </div>
 
     <div class="cart-actions">
-      <button type="button" class="confirm-btn" (click)="openConfirmPopup()">
+      <span class="selected-summary">เลือกแล้ว {{ selectedCount }} รายการ</span>
+      <button
+        type="button"
+        class="confirm-btn"
+        [disabled]="!hasSelectedItems"
+        (click)="openConfirmPopup()"
+      >
         ยืนยันการเช่า
       </button>
     </div>
   </section>
 </main>
 
-<div class="popup-backdrop" *ngIf="isConfirmPopupOpen" (click)="closeConfirmPopup()">
+<div
+  class="popup-backdrop"
+  *ngIf="isConfirmPopupOpen"
+  (click)="closeConfirmPopup()"
+>
   <section class="confirm-popup" (click)="$event.stopPropagation()">
     <div class="popup-header">
       <div>
@@ -61,19 +138,28 @@
         <p>ตรวจสอบรายการก่อนเข้าสู่หน้าชำระเงิน</p>
       </div>
 
-      <button type="button" class="close-popup" aria-label="Close" (click)="closeConfirmPopup()">
+      <button
+        type="button"
+        class="close-popup"
+        aria-label="Close"
+        (click)="closeConfirmPopup()"
+      >
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
 
     <div class="popup-list">
-      <div class="popup-item" *ngFor="let item of cartItems">
-        <img [src]="item.image" [alt]="item.name" />
+      <div class="popup-item" *ngFor="let item of selectedItems">
+        <img [src]="item.image_front" [alt]="item.name" />
 
         <div>
           <strong>{{ item.name }}</strong>
-          <span>จอง {{ item.rentalDays }} วัน</span>
-          <span>{{ item.startDate }} - {{ item.returnDate }}</span>
+          <span>จอง {{ item.day_type }} วัน</span>
+          <span>จำนวน {{ item.quantity }} ชุด</span>
+          <span>
+            {{ item.day_start | date: "dd/MM/yyyy" }} -
+            {{ item.day_end | date: "dd/MM/yyyy" }}</span
+          >
         </div>
       </div>
     </div>
@@ -83,9 +169,7 @@
         แก้ไขรายการ
       </button>
 
-      <a routerLink="/payment" class="payment-btn">
-        ไปหน้าชำระเงิน
-      </a>
+      <a routerLink="/payment" class="payment-btn"> ไปหน้าชำระเงิน </a>
     </div>
   </section>
 </div>

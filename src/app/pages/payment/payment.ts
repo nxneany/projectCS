@@ -1,114 +1,136 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Footer } from '../footer/footer';
 import { Header } from '../header/header';
 
-interface BillingInfo {
-  firstName: string;
-  lastName: string;
+interface CustomerInfo {
+  name: string;
   phone: string;
   email: string;
+  address: string;
 }
 
-interface ShippingInfo {
-  recipientName: string;
+interface PaymentUser {
+  member_id: number;
+  username: string;
+  phone: string;
+  email: string;
+  address: string;
 }
 
 interface BillItem {
-  brand: string;
-  code: string;
-  retailPrice: number;
+  cart_item_id: number;
+  product_id: number;
+  name: string;
+  variant_id: number;
   size: string;
-  arrival: string;
-  returnDate: string;
+  color: string;
+  quantity: number;
   price: number;
+  price_sum: number;
+  day_type: string;
+  day_start: string;
+  day_end: string;
+  image_front: string;
+}
+
+interface PaymentSummary {
+  subtotal: number;
+  deposit: number;
+  grand_total: number;
+  total_items: number;
+}
+
+interface PaymentData {
+  user: PaymentUser;
+  items: BillItem[];
+  summary: PaymentSummary;
 }
 
 @Component({
   selector: 'app-payment',
-  imports: [CommonModule, FormsModule, Header, Footer],
+  imports: [CommonModule, Header, Footer],
   templateUrl: './payment.html',
-  styleUrl: './payment.scss'
+  styleUrl: './payment.scss',
 })
-export class PaymentComponent {
+export class PaymentComponent implements OnInit {
   constructor(private router: Router) {}
 
-  billingInfo: BillingInfo = {
-    firstName: '',
-    lastName: '',
+  customerInfo: CustomerInfo = {
+    name: '',
     phone: '',
-    email: ''
+    email: '',
+    address: '',
   };
 
-  shippingInfo: ShippingInfo = {
-    recipientName: ''
-  };
-
-  isBillingSaved = false;
-  isShippingSaved = false;
   isAgreementPopupOpen = false;
+  isCustomerLoading = false;
 
-  billItems: BillItem[] = [
-    {
-      brand: 'Gucci',
-      code: 'GG4287/S',
-      retailPrice: 34900,
-      size: 'FREE',
-      arrival: 'Sat, 08/03/25',
-      returnDate: 'Tue, 11/03/25',
-      price: 1990
+  paymentData: PaymentData = {
+    user: {
+      member_id: 1,
+      username: 'Arida',
+      phone: '09991115555',
+      email: 'ananya@gmail.com',
+      address: '123/7 กาฬสินธุ์',
     },
-    {
-      brand: 'Gucci',
-      code: 'GG4287/S',
-      retailPrice: 34900,
-      size: 'FREE',
-      arrival: 'Sat, 08/03/25',
-      returnDate: 'Tue, 11/03/25',
-      price: 1990
-    }
-  ];
+    items: [
+      {
+        cart_item_id: 1,
+        product_id: 1,
+        name: 'ชุดราตรีสีแดง',
+        variant_id: 1,
+        size: 'M',
+        color: 'แดง',
+        quantity: 2,
+        price: 1500,
+        price_sum: 3000,
+        day_type: '4วัน',
+        day_start: '2025-10-19T17:00:00.000Z',
+        day_end: '2025-10-23T17:00:00.000Z',
+        image_front:
+          'https://res.cloudinary.com/dfk8wkzrs/image/upload/v1778584104/rental/fqb9eokv3eynotpfujex.png',
+      },
+      {
+        cart_item_id: 5,
+        product_id: 1,
+        name: 'ชุดราตรีสีแดง',
+        variant_id: 2,
+        size: 'L',
+        color: 'แดงเข้ม',
+        quantity: 1,
+        price: 1500,
+        price_sum: 1500,
+        day_type: '4วัน',
+        day_start: '2026-05-19T17:00:00.000Z',
+        day_end: '2026-05-23T17:00:00.000Z',
+        image_front:
+          'https://res.cloudinary.com/dfk8wkzrs/image/upload/v1778584104/rental/fqb9eokv3eynotpfujex.png',
+      },
+    ],
+    summary: {
+      subtotal: 9000,
+      deposit: 4500,
+      grand_total: 9000,
+      total_items: 2,
+    },
+  };
 
-  get rentalTotal() {
-    return this.billItems.reduce((total, item) => total + item.price, 0);
-  }
+  billItems: BillItem[] = [];
+  summary: PaymentSummary = {
+    subtotal: 0,
+    deposit: 0,
+    grand_total: 0,
+    total_items: 0,
+  };
 
-  get depositTotal() {
-    return this.rentalTotal / 2;
-  }
-
-  get payableTotal() {
-    return this.rentalTotal;
-  }
-
-  get grandTotal() {
-    return this.depositTotal;
-  }
-
-  get isPaymentInfoComplete() {
-    return [
-      this.billingInfo.firstName,
-      this.billingInfo.lastName,
-      this.billingInfo.phone,
-      this.billingInfo.email,
-      this.shippingInfo.recipientName
-    ].every(value => value.trim().length > 0);
-  }
-
-  saveBillingInfo() {
-    localStorage.setItem('billingInfo', JSON.stringify(this.billingInfo));
-    this.isBillingSaved = true;
-  }
-
-  saveShippingInfo() {
-    localStorage.setItem('shippingInfo', JSON.stringify(this.shippingInfo));
-    this.isShippingSaved = true;
+  ngOnInit() {
+    this.loadPaymentData();
   }
 
   openAgreementPopup() {
-    if (!this.isPaymentInfoComplete) return;
+    if (this.isCustomerLoading) return;
     this.isAgreementPopupOpen = true;
   }
 
@@ -124,7 +146,26 @@ export class PaymentComponent {
   formatPrice(price: number) {
     return `${price.toLocaleString('en-US', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     })} ฿`;
+  }
+
+  formatDate(date: string) {
+    return new Intl.DateTimeFormat('th-TH', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(date));
+  }
+
+  private loadPaymentData() {
+    this.billItems = this.paymentData.items;
+    this.summary = this.paymentData.summary;
+    this.customerInfo = {
+      name: this.paymentData.user.username || '-',
+      phone: this.paymentData.user.phone || '-',
+      email: this.paymentData.user.email || '-',
+      address: this.paymentData.user.address ||'-',
+    };
   }
 }

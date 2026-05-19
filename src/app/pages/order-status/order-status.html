@@ -62,7 +62,11 @@
           <div class="detail-grid">
             <div>
               <span>สินค้า</span>
-              <strong>{{ order.productName }}</strong>
+              <div class="product-name-list">
+                <strong *ngFor="let productName of order.productNames; let i = index">
+                  {{ i + 1 }}. {{ productName }}
+                </strong>
+              </div>
             </div>
 
             <div>
@@ -78,16 +82,6 @@
             <div>
               <span>วันคืนชุด</span>
               <strong>{{ order.rentalEnd }}</strong>
-            </div>
-
-            <div>
-              <span>ไฟล์สลิป</span>
-              <strong>{{ order.paymentSlip.slipFileName }}</strong>
-            </div>
-
-            <div>
-              <span>เวลาโอน</span>
-              <strong>{{ order.paymentSlip.transferTime }}</strong>
             </div>
           </div>
         </div>

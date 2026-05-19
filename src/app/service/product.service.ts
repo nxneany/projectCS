@@ -57,22 +57,31 @@ export interface PaginatedResponse<T> {
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private apiBase = environment.apiBaseUrl;
-  constructor(private http: HttpClient) { }
-  
+  constructor(private http: HttpClient) {}
 
   // ดึงข้อมูลสินค้าตามหมวดหมู่ ด้วย pagination
   getByCategory(categoryId: number, page: number = 1, limit: number = 8) {
-    return this.http.get <PaginatedResponse<Product>>(`${this.apiBase}/categories/${categoryId}/products?page=${page}&limit=${limit}`);
+    return this.http.get<PaginatedResponse<Product>>(
+      `${this.apiBase}/categories/${categoryId}/products?page=${page}&limit=${limit}`,
+    );
   }
-
 
   //ดึงข้อมูลสินค้าทั้งหมด (รายการชุด) ด้วย pagination
   getProducts(page: number = 1, limit: number = 9) {
-    return this.http.get<PaginatedResponse<Product>>(`${this.apiBase}/products?page=${page}&limit=${limit}`);
+    return this.http.get<PaginatedResponse<Product>>(
+      `${this.apiBase}/products?page=${page}&limit=${limit}`,
+    );
   }
-  
+
   //ดึงข้อมูลสินค้า (รายการเครื่องประดับ) ด้วย pagination
   getAccessories(page: number = 1, limit: number = 9) {
-    return this.http.get<PaginatedResponse<Product>>(`${this.apiBase}/decorative-products?page=${page}&limit=${limit}`);
+    return this.http.get<PaginatedResponse<Product>>(
+      `${this.apiBase}/decorative-products?page=${page}&limit=${limit}`,
+    );
+  }
+
+  // ดึงข้อมูลสินค้า ตาม id (หน้าสินค้าแต่ละอย่าง)
+  getProductsId(id: number) {
+    return this.http.get<Product>(`${this.apiBase}/products/${id}`);
   }
 }

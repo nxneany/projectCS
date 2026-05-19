@@ -48,38 +48,35 @@
   }
 }
 
-.form-grid {
+.info-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
+  gap: 14px;
 }
 
-label {
+.info-item,
+.loading-info {
   display: grid;
-  gap: 8px;
-  color: #51443f;
-  font-weight: 700;
-}
-
-input {
-  width: 100%;
-  min-height: 44px;
-  box-sizing: border-box;
-  border: 1px solid #d9c9bf;
-  border-radius: 6px;
-  padding: 10px 12px;
-  background: #fffefe;
+  gap: 6px;
+  border: 1px solid #eadfd8;
+  border-radius: 8px;
+  padding: 14px 16px;
+  background: #faf7f4;
   color: #2d2420;
-  font: inherit;
 
-  &:focus {
-    outline: 2px solid #b5856f;
-    outline-offset: 1px;
+  span {
+    color: #6f625c;
+    font-weight: 800;
+  }
+
+  strong {
+    overflow-wrap: anywhere;
   }
 }
 
-.full-field {
-  margin-bottom: 18px;
+.loading-info {
+  color: #6f625c;
+  font-weight: 700;
 }
 
 .delivery-options {
@@ -107,75 +104,130 @@ input {
   }
 }
 
-.card-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 14px;
-  margin-top: 24px;
-
-  button {
-    min-height: 42px;
-    border: 0;
-    border-radius: 6px;
-    padding: 10px 18px;
-    background: #2d2420;
-    color: #ffffff;
-    cursor: pointer;
-    font: inherit;
-  }
-}
-
-.save-status {
-  color: #497b46;
-  font-weight: 700;
-}
-
 .bill-card {
   position: sticky;
   top: 24px;
-  padding: 28px 28px 24px;
+  border: 0;
+  border-radius: 3px;
+  padding: 28px 26px 24px;
+  background:
+    linear-gradient(135deg, transparent 8px, #ffffff 0) top left,
+    linear-gradient(225deg, transparent 8px, #ffffff 0) top right,
+    linear-gradient(45deg, transparent 8px, #ffffff 0) bottom left,
+    linear-gradient(315deg, transparent 8px, #ffffff 0) bottom right;
+  background-size: 51% 51%;
+  background-repeat: no-repeat;
+  box-shadow: 0 16px 36px rgb(45 36 32 / 12%);
+  font-family: 'Courier New', monospace;
+}
+
+.bill-card-header {
+  display: grid;
+  gap: 4px;
+  text-align: center;
 
   h2 {
     margin: 0;
-    font-size: 26px;
+    font-family: inherit;
+    font-size: 24px;
+    letter-spacing: 0;
+  }
+
+  p {
+    margin: 0;
+    color: #6f625c;
+    font-size: 13px;
+    font-weight: 800;
   }
 }
 
-.summary-line {
+.bill-order-meta {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px 16px;
+  margin-top: 18px;
+  color: #3c332e;
+  font-size: 14px;
+
+  span {
+    color: #6f625c;
+  }
+}
+
+.receipt-line {
   height: 1px;
-  margin: 18px 0 26px;
-  background: #2d2420;
+  margin: 18px 0;
+  border-top: 1px dashed #8d7f78;
+}
+
+.bill-items-list {
+  display: grid;
+  gap: 0;
+  max-height: 430px;
+  overflow-y: auto;
+  padding-right: 6px;
 }
 
 .bill-item {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 20px;
-  margin-bottom: 44px;
+  border-bottom: 1px dashed #d7c8bf;
+  padding: 12px 0;
+
+  .bill-item-main {
+    min-width: 0;
+  }
 
   h3,
   p {
     margin: 0;
-    font-size: 24px;
+    font-size: 16px;
     line-height: 1.2;
+    overflow-wrap: anywhere;
   }
 
   p {
-    margin-bottom: 18px;
+    margin-bottom: 12px;
+    color: #6f625c;
   }
 
   span {
     display: block;
     color: #111111;
-    font-size: 18px;
+    font-size: 13px;
     line-height: 1.35;
   }
 
   strong {
-    font-size: 22px;
+    font-size: 15px;
     white-space: nowrap;
   }
+}
+
+.bill-item:last-child {
+  border-bottom: 0;
+}
+
+.bill-item-title,
+.bill-qty-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+}
+
+.bill-item-title {
+  align-items: start;
+  margin-bottom: 8px;
+}
+
+.bill-qty-row {
+  grid-template-columns: 1fr auto;
+  margin-top: 10px;
+  color: #2d2420;
+}
+
+.bill-meta-grid {
+  display: grid;
+  gap: 3px;
+  color: #6f625c;
 }
 
 .bill-total-row,
@@ -184,7 +236,8 @@ input {
   justify-content: space-between;
   gap: 20px;
   margin-bottom: 24px;
-  font-size: 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 16px;
 
   strong {
     white-space: nowrap;
@@ -192,11 +245,16 @@ input {
 }
 
 .final-line {
-  margin-top: 54px;
+  margin-top: 24px;
 }
 
 .grand-total {
   margin-bottom: 28px;
+  border: 1px solid #2d2420;
+  padding: 12px 14px;
+  background: #fbf7f2;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .rent-hint {
@@ -343,26 +401,22 @@ input {
     padding: 20px;
   }
 
-  .form-grid {
+  .info-grid {
     grid-template-columns: 1fr;
-  }
-
-  .card-actions {
-    align-items: stretch;
-    flex-direction: column;
-
-    button {
-      width: 100%;
-    }
   }
 
   .bill-item {
-    grid-template-columns: 1fr;
-    margin-bottom: 32px;
-
     strong {
       justify-self: start;
     }
+  }
+
+  .bill-card-header {
+    text-align: left;
+  }
+
+  .bill-meta-grid {
+    grid-template-columns: 1fr;
   }
 
   .agreement-backdrop {

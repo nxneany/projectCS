@@ -188,10 +188,12 @@
 .detail-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 14px;
 
-  div {
+  > div {
     display: grid;
+    align-content: start;
     gap: 6px;
     border: 1px solid #eadfd8;
     border-radius: 8px;
@@ -206,6 +208,25 @@
 
   strong {
     overflow-wrap: anywhere;
+  }
+}
+
+.product-name-list {
+  display: grid;
+  gap: 6px;
+  max-height: 128px;
+  overflow-y: auto;
+  padding-right: 4px;
+
+  strong {
+    display: block;
+    border-bottom: 1px dashed #eadfd8;
+    padding-bottom: 6px;
+
+    &:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
   }
 }
 

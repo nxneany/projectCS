@@ -2,8 +2,8 @@
 <router-outlet></router-outlet>
 <section class="dress-list">
   <h2>รายการชุด</h2>
-
-  <ng-container *ngFor="let dress of dresses; let i = index">
+<ng-container *ngIf="!loading; else skelLoading">
+  <ng-container *ngFor="let dress of products; let i = index">
     <!-- แสดงเส้นคั่นก่อนทุกแถว -->
     <div *ngIf="i % 3 === 0" class="underline"></div>
 
@@ -11,9 +11,9 @@
     <div class="grid-container" *ngIf="i % 3 === 0">
       <div
         class="dress-card"
-        *ngFor="let item of dresses.slice(i, i + 3)"
+        *ngFor="let item of products.slice(i, i + 3)"
       >
-        <img [src]="item.image" [alt]="item.name" />
+        <img [src]="item.image_front" [alt]="item.name" />
         <p class="dress-name">{{ item.name }}</p>
         <p class="dress-price">{{ item.price }} บาท</p>
         
@@ -21,9 +21,67 @@
     </div>
   </ng-container>
 
-  <div class="more-link">
-    <a href="/dresses">ดูรายการเพิ่มเติม</a>
+
+<div class="more-link">
+
+  <button
+    class="more-btn"
+    type="button"
+    (click)="openLoginPopup()"
+  >
+    ดูรายการเพิ่มเติม
+  </button>
+
+</div>
+  </ng-container>
+
+  <ng-template #skelLoading>
+    <div class="grid-container" *ngFor="let _ of [1,2,3]">
+      <div class="dress-card skeleton" *ngFor="let item of [1,2,3]">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-text"></div>
+        <div class="skeleton-text" style="width: 60%"></div>
+        <div class="skeleton-button"></div>
+      </div>
+    </div>
+  </ng-template>
+
+  <!-- LOGIN POPUP -->
+<div
+  class="popup-overlay"
+  *ngIf="showLoginPopup"
+>
+
+  <div class="login-popup">
+
+    <button
+      class="close-btn"
+      (click)="closeLoginPopup()"
+    >
+      ×
+    </button>
+
+    <h2>เข้าสู่ระบบก่อน</h2>
+
+    <p>
+      กรุณาเข้าสู่ระบบ
+      เพื่อดูสินค้าเพิ่มเติม
+    </p>
+
+    <div class="popup-actions">
+
+      <button
+        class="login-btn"
+         (click)="closeLoginPopup()"
+      >
+        เข้าสู่ระบบ
+      </button>
+
+    </div>
+
   </div>
+
+</div>
 </section>
 
 <app-footer></app-footer>
