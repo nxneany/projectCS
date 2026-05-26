@@ -18,10 +18,16 @@
 
   <!-- กล่องค้นหา + ปุ่ม -->
   <div class="actions">
-    <div class="search-box">
-      <i class="fas fa-search search-icon"></i>
-      <input type="text" placeholder="ค้นหา..." />
-    </div>
+    <form class="search-box" (ngSubmit)="searchProducts()">
+      <input
+        type="text"
+        name="searchKeyword"
+        placeholder="ค้นหา..."
+        [(ngModel)]="searchKeyword" />
+      <button type="submit" aria-label="ค้นหาสินค้า">
+        <mat-icon>search</mat-icon>
+      </button>
+    </form>
 
     <!-- 🔹 ยังไม่ล็อกอิน -->
     <ng-container *ngIf="!(isLoggedIn$ | async); else loggedInIcons">
@@ -58,6 +64,15 @@
 
 <!-- เมนูสำหรับมือถือ -->
 <div class="mobile-menu" *ngIf="isMenuOpen">
+  <form class="mobile-search-box" (ngSubmit)="searchProducts()">
+    <input
+      type="text"
+      name="mobileSearchKeyword"
+      placeholder="ค้นหา..."
+      [(ngModel)]="searchKeyword" />
+    <button type="submit">ค้นหา</button>
+  </form>
+
   <a routerLink="/">หน้าหลัก</a>
   <a [routerLink]="(isLoggedIn$ | async) ? '/clothing-m' : '/clothing'">รายการชุด</a>
   <a [routerLink]="(isLoggedIn$ | async) ? '/accessories-m' : '/accessories'">Accessories</a>

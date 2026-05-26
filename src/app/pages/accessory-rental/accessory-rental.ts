@@ -5,8 +5,11 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Footer } from '../footer/footer';
 import { Header } from '../header/header';
 import { Product, ProductService, ProductVariant } from '../../service/product.service';
-
-import { CartService } from '../../service/cart.service';
+import {
+  AddToCartPayload,
+  AddToCartResponse,
+  CartService,
+} from '../../service/cart.service';
 
 interface RentalAccessory {
   id: number;
@@ -40,29 +43,7 @@ export class AccessoryRentalComponent implements OnInit {
   loadingProduct = true;
   selectedGalleryImage = '';
   selectedSize = '40';
-
-  accessories: RentalAccessory[] = [
-    {
-      id: 1,
-      image: 'assets/accessories/m1.png',
-      name: 'มงกุฎเพชรเจ้าหญิง',
-      price: 1200,
-      detail: 'มงกุฎเพชรประกายหรู เหมาะกับชุดเจ้าหญิง งานเวที และงานถ่ายภาพ',
-      stock: 4,
-      sizes: ['40', '41', '42', '43'],
-      variants: [],
-    },
-    {
-      id: 2,
-      image: 'assets/accessories/m2.jpg',
-      name: 'มงกุฎคริสตัลราชินี',
-      price: 1350,
-      detail: 'มงกุฎคริสตัลทรงสูง เพิ่มลุคราชินีให้โดดเด่นสำหรับงานสำคัญ',
-      stock: 3,
-      sizes: ['40', '41', '42', '43'],
-      variants: [],
-    },
-  ];
+  relatedProducts: Product[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -71,7 +52,9 @@ export class AccessoryRentalComponent implements OnInit {
     private cartService: CartService,
   ) {}
   ngOnInit() {
-    this.loadProduct();
+    this.route.paramMap.subscribe((params) => {
+      this.loadProduct(Number(params.get('id')));
+    });
   }
 
   get totalPrice() {
@@ -79,7 +62,7 @@ export class AccessoryRentalComponent implements OnInit {
   }
 
   get relatedAccessories() {
-    return this.accessories.filter((item) => item.id !== this.accessory?.id);
+    return this.relatedProducts;
   }
 
   get visibleRelatedAccessories() {
@@ -119,7 +102,7 @@ export class AccessoryRentalComponent implements OnInit {
       { label: 'ด้านหน้า', src: variant.image_front },
       { label: 'ด้านหลัง', src: variant.image_back },
       { label: 'ตอนสวมใส่', src: variant.image_wear },
-    ].filter((image) => !!image.src);
+    ].filter((image): image is GalleryImage => !!image.src);
   }
 
   get currentStock() {
@@ -167,7 +150,7 @@ export class AccessoryRentalComponent implements OnInit {
   }
 
   increaseQuantity() {
-    if (this.accessory && this.quantity < this.accessory.stock)
+    if (this.accessory && this.quantity < this.currentStock)
       this.quantity += 1;
   }
 
@@ -188,39 +171,8 @@ export class AccessoryRentalComponent implements OnInit {
   }
 
   addToCart() {
-    if (!this.accessory) return;
-
-    const memberId = Number(localStorage.getItem('member_id'));
-
-    if (!memberId) {
-      this.cartMessage = 'กรุณาเข้าสู่ระบบ';
-
-      return;
-    }
-
-    if (!this.selectedVariant) {
-      this.cartMessage = 'กรุณาเลือกสินค้า';
-
-      return;
-    }
-
-    const payload = {
-      user_id: memberId,
-
-      variant_id: this.selectedVariant.variant_id,
-
-      quantity: this.quantity,
-
-      price: this.totalPrice,
-
-      day_type: `${this.selectedDuration}วัน`,
-
-      day_start: this.rentalStartDate,
-
-      day_end: this.rentalEndDate,
-    };
-
-    console.log(payload);
+    const payload = this.buildAddToCartPayload();
+    if (!payload) return;
 
     this.cartService.addToCart(payload).subscribe({
       next: () => {
@@ -236,12 +188,54 @@ export class AccessoryRentalComponent implements OnInit {
   }
 
   rentNow() {
-    if (!this.accessory) return;
-    localStorage.setItem(
-      'selectedRentalAccessory',
-      JSON.stringify(this.buildRentalPayload()),
-    );
-    this.router.navigate(['/payment']);
+    const payload = this.buildAddToCartPayload();
+    if (!payload) return;
+
+    const memberId = payload.user_id;
+
+    this.cartMessage = 'กำลังเตรียมรายการเช่า...';
+
+    this.cartService.addToCart(payload).subscribe({
+      next: (res: AddToCartResponse) => {
+        const paymentTarget = this.resolvePaymentTargetFromAddResponse(res);
+
+        if (paymentTarget) {
+          this.goToPayment(paymentTarget.cartId, paymentTarget.cartItemIds);
+          return;
+        }
+
+        this.cartService.getCart(memberId).subscribe({
+          next: (cart) => {
+            const addedItem = [...cart.items]
+              .reverse()
+              .find(
+                (item) =>
+                  item.variant_id === payload.variant_id &&
+                  item.day_start === payload.day_start &&
+                  item.day_end === payload.day_end &&
+                  item.quantity === payload.quantity,
+              );
+
+            if (!addedItem) {
+              this.cartMessage = 'ไม่พบข้อมูลสินค้าในตะกร้า';
+              return;
+            }
+
+            this.goToPayment(addedItem.cart_id, [addedItem.cart_item_id]);
+          },
+          error: (err) => {
+            console.log(err);
+
+            this.cartMessage = 'ไม่สามารถดึงข้อมูลตะกร้าได้';
+          },
+        });
+      },
+      error: (err) => {
+        console.log(err);
+
+        this.cartMessage = 'ไม่สามารถไปหน้าชำระเงินได้';
+      },
+    });
   }
 
   formatPrice(price: number) {
@@ -264,13 +258,72 @@ export class AccessoryRentalComponent implements OnInit {
     };
   }
 
-  private loadProduct() {
-    const productId = Number(this.route.snapshot.paramMap.get('id'));
+  private buildAddToCartPayload(): AddToCartPayload | null {
+    if (!this.accessory || !this.canSubmitRental) return null;
 
+    const memberId = Number(localStorage.getItem('member_id'));
+
+    if (!memberId) {
+      this.cartMessage = 'กรุณาเข้าสู่ระบบ';
+
+      return null;
+    }
+
+    if (!this.selectedVariant?.variant_id) {
+      this.cartMessage = 'กรุณาเลือกสินค้า';
+
+      return null;
+    }
+
+    return {
+      user_id: memberId,
+      variant_id: this.selectedVariant.variant_id,
+      quantity: this.quantity,
+      price: this.totalPrice,
+      day_type: `${this.selectedDuration}วัน`,
+      day_start: this.rentalStartDate,
+      day_end: this.rentalEndDate,
+    };
+  }
+
+  private resolvePaymentTargetFromAddResponse(res: AddToCartResponse) {
+    const source = res.data ?? res;
+    const item = source.item ?? source.items?.[source.items.length - 1];
+    const cartId = source.cart_id ?? item?.cart_id;
+    const cartItemIds = source.cart_item_ids?.length
+      ? source.cart_item_ids
+      : source.cart_item_id
+        ? [source.cart_item_id]
+        : item?.cart_item_id
+          ? [item.cart_item_id]
+          : [];
+
+    if (!cartId || cartItemIds.length === 0) return null;
+
+    return {
+      cartId,
+      cartItemIds,
+    };
+  }
+
+  private goToPayment(cartId: number, cartItemIds: number[]) {
+    this.router.navigate(['/payment'], {
+      queryParams: {
+        cart_id: cartId,
+        cart_item_ids: cartItemIds.join(','),
+      },
+    });
+  }
+
+  private loadProduct(productId: number) {
     if (!productId) {
       this.loadingProduct = false;
       return;
     }
+
+    this.loadingProduct = true;
+    this.relatedStartIndex = 0;
+    this.relatedProducts = [];
 
     this.productService.getProductsId(productId).subscribe({
       next: (product) => {
@@ -278,6 +331,7 @@ export class AccessoryRentalComponent implements OnInit {
         this.selectedSize = this.accessory.sizes[0] || '';
         this.quantity = this.currentStock > 0 ? 1 : 0;
         this.selectedGalleryImage = this.galleryImages[0]?.src || '';
+        this.loadRelatedProducts(product.product_id);
         this.loadingProduct = false;
       },
       error: () => {
@@ -293,15 +347,26 @@ export class AccessoryRentalComponent implements OnInit {
       id: product.product_id,
       image:
         product.image_front ||
-        variants[0]?.image_front ||
+        variants.find((variant) => !!variant.image_front)?.image_front ||
         'assets/clothing/w3.jpg',
       name: product.name,
       price: product.price,
       detail: product.description,
-      stock: variants.reduce((total, variant) => total + variant.quantity, 0),
-      sizes: [...new Set(variants.map((variant) => variant.size))],
+      stock: variants.reduce((total, variant) => total + (variant.quantity ?? 0), 0),
+      sizes: [...new Set(variants.map((variant) => variant.size).filter((size): size is string => !!size))],
       variants,
     };
+  }
+
+  private loadRelatedProducts(productId: number) {
+    this.productService.getRelatedProducts(productId).subscribe({
+      next: (products) => {
+        this.relatedProducts = products;
+      },
+      error: () => {
+        this.relatedProducts = [];
+      },
+    });
   }
 
   private updateRentalEndDate() {

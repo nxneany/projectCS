@@ -1,0 +1,133 @@
+<header class="topbar">
+  <div>
+    <p>การชำระเงิน</p>
+    <h1>ตรวจสลิป</h1>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="panel-heading">
+    <h2>ตรวจรูปภาพสลิป เวลาโอน และจำนวนเงิน</h2>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <label class="global-search">
+      <span class="material-symbols-outlined">search</span>
+
+      <input
+        type="text"
+        [(ngModel)]="searchText"
+        placeholder="ค้นหาเลขออเดอร์ เช่น ORD-20260520-001"
+      />
+    </label>
+  </div>
+
+  <!-- LIST -->
+  <div class="review-grid" *ngIf="filteredPayments.length > 0; else emptyState">
+    <article class="review-card" *ngFor="let payment of filteredPayments">
+      <div class="slip-box">
+        <img [src]="payment.slipImage" [alt]="payment.orderNo" />
+      </div>
+
+      <div class="payment-info">
+        <div class="review-status">
+          <span class="material-symbols-outlined">schedule</span>
+
+          {{ payment.status }}
+        </div>
+
+        <h3>{{ payment.orderNo }}</h3>
+
+        <p>{{ payment.customerName }}</p>
+
+        <span>
+          <span class="material-symbols-outlined">payments</span>
+          เวลาโอน {{ payment.transferTime }}
+        </span>
+
+        <strong>{{ formatPrice(payment.amount) }}</strong>
+      </div>
+
+      <div class="button-group">
+        <button type="button" (click)="approvePayment(payment.orderNo)">
+          ยืนยันการโอน
+        </button>
+
+        <button
+          type="button"
+          class="danger"
+          (click)="openDeletePopup(payment.orderNo)"
+        >
+          ปฏิเสธ
+        </button>
+      </div>
+    </article>
+  </div>
+
+  <!-- EMPTY -->
+  <ng-template #emptyState>
+    <div class="empty-review">
+      <span class="material-symbols-outlined">receipt_long</span>
+
+      <h3>ไม่พบรายการสลิป</h3>
+
+      <p>ไม่พบข้อมูลออเดอร์ตามเลขที่ค้นหา กรุณาตรวจสอบหมายเลขออเดอร์อีกครั้ง</p>
+    </div>
+  </ng-template>
+</section>
+
+<!-- =========================
+     SUCCESS POPUP
+========================= -->
+
+<div class="success-popup" *ngIf="showSuccessPopup">
+  <span class="material-symbols-outlined">check_circle</span>
+
+  <strong>{{ successMessage }}</strong>
+</div>
+
+<!-- =========================
+     DELETE CONFIRM
+========================= -->
+
+<div
+  class="confirm-backdrop"
+  *ngIf="showDeletePopup"
+  (click)="closeDeletePopup()"
+>
+  <section
+    class="confirm-modal"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="confirm-icon">
+      <span class="material-symbols-outlined">warning</span>
+    </div>
+
+    <h3>ยืนยันการปฏิเสธสลิป?</h3>
+
+    <p>
+      ต้องการลบรายการ
+      <strong>{{ selectedDeleteOrderNo }}</strong>
+      ใช่หรือไม่
+    </p>
+
+    <div class="confirm-actions">
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="closeDeletePopup()"
+      >
+        ยกเลิก
+      </button>
+
+      <button
+        type="button"
+        class="delete-btn"
+        (click)="confirmDeletePayment()"
+      >
+        ยืนยันการลบ
+      </button>
+    </div>
+  </section>
+</div>

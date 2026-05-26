@@ -1,12 +1,13 @@
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { Product, ProductService } from '../../service/product.service';
 import { Footer } from "../footer/footer";
 import { Header } from "../header/header";
 
 @Component({
   selector: 'app-main',
-  imports: [Header, RouterOutlet, CommonModule, Footer],
+  imports: [Header, RouterOutlet, RouterLink, CommonModule, Footer],
   templateUrl: './main.html',
   styleUrl: './main.scss'
 })
@@ -25,13 +26,19 @@ export class Main implements OnInit {
   ];
 
   currentIndex = 0;
+  popularProducts: Product[] = [];
+  popularLimit = 4;
+  loadingPopular = true;
 
   constructor(
     private route: ActivatedRoute,
-    private scroller: ViewportScroller
+    private scroller: ViewportScroller,
+    private productService: ProductService
   ) {}
 
   ngOnInit(): void {
+    this.loadPopularProducts(this.popularLimit);
+
     // ตรวจสอบ fragment (เช่น #about)
     this.route.fragment.subscribe(fragment => {
       if (fragment) {
@@ -59,5 +66,37 @@ export class Main implements OnInit {
     } else {
       this.currentIndex = Math.max(this.dresses.length - 3, 0);
     }
+  }
+
+  showAllPopular() {
+    this.popularLimit = 12;
+    this.loadPopularProducts(this.popularLimit);
+  }
+
+  detailLink(product: Product) {
+    if (product.category_id >= 1 && product.category_id <= 8) {
+      return ['/clothing-m', product.product_id];
+    }
+
+    return ['/accessories-m', product.product_id];
+  }
+
+  formatPrice(price: number) {
+    return `${price.toLocaleString('en-US')} บาท`;
+  }
+
+  private loadPopularProducts(limit: number) {
+    this.loadingPopular = true;
+
+    this.productService.getPopularProducts(limit).subscribe({
+      next: (products) => {
+        this.popularProducts = products;
+        this.loadingPopular = false;
+      },
+      error: () => {
+        this.popularProducts = [];
+        this.loadingPopular = false;
+      }
+    });
   }
 }

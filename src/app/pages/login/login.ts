@@ -5,8 +5,8 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatIconModule } from "@angular/material/icon";
 import { Router, RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
-import { AuthApiService } from '../../service/auth-api.service';
-import { AuthService } from '../../service/auth.service';
+import { AuthApiService, LoginResponse } from '../../service/auth-api.service';
+import { AuthRole, AuthService } from '../../service/auth.service';
 
 
 declare const google: any; // ← ADD: ใช้ตัวแปร global จาก GIS
@@ -35,6 +35,39 @@ export class Login implements AfterViewInit {   // ← ADD: implements
     private authApi: AuthApiService,
     private auth: AuthService
   ) {}
+
+  private redirectByRole(role: AuthRole) {
+    if (role === 'admin' || role === 'staff' || role === 'employee') {
+      this.router.navigate(['/admin/overview']);
+      return;
+    }
+    this.router.navigate(['/']);
+  }
+
+  private applyLoginResponse(res: LoginResponse) {
+    const raw = res.user ?? res.member;
+    if (!raw) {
+      this.errorMessage = 'ข้อมูลผู้ใช้ไม่ถูกต้อง';
+      this.isLoading = false;
+      return;
+    }
+
+    const role = (res.role ?? raw.role ?? 'member') as AuthRole;
+    const fallbackId = raw.id ?? raw.member_id ?? raw.staff_id ?? raw.admin_id ?? 0;
+    const memberId = raw.member_id ?? fallbackId;
+
+    this.auth.login({
+      member_id: memberId,
+      username: raw.username,
+      email: raw.email,
+      role,
+      phone: raw.phone,
+    });
+
+    this.isLoading = false;
+    this.dialogRef.close();
+    this.redirectByRole(role);
+  }
 
   private exchangeCodeWithBackend(code: string) {
   this.isLoading = true;
@@ -144,7 +177,8 @@ export class Login implements AfterViewInit {   // ← ADD: implements
         this.auth.login({
           member_id: 1,
           username: 'Test User',
-          email: this.mockEmail
+          email: this.mockEmail,
+          role: 'member',
         });
         this.isLoading = false;
         this.dialogRef.close();
@@ -156,14 +190,7 @@ export class Login implements AfterViewInit {   // ← ADD: implements
 
       this.authApi.login({ email: this.email, password: hashedPassword }).subscribe({
         next: (res) => {
-          this.auth.login({
-            member_id: res.member.member_id,
-            username: res.member.username,
-            email: res.member.email
-          });
-          this.isLoading = false;
-          this.dialogRef.close();
-          this.router.navigate(['/']);
+          this.applyLoginResponse(res);
         },
         error: (err) => {
           this.isLoading = false;

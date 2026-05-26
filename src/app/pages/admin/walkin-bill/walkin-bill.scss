@@ -1,0 +1,326 @@
+@use '../../../shared/admin-shared.scss';
+
+.topbar {
+  margin-bottom: 24px;
+
+  p {
+    margin: 0 0 4px;
+    color: #9b6f59;
+    font-weight: 700;
+  }
+
+  h1 {
+    margin: 0;
+    color: #2d2420;
+    font-size: 32px;
+    font-weight: 800;
+  }
+}
+
+.panel {
+  border: 1px solid #eadfd8;
+  border-radius: 22px;
+  overflow: hidden;
+  background: #ffffff;
+  box-shadow: 0 18px 40px rgb(45 36 32 / 8%);
+}
+
+.panel-heading {
+  padding: 22px 24px;
+  border-bottom: 1px solid #f2e8e2;
+
+  h2 {
+    margin: 0;
+    color: #2d2420;
+    font-size: 22px;
+    font-weight: 800;
+  }
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 24px;
+  padding: 0 16px;
+  height: 54px;
+  border: 1px solid #eadfd8;
+  border-radius: 14px;
+
+  .material-symbols-outlined {
+    color: #9b6f59;
+  }
+
+  input {
+    width: 100%;
+    border: 0;
+    outline: none;
+    background: transparent;
+    font-size: 15px;
+  }
+}
+
+.order-list {
+  display: grid;
+  gap: 16px;
+  padding: 0 24px 24px;
+}
+
+.order-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px;
+  border: 1px solid #eee1d7;
+  border-radius: 18px;
+  background: #fffaf6;
+}
+
+.order-info {
+  display: grid;
+  gap: 6px;
+
+  strong {
+    font-size: 18px;
+    color: #2d2420;
+  }
+
+  p {
+    margin: 0;
+    color: #51443f;
+    font-weight: 700;
+  }
+
+  span {
+    color: #8b7265;
+    font-size: 14px;
+  }
+}
+
+.order-price {
+  display: grid;
+  gap: 6px;
+  text-align: right;
+
+  span {
+    color: #8b7265;
+    font-size: 14px;
+  }
+
+  strong {
+    color: #8f6049;
+    font-size: 22px;
+  }
+}
+
+.order-actions {
+  button {
+    height: 46px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2d2420 0%, #8f6049 100%);
+    color: white;
+    cursor: pointer;
+    font-weight: 700;
+  }
+}
+
+/* =========================
+   BILL MODAL
+========================= */
+
+.bill-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(0 0 0 / 55%);
+  backdrop-filter: blur(4px);
+}
+
+.bill-modal {
+  width: min(720px, 100%);
+  max-height: 92vh;
+  overflow: auto;
+  border-radius: 24px;
+  padding: 28px;
+  background: white;
+  box-shadow: 0 30px 80px rgb(17 17 17 / 28%);
+}
+
+.bill-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h2 {
+    margin: 0 0 6px;
+    font-size: 30px;
+    color: #2d2420;
+  }
+
+  p {
+    margin: 0;
+    color: #8b7265;
+  }
+}
+
+.close-btn {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: #f4ece7;
+  cursor: pointer;
+}
+
+.bill-meta {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  div {
+    display: grid;
+    gap: 6px;
+  }
+
+  span {
+    color: #8b7265;
+    font-size: 14px;
+  }
+
+  strong {
+    color: #2d2420;
+  }
+}
+
+.full-width {
+  grid-column: span 2;
+}
+
+.receipt-line {
+  height: 1px;
+  margin: 24px 0;
+  border-top: 1px dashed #cdb9ae;
+}
+
+.bill-items {
+  display: grid;
+  gap: 16px;
+}
+
+.bill-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px dashed #e2d2c8;
+
+  h3 {
+    margin: 0 0 8px;
+    color: #2d2420;
+  }
+
+  span {
+    display: block;
+    color: #6f625c;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+}
+
+.item-price {
+  text-align: right;
+
+  strong {
+    display: block;
+    margin-top: 8px;
+    color: #8f6049;
+  }
+}
+
+.bill-summary {
+  display: grid;
+  gap: 14px;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  span {
+    color: #6f625c;
+  }
+
+  strong {
+    color: #2d2420;
+  }
+}
+
+.grand-total {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+  padding: 18px;
+  border-radius: 16px;
+  background: #f7efe9;
+
+  span {
+    color: #51443f;
+    font-weight: 700;
+  }
+
+  strong {
+    color: #8f6049;
+    font-size: 24px;
+    font-weight: 800;
+  }
+}
+
+.print-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  height: 56px;
+  margin-top: 24px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2d2420 0%, #8f6049 100%);
+  color: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .bill-modal,
+  .bill-modal * {
+    visibility: visible;
+  }
+
+  .bill-modal {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .close-btn,
+  .print-btn {
+    display: none;
+  }
+}

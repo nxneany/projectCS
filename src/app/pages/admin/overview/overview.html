@@ -1,0 +1,37 @@
+<header class="topbar">
+  <div>
+    <p>ภาพรวมหลังร้าน</p>
+    <h1>แดชบอร์ด</h1>
+  </div>
+</header>
+
+<section class="screen">
+  <div class="stat-grid">
+    <article class="stat-card" *ngFor="let stat of stats">
+      <span class="material-symbols-outlined">
+        {{ stat.icon }}
+      </span>
+
+      <div>
+        <strong>{{ stat.value }}</strong>
+        <p>{{ stat.label }}</p>
+      </div>
+    </article>
+  </div>
+
+       <div class="two-column">
+        <section class="panel">
+          <div class="panel-heading"><h2>ออเดอร์ล่าสุด</h2><a routerLink="/admin/orders">ดูทั้งหมด</a></div>
+          <div class="compact-list">
+            <article *ngFor="let order of orders"><div><strong>{{ order.orderNo }}</strong><span>{{ order.customerName }} | {{ order.products }}</span></div><b>{{ order.status }}</b></article>
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-heading"><h2>งานที่ต้องตรวจ</h2><a routerLink="/admin/payment-review">ไปตรวจสลิป</a></div>
+          <div class="task-stack">
+            <div><span class="material-symbols-outlined">fact_check</span>ตรวจสอบสลิปโอนเงินของลูกค้า</div>
+            <div><span class="material-symbols-outlined">assignment_ind</span>อัปเดตรูปถ่ายลูกค้าคู่บัตรประชาชน</div>
+          </div>
+        </section>
+      </div>
+</section>

@@ -98,7 +98,7 @@
         <div class="quantity-control">
           <button type="button" (click)="decreaseQuantity()" [disabled]="quantity === 1">−</button>
           <strong>{{ quantity }}</strong>
-          <button type="button" (click)="increaseQuantity()" [disabled]="quantity === accessory.stock">+</button>
+          <button type="button" (click)="increaseQuantity()" [disabled]="quantity >= currentStock">+</button>
         </div>
       </div>
 
@@ -108,8 +108,8 @@
       </div>
 
       <div class="rental-actions">
-        <button type="button" class="rent-now-btn" (click)="rentNow()">เช่าเลย</button>
-        <button type="button" class="add-cart-btn" (click)="addToCart()">เพิ่มไปในตะกร้า</button>
+        <button type="button" class="rent-now-btn" [disabled]="!canSubmitRental" (click)="rentNow()">เช่าเลย</button>
+        <button type="button" class="add-cart-btn" [disabled]="!canSubmitRental" (click)="addToCart()">เพิ่มไปในตะกร้า</button>
       </div>
 
       <p class="cart-message" *ngIf="cartMessage">{{ cartMessage }}</p>
@@ -118,7 +118,7 @@
     <section class="related-section">
       <div class="related-heading">
         <h2>รายการสินค้าใกล้เคียง</h2>
-        <div class="related-controls">
+        <div class="related-controls" *ngIf="relatedAccessories.length > 0">
           <button type="button" aria-label="รายการก่อนหน้า" (click)="previousRelated()">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
@@ -128,14 +128,20 @@
         </div>
       </div>
 
-      <div class="related-list">
+      <div class="related-list" *ngIf="relatedAccessories.length > 0; else noRelatedProducts">
         <article class="related-card" *ngFor="let item of visibleRelatedAccessories">
-          <img [src]="item.image" [alt]="item.name" />
+          <img [src]="item.image_front || 'assets/clothing/w3.jpg'" [alt]="item.name" />
           <h3>{{ item.name }}</h3>
           <p>ราคาเช่า {{ formatPrice(item.price) }}</p>
-          <a [routerLink]="['/accessories-m', item.id]">ดูรายละเอียด</a>
+          <a [routerLink]="['/accessories-m', item.product_id]">ดูรายละเอียด</a>
         </article>
       </div>
+
+      <ng-template #noRelatedProducts>
+        <div class="related-empty">
+          ยังไม่มีสินค้าที่ใกล้เคียงในตอนนี้
+        </div>
+      </ng-template>
     </section>
   </section>
    </ng-template>

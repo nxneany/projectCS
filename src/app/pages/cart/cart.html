@@ -5,46 +5,32 @@
     <h1>ตะกร้าของฉัน</h1>
     <p>รายการชุดและอุปกรณ์ที่คุณเลือกไว้จะแสดงที่นี่</p>
   </section>
-<!-- LOADING -->
-<section
-  class="cart-skeleton"
-  *ngIf="loadingCart"
->
+  <!-- LOADING -->
+  <section class="cart-skeleton" *ngIf="loadingCart">
+    <div class="skeleton-row" *ngFor="let _ of [1, 2, 3]">
+      <div class="skeleton-checkbox"></div>
 
-  <div
-    class="skeleton-row"
-    *ngFor="let _ of [1,2,3]"
-  >
+      <div class="skeleton-product">
+        <div class="skeleton-image"></div>
 
-    <div class="skeleton-checkbox"></div>
+        <div class="skeleton-text-group">
+          <div class="skeleton-text title"></div>
 
-    <div class="skeleton-product">
-
-      <div class="skeleton-image"></div>
-
-      <div class="skeleton-text-group">
-
-        <div class="skeleton-text title"></div>
-
-        <div class="skeleton-text short"></div>
-
+          <div class="skeleton-text short"></div>
+        </div>
       </div>
 
+      <div class="skeleton-small"></div>
+
+      <div class="skeleton-small"></div>
+
+      <div class="skeleton-date"></div>
+
+      <div class="skeleton-date"></div>
+
+      <div class="skeleton-delete"></div>
     </div>
-
-    <div class="skeleton-small"></div>
-
-    <div class="skeleton-small"></div>
-
-    <div class="skeleton-date"></div>
-
-    <div class="skeleton-date"></div>
-
-    <div class="skeleton-delete"></div>
-
-  </div>
-
-</section>
+  </section>
   <section class="empty-cart" *ngIf="cartItems.length === 0">
     <span class="material-symbols-outlined">shopping_cart</span>
     <h2>ยังไม่มีสินค้าในตะกร้า</h2>
@@ -169,9 +155,35 @@
         แก้ไขรายการ
       </button>
 
-      <a routerLink="/payment" class="payment-btn"> ไปหน้าชำระเงิน </a>
+      <button type="button" class="payment-btn" (click)="goToPayment()">
+        ไปหน้าชำระเงิน
+      </button>
     </div>
   </section>
+
+  <!-- WARNING POPUP -->
+
+  <div
+    class="warning-overlay"
+    *ngIf="showWarningPopup"
+    (click)="closeWarningPopup()"
+  >
+    <section class="warning-popup" (click)="$event.stopPropagation()">
+      <div class="warning-icon">
+        <span class="material-symbols-outlined"> warning </span>
+      </div>
+
+      <h2>ไม่สามารถดำเนินการต่อได้</h2>
+
+      <p>
+        {{ warningMessage }}
+      </p>
+
+      <button type="button" class="warning-btn" (click)="closeWarningPopup()">
+        เข้าใจแล้ว
+      </button>
+    </section>
+  </div>
 </div>
 
 <app-footer></app-footer>

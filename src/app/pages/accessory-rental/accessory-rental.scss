@@ -415,6 +415,19 @@
   gap: 18px;
 }
 
+.related-empty {
+  display: grid;
+  min-height: 150px;
+  place-items: center;
+  border: 1px dashed #d9c9bf;
+  border-radius: 8px;
+  background: #fffaf6;
+  color: #8a5d48;
+  font-size: 18px;
+  font-weight: 800;
+  text-align: center;
+}
+
 .related-card {
   display: grid;
   gap: 10px;

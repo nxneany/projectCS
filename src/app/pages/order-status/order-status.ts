@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Footer } from '../footer/footer';
 import { Header } from '../header/header';
+import { CartService } from '../../service/cart.service';
+import { OrderRes, OrderService } from '../../service/order.service';
+import { RouterLink } from '@angular/router';
+
 
 interface PaymentSlipStatus {
   slipFileName: string;
@@ -20,101 +24,122 @@ interface RentalOrder {
 
 @Component({
   selector: 'app-order-status',
-  imports: [CommonModule, Header, Footer],
+  imports: [CommonModule, Header, Footer, RouterLink],
   templateUrl: './order-status.html',
-  styleUrl: './order-status.scss'
+  styleUrl: './order-status.scss',
 })
-export class OrderStatusComponent {
-  paymentSlip: PaymentSlipStatus = this.loadPaymentSlip();
-  expandedOrderNo = 'DMU-20260511-0001';
+export class OrderStatusComponent implements OnInit {
+  // paymentSlip: PaymentSlipStatus = this.loadPaymentSlip();
+  // expandedOrderNo = 'DMU-20260511-0001';
 
-  orders: RentalOrder[] = [
-    {
-      orderNo: 'DMU-20260511-0001',
-      productNames: ['Gucci GG4287/S', 'ชุดราตรีสีแดง'],
-      depositAmount: 1990,
-      rentalStart: '2026-05-12',
-      rentalEnd: '2026-05-15',
-      paymentSlip: this.paymentSlip
-    },
-    {
-      orderNo: 'DMU-20260511-0002',
-      productNames: ['ชุดเจ้าหญิงเบล'],
-      depositAmount: 700,
-      rentalStart: '2026-05-18',
-      rentalEnd: '2026-05-20',
-      paymentSlip: {
-        slipFileName: 'belle-slip.png',
-        transferTime: '14:25',
-        status: 'approved'
-      }
-    },
-    {
-      orderNo: 'DMU-20260511-0003',
-      productNames: ['ชุดแฟนซีฟ้า', 'มงกุฎเจ้าหญิง', 'รองเท้าส้นสูงสีเงิน'],
-      depositAmount: 550,
-      rentalStart: '2026-05-22',
-      rentalEnd: '2026-05-24',
-      paymentSlip: {
-        slipFileName: 'blue-fancy-slip.jpg',
-        transferTime: '09:10',
-        status: 'pending'
-      }
+  orders: OrderRes[] = [];
+
+  expandedOrderId = 0;
+
+  loadingOrders = true;
+
+  constructor(private orderService: OrderService) {}
+
+  ngOnInit() {
+    this.loadOrders();
+  }
+
+  loadOrders() {
+    this.loadingOrders = true;
+
+    const memberId = Number(localStorage.getItem('member_id'));
+
+    if (!memberId) {
+      this.orders = [];
+
+      this.loadingOrders = false;
+
+      return;
     }
-  ];
 
-  toggleOrder(orderNo: string) {
-    this.expandedOrderNo = this.expandedOrderNo === orderNo ? '' : orderNo;
+    this.orderService.getOrder(memberId).subscribe({
+      next: (res) => {
+        console.log(res);
+
+        this.orders = res;
+
+        if (res.length > 0) {
+          this.expandedOrderId = res[0].order_id;
+        }
+
+        this.loadingOrders = false;
+      },
+
+      error: (err) => {
+        console.log(err);
+
+        this.orders = [];
+
+        this.loadingOrders = false;
+      },
+    });
   }
 
-  isExpanded(orderNo: string) {
-    return this.expandedOrderNo === orderNo;
+  toggleOrder(orderId: number) {
+    this.expandedOrderId = this.expandedOrderId === orderId ? 0 : orderId;
   }
 
-  statusLabel(order: RentalOrder) {
-    if (order.paymentSlip.status === 'approved') return 'ตรวจสอบสลิปแล้ว';
-    if (order.paymentSlip.status === 'rejected') return 'สลิปไม่ถูกต้อง';
-    return 'รอตรวจสอบสลิป';
+  isExpanded(orderId: number) {
+    return this.expandedOrderId === orderId;
   }
 
-  statusDetail(order: RentalOrder) {
-    if (order.paymentSlip.status === 'approved') return 'พนักงานตรวจสอบเรียบร้อยแล้ว สามารถรอรับชุดตามวันที่จองได้';
-    if (order.paymentSlip.status === 'rejected') return 'กรุณาแนบสลิปใหม่ หรือติดต่อพนักงานเพื่อแก้ไขข้อมูล';
-    return 'ส่งสลิปสำเร็จแล้ว กรุณารอพนักงานตรวจสอบและอัปเดตสถานะรายการ';
+  statusLabel(status: string | null) {
+    switch (status) {
+      case '1':
+        return 'รอตรวจสอบสลิป';
+
+      case '2':
+        return 'ชำระเงินสำเร็จ';
+
+      case '3':
+        return 'สลิปไม่ถูกต้อง';
+
+      default:
+        return 'ยังไม่ชำระเงิน';
+    }
   }
 
-  statusIcon(order: RentalOrder) {
-    if (order.paymentSlip.status === 'approved') return 'verified';
-    if (order.paymentSlip.status === 'rejected') return 'error';
-    return 'schedule';
+  statusDetail(status: string | null) {
+    switch (status) {
+      case '1':
+        return 'ส่งสลิปเรียบร้อยแล้ว กรุณารอพนักงานตรวจสอบ';
+
+      case '2':
+        return 'พนักงานตรวจสอบสลิปเรียบร้อยแล้ว';
+
+      case '3':
+        return 'กรุณาอัปโหลดสลิปใหม่อีกครั้ง';
+
+      default:
+        return 'กรุณาชำระเงินเพื่อยืนยันรายการเช่า';
+    }
+  }
+
+  statusIcon(status: string | null) {
+    switch (status) {
+      case '1':
+        return 'schedule';
+
+      case '2':
+        return 'verified';
+
+      case '3':
+        return 'error';
+
+      default:
+        return 'payments';
+    }
   }
 
   formatPrice(price: number) {
     return `${price.toLocaleString('en-US', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 2,
     })} ฿`;
-  }
-
-  private loadPaymentSlip(): PaymentSlipStatus {
-    const savedSlip = localStorage.getItem('latestPaymentSlip');
-
-    if (!savedSlip) {
-      return {
-        slipFileName: 'ยังไม่มีข้อมูลสลิป',
-        transferTime: '-',
-        status: 'pending'
-      };
-    }
-
-    try {
-      return JSON.parse(savedSlip) as PaymentSlipStatus;
-    } catch {
-      return {
-        slipFileName: 'ยังไม่มีข้อมูลสลิป',
-        transferTime: '-',
-        status: 'pending'
-      };
-    }
   }
 }

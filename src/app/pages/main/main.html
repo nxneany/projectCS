@@ -47,18 +47,61 @@
 
   <!-- ------------------- สินค้ายอดนิยม ------------------- -->
   <section class="popular">
-    <div class="popular-cards">
-      <img src="assets/pm.png" alt="">
+    <div class="popular-heading">
+      <div>
+        <p>สินค้ายอดนิยมทั้งหมด</p>
+        <h2>รายการที่ถูกเช่าบ่อย</h2>
+      </div>
+
+      <button type="button" class="view-all" (click)="showAllPopular()" [disabled]="loadingPopular || popularLimit > 4">
+        {{ popularLimit > 4 ? 'แสดงทั้งหมดแล้ว' : 'ดูทั้งหมด' }}
+      </button>
     </div>
+
+    <ng-container *ngIf="!loadingPopular; else popularLoading">
+      <div class="popular-products" *ngIf="popularProducts.length > 0; else popularEmpty">
+        <article class="popular-product-card" *ngFor="let product of popularProducts">
+          <img [src]="product.image_front || 'assets/clothing/w3.jpg'" [alt]="product.name">
+
+          <div class="popular-product-info">
+            <h3>{{ product.name }}</h3>
+            <p>{{ product.description }}</p>
+            <strong>{{ formatPrice(product.price) }}</strong>
+            <span>ถูกเช่า {{ product.rental_count || 0 }} ครั้ง</span>
+          </div>
+
+          <a [routerLink]="detailLink(product)">เลือกเช่า</a>
+        </article>
+      </div>
+    </ng-container>
+
+    <ng-template #popularLoading>
+      <div class="popular-products">
+        <article class="popular-product-card skeleton" *ngFor="let _ of [1,2,3,4]">
+          <div class="skeleton-image"></div>
+          <div class="skeleton-line"></div>
+          <div class="skeleton-line short"></div>
+        </article>
+      </div>
+    </ng-template>
+
+    <ng-template #popularEmpty>
+      <div class="popular-empty">ยังไม่มีสินค้ายอดนิยมในตอนนี้</div>
+    </ng-template>
   </section>
   <!-- ------------------- แบนเนอร์ ------------------- -->
 <section class="popular-banner">
   <div class="banner-items">
-  <img *ngFor="let dress of dresses.concat(dresses).slice(0, 18)" [src]="dress" alt="popular dress">
+  <img
+    *ngFor="let product of popularProducts.concat(popularProducts).slice(0, 18)"
+    [src]="product.image_front || 'assets/clothing/w3.jpg'"
+    [alt]="product.name">
 </div>
 <div class="banner-text">
   <span class="title">สินค้ายอดนิยม</span>
-  <a routerLink="/products" class="view-all">ดูทั้งหมด</a>
+  <button type="button" class="view-all" (click)="showAllPopular()" [disabled]="loadingPopular || popularLimit > 4">
+    {{ popularLimit > 4 ? 'แสดงทั้งหมดแล้ว' : 'ดูทั้งหมด' }}
+  </button>
 </div>
   
 </section>

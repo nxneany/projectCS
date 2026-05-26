@@ -1,6 +1,7 @@
 // src/app/pages/header/header.ts  (ตามที่คุณส่งมา)
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,13 +17,14 @@ import { ProfileMember } from '../profile-member/profile-member';
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterLink,MatDialogModule],
+  imports: [CommonModule, FormsModule, MatToolbarModule, MatButtonModule, MatIconModule, RouterLink,MatDialogModule],
   templateUrl: './header.html',
   styleUrls: ['./header.scss']
 })
 export class Header {
   isLoggedIn$!: Observable<boolean>;
   isMenuOpen = false;
+  searchKeyword = '';
 
   constructor(
     private dialog: MatDialog,
@@ -40,6 +42,20 @@ export class Header {
   }
 
   toggleMenu() { this.isMenuOpen = !this.isMenuOpen; }
+
+  searchProducts() {
+    const name = this.searchKeyword.trim();
+    if (!name) return;
+
+    this.isMenuOpen = false;
+    this.router.navigate(['/search'], {
+      queryParams: {
+        name,
+        page: 1,
+        limit: 9
+      }
+    });
+  }
 
   // ⬇️ เพิ่มเมธอดนี้เท่านั้น
   openCategories() {

@@ -284,3 +284,53 @@
     grid-template-columns: 1fr;
   }
 }
+.payment-action {
+
+  margin-top: 24px;
+
+  display: flex;
+
+  justify-content: flex-end;
+}
+
+.pay-now-btn {
+
+  min-width: 180px;
+
+  height: 46px;
+
+  border: 0;
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+    135deg,
+    #8f6049 0%,
+    #b5856f 100%
+  );
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+
+  box-shadow:
+    0 10px 22px
+    rgb(181 133 111 / 24%);
+}
+
+.pay-now-btn:hover {
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 14px 28px
+    rgb(181 133 111 / 32%);
+}

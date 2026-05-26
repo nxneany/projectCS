@@ -1,0 +1,306 @@
+<header class="topbar">
+  <div>
+    <p>คลังสินค้า</p>
+    <h1>สินค้า</h1>
+  </div>
+
+  <label class="global-search">
+    <span class="material-symbols-outlined">search</span>
+
+    <input placeholder="ค้นหาสินค้า" />
+  </label>
+</header>
+
+<section class="panel">
+  <div class="panel-heading">
+    <h2>เพิ่ม ลบ แก้ไข ค้นหาสินค้า</h2>
+
+    <button type="button" (click)="openAddProductPopup()">
+      เพิ่มสินค้า
+    </button>
+  </div>
+
+  <div class="category-strip">
+    <span *ngFor="let category of categories">
+      {{ category }}
+    </span>
+  </div>
+
+  <div class="product-admin-grid">
+    <article class="product-admin-card" *ngFor="let product of products">
+      <img [src]="product.image" [alt]="product.name" />
+
+      <div class="product-info">
+        <strong>
+          {{ product.productId }} | {{ product.name }}
+        </strong>
+
+        <p>{{ product.description }}</p>
+
+        <span>
+          {{ product.category }}
+        </span>
+
+        <b>
+          {{ formatPrice(product.price) }}
+        </b>
+
+        <div class="variant-preview">
+          <div *ngFor="let variant of product.variants">
+            {{ variant.size }} | {{ variant.color }} |
+            คงเหลือ {{ variant.quantity }}
+          </div>
+        </div>
+
+        <div class="stock-total">
+          จำนวนรวม {{ getTotalQuantity(product) }}
+        </div>
+      </div>
+
+      <div class="button-group">
+        <button
+          type="button"
+          (click)="openEditProductPopup(product)"
+        >
+          แก้ไข
+        </button>
+
+        <button
+          type="button"
+          class="danger"
+        >
+          ลบ
+        </button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- popup -->
+
+<div
+  class="admin-modal-backdrop"
+  *ngIf="isProductPopupOpen"
+  (click)="closeProductPopup()"
+>
+  <section
+    class="admin-modal product-modal"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-heading">
+      <div>
+        <p>คลังสินค้า</p>
+
+        <h2>
+          {{ editingProductId ? 'แก้ไขสินค้า' : 'เพิ่มสินค้าใหม่' }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        (click)="closeProductPopup()"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <form
+      class="employee-form product-form"
+      (ngSubmit)="saveProduct()"
+    >
+      <label>
+        รหัสสินค้า
+
+        <input
+          type="text"
+          name="productId"
+          [(ngModel)]="productForm.productId"
+          required
+        />
+      </label>
+
+      <label>
+        ชื่อสินค้า
+
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="productForm.name"
+          required
+        />
+      </label>
+
+      <label>
+        ราคา
+
+        <input
+          type="number"
+          name="price"
+          [(ngModel)]="productForm.price"
+          required
+        />
+      </label>
+
+      <label>
+        ประเภทสินค้า
+
+        <select
+          name="category"
+          [(ngModel)]="productForm.category"
+          required
+        >
+          <option value="" disabled>
+            เลือกหมวดหมู่
+          </option>
+
+          <option
+            *ngFor="let category of categories"
+            [value]="category"
+          >
+            {{ category }}
+          </option>
+        </select>
+      </label>
+
+      <label class="wide-field">
+        รายละเอียดสินค้า
+
+        <textarea
+          name="description"
+          [(ngModel)]="productForm.description"
+          rows="3"
+          required
+        ></textarea>
+      </label>
+
+      <!-- variants -->
+
+      <div class="variant-section wide-field">
+        <div class="variant-header">
+          <h3>ไซส์และจำนวนสินค้า</h3>
+
+          <button
+            type="button"
+            class="add-variant-btn"
+            (click)="addVariant()"
+          >
+            + เพิ่มไซส์ / สี
+          </button>
+        </div>
+
+        <div
+          class="variant-card"
+          *ngFor="let variant of productForm.variants; let i = index"
+        >
+          <div class="variant-grid">
+            <label>
+              ไซส์
+
+              <input
+                type="text"
+                [(ngModel)]="variant.size"
+                [name]="'size' + i"
+              />
+            </label>
+
+            <label>
+              สี
+
+              <input
+                type="text"
+                [(ngModel)]="variant.color"
+                [name]="'color' + i"
+              />
+            </label>
+
+            <label>
+              จำนวน
+
+              <input
+                type="number"
+                [(ngModel)]="variant.quantity"
+                [name]="'quantity' + i"
+              />
+            </label>
+          </div>
+
+          <button
+            type="button"
+            class="remove-variant-btn"
+            (click)="removeVariant(i)"
+          >
+            ลบ Variant
+          </button>
+        </div>
+      </div>
+
+      <!-- images -->
+
+      <label>
+        รูปด้านหน้าของสินค้า
+
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onProductImageSelected($event, 'front')"
+        />
+      </label>
+
+      <label>
+        รูปด้านหลังของสินค้า
+
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onProductImageSelected($event, 'back')"
+        />
+      </label>
+
+      <label>
+        รูปตัวอย่างตอนใช้สินค้า
+
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onProductImageSelected($event, 'wear')"
+        />
+      </label>
+
+      <div class="product-image-summary wide-field">
+        <span>
+          ด้านหน้า:
+          {{ productForm.imageFrontName || 'ยังไม่ได้เลือก' }}
+        </span>
+
+        <span>
+          ด้านหลัง:
+          {{ productForm.imageBackName || 'ยังไม่ได้เลือก' }}
+        </span>
+
+        <span>
+          ตอนใช้สินค้า:
+          {{ productForm.imageWearName || 'ยังไม่ได้เลือก' }}
+        </span>
+      </div>
+
+      <p class="form-error" *ngIf="productFormError">
+        {{ productFormError }}
+      </p>
+
+      <div class="modal-actions wide-field">
+        <button
+          type="button"
+          class="ghost-btn"
+          (click)="closeProductPopup()"
+        >
+          ยกเลิก
+        </button>
+
+        <button type="submit">
+          {{ editingProductId ? 'บันทึกการแก้ไข' : 'บันทึกสินค้า' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>

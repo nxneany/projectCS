@@ -1,0 +1,81 @@
+<header class="topbar"><div><p>เจ้าของร้าน</p><h1>ข้อมูลส่วนตัว</h1></div></header>
+    <section class="screen"><section class="panel">
+      <div class="panel-heading"><h2>ข้อมูลเจ้าของร้าน</h2><div class="button-group"><button type="button" (click)="openEditProfilePopup()">แก้ไข</button><button class="danger">ลบ</button></div></div>
+      <div class="profile-view">
+        <img [src]="profile.image" alt="owner profile">
+        <div>
+          <span>ชื่อ-นามสกุล</span>
+          <strong>{{ profile.fullName }}</strong>
+        </div>
+        <div>
+          <span>เบอร์โทรศัพท์</span>
+          <strong>{{ profile.phone }}</strong>
+        </div>
+        <div>
+          <span>อีเมล</span>
+          <strong>{{ profile.email }}</strong>
+        </div>
+        <div>
+          <span>รหัสผ่าน</span>
+          <strong>{{ profile.password }}</strong>
+        </div>
+      </div>
+    </section></section>
+
+    <div class="admin-modal-backdrop" *ngIf="isProfilePopupOpen" (click)="closeEditProfilePopup()">
+      <section class="admin-modal" (click)="$event.stopPropagation()">
+        <div class="modal-heading">
+          <div>
+            <p>เจ้าของร้าน</p>
+            <h2>แก้ไขข้อมูลส่วนตัว</h2>
+          </div>
+          <button type="button" class="modal-close" (click)="closeEditProfilePopup()">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+
+        <form class="employee-form" (ngSubmit)="saveProfile()">
+          <label>
+            รูป
+            <input type="file" name="profileImage" accept="image/*" (change)="onProfileImageSelected($event)">
+          </label>
+
+          <div class="id-card-preview">
+            <span class="material-symbols-outlined">image</span>
+            <strong>{{ profileForm.imageFileName || 'ยังไม่ได้เลือกรูปใหม่' }}</strong>
+          </div>
+
+          <label>
+            ชื่อ-นามสกุล
+            <input type="text" name="fullName" [(ngModel)]="profileForm.fullName" required>
+          </label>
+
+          <label>
+            เบอร์โทรศัพท์
+            <input type="tel" name="phone" [(ngModel)]="profileForm.phone" required>
+          </label>
+
+          <label>
+            อีเมล
+            <input type="email" name="email" [(ngModel)]="profileForm.email" required>
+          </label>
+
+          <label>
+            รหัสผ่าน
+            <input type="password" name="password" [(ngModel)]="profileForm.password">
+          </label>
+
+          <label>
+            ยืนยันรหัสผ่าน
+            <input type="password" name="confirmPassword" [(ngModel)]="profileForm.confirmPassword">
+          </label>
+
+          <p class="form-error" *ngIf="profileFormError">{{ profileFormError }}</p>
+
+          <div class="modal-actions">
+            <button type="button" class="ghost-btn" (click)="closeEditProfilePopup()">ยกเลิก</button>
+            <button type="submit">บันทึกการแก้ไข</button>
+          </div>
+        </form>
+      </section>
+    </div>

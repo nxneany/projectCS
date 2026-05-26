@@ -5,17 +5,32 @@
     <div class="payment-copy">
       <p>ชำระเงิน</p>
       <h1>สแกนจ่าย QR Code</h1>
-      <span>กรุณาสแกน QR Code เพื่อชำระค่ามัดจำ แล้วแนบสลิปพร้อมกรอกเวลาโอน</span>
+      <span
+        >กรุณาสแกน QR Code เพื่อชำระค่ามัดจำ แล้วแนบสลิปพร้อมกรอกเวลาโอน</span
+      >
     </div>
 
     <div class="payment-grid">
       <section class="qr-card" aria-label="QR Code สำหรับชำระเงิน">
-        <img class="qr-image" [src]="paymentAccount.qrImage" alt="QR Code สำหรับชำระเงิน" />
+        <div class="qr-loading" *ngIf="loadingPaymentChannel; else qrReady">
+          กำลังโหลดช่องทางชำระเงิน...
+        </div>
+
+        <ng-template #qrReady>
+          <img
+            class="qr-image"
+            [src]="paymentAccount.qrImage"
+            alt="QR Code สำหรับชำระเงิน"
+          />
+        </ng-template>
 
         <div class="qr-detail">
-          <strong>Dress Me Up</strong>
+          <strong>{{ paymentAccount.accountName }}</strong>
           <span>ยอดชำระค่ามัดจำ 50%</span>
-          <b>1,990.00 ฿</b>
+          <b>
+            {{ depositAmount | number: "1.2-2" }}
+            ฿
+          </b>
         </div>
 
         <dl class="bank-detail">
@@ -25,21 +40,25 @@
           </div>
 
           <div>
-            <dt>ธนาคาร</dt>
-            <dd class="bank-name">
-              <img [src]="paymentAccount.bankLogo" alt="โลโก้ธนาคารกสิกรไทย" />
-              <span>{{ paymentAccount.bankName }}</span>
+            <dt>เลขบัญชี</dt>
+            <dd class="copy-value">
+              <span>{{ formatAccountNumber(paymentAccount.accountNumber) }}</span>
+              <button type="button" (click)="copyText(paymentAccount.accountNumber, 'account')">
+                <span class="material-symbols-outlined">content_copy</span>
+                {{ copiedField === "account" ? "คัดลอกแล้ว" : "คัดลอก" }}
+              </button>
             </dd>
           </div>
 
           <div>
-            <dt>เลขบัญชี</dt>
-            <dd>{{ paymentAccount.accountNumber }}</dd>
-          </div>
-
-          <div>
             <dt>พร้อมเพย์</dt>
-            <dd>{{ paymentAccount.promptPayNumber }}</dd>
+            <dd class="copy-value">
+              <span>{{ formatPhoneNumber(paymentAccount.promptPayNumber) }}</span>
+              <button type="button" (click)="copyText(paymentAccount.promptPayNumber, 'promptpay')">
+                <span class="material-symbols-outlined">content_copy</span>
+                {{ copiedField === "promptpay" ? "คัดลอกแล้ว" : "คัดลอก" }}
+              </button>
+            </dd>
           </div>
         </dl>
       </section>
@@ -48,26 +67,49 @@
         <h2>แนบหลักฐานการโอน</h2>
 
         <label class="upload-box">
-          <span class="material-symbols-outlined">upload_file</span>
-          <strong>{{ slipFileName || 'แนบสลิปการโอนเงิน' }}</strong>
-          <small>รองรับไฟล์รูปภาพ เช่น JPG, PNG</small>
-          <input type="file" accept="image/*" (change)="onSlipSelected($event)" required />
+          <ng-container *ngIf="!slipPreview">
+            <span class="material-symbols-outlined"> upload_file </span>
+
+            <strong>
+              {{ slipFileName || "แนบสลิปการโอนเงิน" }}
+            </strong>
+
+            <small> รองรับไฟล์รูปภาพ เช่น JPG, PNG </small>
+          </ng-container>
+
+          <img *ngIf="slipPreview" [src]="slipPreview" class="slip-preview" />
+
+          <input
+            type="file"
+            name="slip"
+            accept="image/*"
+            (change)="onSlipSelected($event)"
+            required
+          />
         </label>
 
         <label class="time-field">
           เวลาโอน
-          <input type="time" name="transferTime" [(ngModel)]="transferTime" required />
+          <input type="time" name="transferTime" [(ngModel)]="transferTime" />
         </label>
 
-        <button type="submit" [disabled]="!slipFileName || !transferTime">ยืนยันการชำระเงิน</button>
+        <button type="submit" [disabled]="!slipFileName || !transferTime">
+          ยืนยันการชำระเงิน
+        </button>
 
-        <p class="submit-status" *ngIf="isSubmitted">บันทึกข้อมูลการชำระเงินเรียบร้อยแล้ว</p>
+        <p class="submit-status" *ngIf="isSubmitted">
+          บันทึกข้อมูลการชำระเงินเรียบร้อยแล้ว
+        </p>
       </form>
     </div>
   </section>
 </main>
 
-<div class="success-backdrop" *ngIf="isSuccessPopupOpen" (click)="closeSuccessPopup()">
+<div
+  class="success-backdrop"
+  *ngIf="isSuccessPopupOpen"
+  (click)="closeSuccessPopup()"
+>
   <section class="success-popup" (click)="$event.stopPropagation()">
     <div class="success-icon">
       <span class="material-symbols-outlined">check</span>
@@ -78,6 +120,18 @@
 
     <button type="button" (click)="closeSuccessPopup()">ตกลง</button>
   </section>
+</div>
+
+<!-- LOADING -->
+
+<div class="loading-backdrop" *ngIf="uploading">
+  <div class="loading-popup">
+    <div class="spinner"></div>
+
+    <h2>กำลังอัปโหลดสลิป</h2>
+
+    <p>กรุณารอสักครู่ ระบบกำลังบันทึกข้อมูลการชำระเงิน</p>
+  </div>
 </div>
 
 <app-footer></app-footer>

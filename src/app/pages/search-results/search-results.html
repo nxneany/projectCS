@@ -1,0 +1,61 @@
+<app-header></app-header>
+
+<main class="search-page">
+  <section class="search-heading">
+    <p>ผลการค้นหา</p>
+    <h1>{{ keyword || 'ค้นหาสินค้า' }}</h1>
+    <span *ngIf="!loading">พบสินค้า {{ products.length }} รายการ</span>
+  </section>
+
+  <ng-container *ngIf="!loading; else loadingState">
+    <section class="product-grid" *ngIf="products.length > 0; else emptyState">
+      <article class="product-card" *ngFor="let product of products">
+        <img [src]="product.image_front" [alt]="product.name" />
+
+        <div class="product-info">
+          <h2>{{ product.name }}</h2>
+          <p>{{ product.description }}</p>
+          <strong>{{ formatPrice(product.price) }}</strong>
+          <span>ไซส์: {{ getSizes(product) }}</span>
+        </div>
+
+        <a [routerLink]="detailLink(product)">เลือกเช่า</a>
+      </article>
+    </section>
+
+    <ng-template #emptyState>
+      <section class="empty-state">
+        <h2>ไม่พบสินค้า</h2>
+        <p>ลองค้นหาด้วยชื่อสินค้าอื่นอีกครั้ง</p>
+      </section>
+    </ng-template>
+
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button type="button" class="page-btn" [disabled]="!hasPrevPage" (click)="prevPage()">ก่อนหน้า</button>
+
+      <button
+        type="button"
+        class="page-number"
+        *ngFor="let page of pages"
+        [class.active]="page === currentPage"
+        (click)="goToPage(page)">
+        {{ page }}
+      </button>
+
+      <button type="button" class="page-btn" [disabled]="!hasNextPage" (click)="nextPage()">ถัดไป</button>
+    </div>
+  </ng-container>
+
+  <ng-template #loadingState>
+    <section class="product-grid">
+      <article class="product-card skeleton" *ngFor="let _ of [1,2,3,4,5,6]">
+        <div class="skeleton-image"></div>
+        <div class="skeleton-text"></div>
+        <div class="skeleton-text short"></div>
+        <div class="skeleton-button"></div>
+      </article>
+    </section>
+  </ng-template>
+</main>
+
+<app-footer></app-footer>

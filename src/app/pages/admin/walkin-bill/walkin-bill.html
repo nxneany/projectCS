@@ -1,0 +1,150 @@
+<header class="topbar">
+  <div>
+    <p>หน้าร้าน</p>
+    <h1>ออกบิลออเดอร์</h1>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="panel-heading">
+    <h2>รายการออเดอร์ที่ชำระเงินสำเร็จ</h2>
+  </div>
+
+  <div class="search-box">
+    <span class="material-symbols-outlined">search</span>
+
+    <input
+      type="text"
+      [(ngModel)]="searchText"
+      placeholder="ค้นหาเลขออเดอร์ เช่น ORD-20260520-001"
+    />
+  </div>
+
+  <div class="order-list">
+    <article class="order-card" *ngFor="let order of filteredOrders">
+      <div class="order-info">
+        <strong>{{ order.orderId }}</strong>
+
+        <p>{{ order.customerName }}</p>
+
+        <span>{{ order.createdAt }}</span>
+      </div>
+
+      <div class="order-price">
+        <span>ยอดมัดจำ</span>
+
+        <strong>{{ formatPrice(order.deposit) }}</strong>
+      </div>
+
+      <div class="order-actions">
+        <button type="button" (click)="openBill(order)">
+          ดูบิล
+        </button>
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- =========================
+     BILL POPUP
+========================= -->
+
+<div
+  class="bill-backdrop"
+  *ngIf="selectedOrder"
+  (click)="closeBill()"
+>
+  <section class="bill-modal" (click)="$event.stopPropagation()">
+    <div class="bill-header">
+      <div>
+        <h2>ใบเสร็จรับเงิน</h2>
+        <p>Dress Me Up</p>
+      </div>
+
+      <button type="button" class="close-btn" (click)="closeBill()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="bill-meta">
+      <div>
+        <span>เลขออเดอร์</span>
+        <strong>{{ selectedOrder.orderId }}</strong>
+      </div>
+
+      <div>
+        <span>วันที่</span>
+        <strong>{{ selectedOrder.createdAt }}</strong>
+      </div>
+
+      <div>
+        <span>ลูกค้า</span>
+        <strong>{{ selectedOrder.customerName }}</strong>
+      </div>
+
+      <div>
+        <span>เบอร์โทร</span>
+        <strong>{{ selectedOrder.phone }}</strong>
+      </div>
+
+      <div class="full-width">
+        <span>ที่อยู่</span>
+        <strong>{{ selectedOrder.address }}</strong>
+      </div>
+    </div>
+
+    <div class="receipt-line"></div>
+
+    <div class="bill-items">
+      <article
+        class="bill-item"
+        *ngFor="let item of selectedOrder.items"
+      >
+        <div>
+          <h3>{{ item.name }}</h3>
+
+          <span>
+            ไซส์ {{ item.size }} | สี {{ item.color }}
+          </span>
+
+          <span>
+            {{ item.startDate }} - {{ item.endDate }}
+          </span>
+        </div>
+
+        <div class="item-price">
+          <span>{{ item.quantity }} ชิ้น</span>
+
+          <strong>{{ formatPrice(item.price) }}</strong>
+        </div>
+      </article>
+    </div>
+
+    <div class="receipt-line"></div>
+
+    <div class="bill-summary">
+      <div>
+        <span>ยอดรวม</span>
+
+        <strong>{{ formatPrice(selectedOrder.total) }}</strong>
+      </div>
+
+      <div>
+        <span>มัดจำ 50%</span>
+
+        <strong>{{ formatPrice(selectedOrder.deposit) }}</strong>
+      </div>
+    </div>
+
+    <div class="grand-total">
+      <span>ยอดที่ชำระ</span>
+
+      <strong>{{ formatPrice(selectedOrder.deposit) }}</strong>
+    </div>
+
+    <button type="button" class="print-btn" (click)="printBill()">
+      <span class="material-symbols-outlined">print</span>
+      พิมพ์บิล
+    </button>
+  </section>
+</div>

@@ -118,7 +118,7 @@
     <section class="related-section">
       <div class="related-heading">
         <h2>รายการสินค้าใกล้เคียง</h2>
-        <div class="related-controls">
+        <div class="related-controls" *ngIf="relatedDresses.length > 0">
           <button type="button" aria-label="รายการก่อนหน้า" (click)="previousRelated()">
             <span class="material-symbols-outlined">chevron_left</span>
           </button>
@@ -128,14 +128,20 @@
         </div>
       </div>
 
-      <div class="related-list">
+      <div class="related-list" *ngIf="relatedDresses.length > 0; else noRelatedProducts">
         <article class="related-card" *ngFor="let item of visibleRelatedDresses">
-          <img [src]="item.image" [alt]="item.name" />
+          <img [src]="item.image_front || 'assets/clothing/w3.jpg'" [alt]="item.name" />
           <h3>{{ item.name }}</h3>
           <p>ราคาเช่า {{ formatPrice(item.price) }}</p>
-          <a [routerLink]="['/clothing-m', item.id]">ดูรายละเอียด</a>
+          <a [routerLink]="['/clothing-m', item.product_id]">ดูรายละเอียด</a>
         </article>
       </div>
+
+      <ng-template #noRelatedProducts>
+        <div class="related-empty">
+          ยังไม่มีสินค้าที่ใกล้เคียงในตอนนี้
+        </div>
+      </ng-template>
     </section>
   </section>
   </ng-template>

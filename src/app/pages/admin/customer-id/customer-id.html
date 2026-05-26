@@ -1,0 +1,104 @@
+<header class="topbar">
+  <div>
+    <p>เอกสารลูกค้า</p>
+    <h1>รูปคู่บัตรประชาชน</h1>
+  </div>
+  <label class="global-search"
+    ><span class="material-symbols-outlined">search</span
+    ><input placeholder="ค้นหาออเดอร์"
+  /></label>
+</header>
+<section class="panel">
+  <div class="panel-heading">
+    <h2>ออเดอร์ที่ยังไม่ได้เพิ่มรูปยืนยันตัวตน</h2>
+    <span class="count-badge">{{ pendingIdentityOrders.length }} ออเดอร์</span>
+  </div>
+
+  <div
+    class="identity-order-list"
+    *ngIf="pendingIdentityOrders.length > 0; else emptyIdentityOrders"
+  >
+    <article
+      class="identity-order-card"
+      *ngFor="let order of pendingIdentityOrders"
+    >
+      <div>
+        <strong>{{ order.orderNo }}</strong>
+        <p>{{ order.customerName }} | {{ order.date }}</p>
+        <span>{{ order.products }} | {{ order.duration }}</span>
+      </div>
+
+      <div class="identity-status">
+        <span class="material-symbols-outlined">image_not_supported</span>
+        ยังไม่มีรูปยืนยันตัวตน
+      </div>
+
+      <button type="button" class="detail-btn" (click)="openUploadPopup(order)">
+        เพิ่มรูป
+      </button>
+    </article>
+  </div>
+
+  <ng-template #emptyIdentityOrders>
+    <div class="identity-empty">
+      <span class="material-symbols-outlined">verified</span>
+      ไม่มีออเดอร์ที่รอเพิ่มรูปยืนยันตัวตน
+    </div>
+  </ng-template>
+</section>
+
+<div
+  class="admin-modal-backdrop"
+  *ngIf="selectedOrder"
+  (click)="closeUploadPopup()"
+>
+  <section class="admin-modal confirm-modal" (click)="$event.stopPropagation()">
+    <div class="modal-heading">
+      <div>
+        <p>เพิ่มรูปยืนยันตัวตน</p>
+        <h2>{{ selectedOrder.orderNo }}</h2>
+      </div>
+      <button
+    type="button"
+    class="modal-close"
+    (click)="closeUploadPopup()"
+  >
+    <span class="material-symbols-outlined">close</span>
+  </button>
+    </div>
+
+    <div class="upload-order-summary">
+      <div>
+        <span>ลูกค้า</span><strong>{{ selectedOrder.customerName }}</strong>
+      </div>
+      <div>
+        <span>สินค้า</span><strong>{{ selectedOrder.products }}</strong>
+      </div>
+    </div>
+
+    <label class="upload-drop">
+      <span class="material-symbols-outlined">add_a_photo</span>
+      <strong>{{
+        selectedFileName || "อัปโหลดรูปถ่ายลูกค้าคู่บัตรประชาชน"
+      }}</strong>
+      <input
+        type="file"
+        accept="image/*"
+        (change)="onIdentityPhotoSelected($event)"
+      />
+    </label>
+
+    <div class="modal-actions">
+      <button type="button" class="ghost-btn" (click)="closeUploadPopup()">
+        ยกเลิก
+      </button>
+      <button
+        type="button"
+        [disabled]="!selectedFileName"
+        (click)="saveIdentityPhoto()"
+      >
+        บันทึกรูป
+      </button>
+    </div>
+  </section>
+</div>

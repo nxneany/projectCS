@@ -1,0 +1,30 @@
+<main class="backoffice-page">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="assets/logob.png" alt="Dress Me Up">
+      <div>
+        <strong>Dress Me Up</strong>
+        <span>Back Office</span>
+      </div>
+    </div>
+
+    <nav class="side-nav">
+      <a
+        *ngFor="let menu of visibleMenus"
+        [routerLink]="menu.path"
+        routerLinkActive="active">
+        <span class="material-symbols-outlined">{{ menu.icon }}</span>
+        {{ menu.label }}
+      </a>
+    </nav>
+
+    <button type="button" class="logout-btn" (click)="logout()">
+      <span class="material-symbols-outlined">logout</span>
+      ออกจากระบบ
+    </button>
+  </aside>
+
+  <section class="workspace">
+    <router-outlet></router-outlet>
+  </section>
+</main>

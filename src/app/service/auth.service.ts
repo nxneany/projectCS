@@ -6,7 +6,11 @@ export interface AuthUser {
   member_id: number;
   username: string;
   email: string;
+  role?: AuthRole;
+  phone?: string;
 }
+
+export type AuthRole = 'member' | 'admin' | 'staff' | 'employee';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,10 +26,15 @@ export class AuthService {
   constructor(private router: Router) {}
 
   login(user: AuthUser) {
+    const normalizedRole = user.role === 'employee' ? 'staff' : user.role ?? 'member';
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('member_id', String(user.member_id));
     localStorage.setItem('username', user.username);
     localStorage.setItem('email', user.email);
+    localStorage.setItem('user_role', normalizedRole);
+    if (user.phone) {
+      localStorage.setItem('phone', user.phone);
+    }
     this._isLoggedIn$.next(true);
   }
 
@@ -35,6 +44,9 @@ export class AuthService {
     localStorage.removeItem('member_id');
     localStorage.removeItem('username');
     localStorage.removeItem('email');
+    localStorage.removeItem('phone');
+    localStorage.removeItem('user_role');
+    localStorage.removeItem('role');
     this._isLoggedIn$.next(false);
 
     // 2) รีไดเรกต์จากหน้า -m ไปหน้า public ที่คู่กัน (ถ้าไม่แมป ให้กลับหน้าแรก)
@@ -45,5 +57,13 @@ export class AuthService {
 
   get isLoggedInSync(): boolean {
     return this._isLoggedIn$.value;
+  }
+
+  get roleSync(): AuthRole {
+    const role = localStorage.getItem('user_role');
+    if (role === 'admin' || role === 'staff' || role === 'employee') {
+      return role;
+    }
+    return 'member';
   }
 }

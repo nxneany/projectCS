@@ -3,6 +3,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Footer } from '../footer/footer';
 import { Header } from '../header/header';
+import { ActivatedRoute } from '@angular/router';
+import {
+  BillingResponse,
+  CartService,
+  CreateOrderResponse,
+} from '../../service/cart.service';
 
 interface CustomerInfo {
   name: string;
@@ -28,7 +34,6 @@ interface BillItem {
   color: string;
   quantity: number;
   price: number;
-  price_sum: number;
   day_type: string;
   day_start: string;
   day_end: string;
@@ -55,7 +60,15 @@ interface PaymentData {
   styleUrl: './payment.scss',
 })
 export class PaymentComponent implements OnInit {
-  constructor(private router: Router) {}
+  billing?: BillingResponse;
+  cartId = 0;
+  cartItemIds: number[] = [];
+
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private cartService: CartService,
+  ) {}
 
   customerInfo: CustomerInfo = {
     name: '',
@@ -66,56 +79,7 @@ export class PaymentComponent implements OnInit {
 
   isAgreementPopupOpen = false;
   isCustomerLoading = false;
-
-  paymentData: PaymentData = {
-    user: {
-      member_id: 1,
-      username: 'Arida',
-      phone: '09991115555',
-      email: 'ananya@gmail.com',
-      address: '123/7 กาฬสินธุ์',
-    },
-    items: [
-      {
-        cart_item_id: 1,
-        product_id: 1,
-        name: 'ชุดราตรีสีแดง',
-        variant_id: 1,
-        size: 'M',
-        color: 'แดง',
-        quantity: 2,
-        price: 1500,
-        price_sum: 3000,
-        day_type: '4วัน',
-        day_start: '2025-10-19T17:00:00.000Z',
-        day_end: '2025-10-23T17:00:00.000Z',
-        image_front:
-          'https://res.cloudinary.com/dfk8wkzrs/image/upload/v1778584104/rental/fqb9eokv3eynotpfujex.png',
-      },
-      {
-        cart_item_id: 5,
-        product_id: 1,
-        name: 'ชุดราตรีสีแดง',
-        variant_id: 2,
-        size: 'L',
-        color: 'แดงเข้ม',
-        quantity: 1,
-        price: 1500,
-        price_sum: 1500,
-        day_type: '4วัน',
-        day_start: '2026-05-19T17:00:00.000Z',
-        day_end: '2026-05-23T17:00:00.000Z',
-        image_front:
-          'https://res.cloudinary.com/dfk8wkzrs/image/upload/v1778584104/rental/fqb9eokv3eynotpfujex.png',
-      },
-    ],
-    summary: {
-      subtotal: 9000,
-      deposit: 4500,
-      grand_total: 9000,
-      total_items: 2,
-    },
-  };
+  loadingPayment = true;
 
   billItems: BillItem[] = [];
   summary: PaymentSummary = {
@@ -126,7 +90,23 @@ export class PaymentComponent implements OnInit {
   };
 
   ngOnInit() {
-    this.loadPaymentData();
+    this.route.queryParams.subscribe((params) => {
+      this.cartId = Number(params['cart_id']);
+
+      this.cartItemIds =
+        params['cart_item_ids']
+          ?.split(',')
+          .map(Number)
+          .filter((id: number) => !Number.isNaN(id)) || [];
+
+      if (!this.cartId) {
+        this.loadingPayment = false;
+
+        return;
+      }
+
+      this.loadPaymentData(this.cartId);
+    });
   }
 
   openAgreementPopup() {
@@ -139,8 +119,32 @@ export class PaymentComponent implements OnInit {
   }
 
   confirmRental() {
-    this.isAgreementPopupOpen = false;
-    this.router.navigate(['/qr-payment']);
+    this.isCustomerLoading = true;
+    const cartItemIds = this.cartItemIds.length
+      ? this.cartItemIds
+      : this.billItems.map((item) => item.cart_item_id);
+
+    this.cartService.addOrder(this.cartId, cartItemIds).subscribe({
+      next: (res: CreateOrderResponse) => {
+        console.log(res);
+
+        this.isAgreementPopupOpen = false;
+
+        this.isCustomerLoading = false;
+
+        this.router.navigate(['/qr-payment'], {
+          queryParams: {
+            order_id: res.order_id,
+          },
+        });
+      },
+
+      error: (err) => {
+        console.log(err);
+
+        this.isCustomerLoading = false;
+      },
+    });
   }
 
   formatPrice(price: number) {
@@ -158,14 +162,41 @@ export class PaymentComponent implements OnInit {
     }).format(new Date(date));
   }
 
-  private loadPaymentData() {
-    this.billItems = this.paymentData.items;
-    this.summary = this.paymentData.summary;
-    this.customerInfo = {
-      name: this.paymentData.user.username || '-',
-      phone: this.paymentData.user.phone || '-',
-      email: this.paymentData.user.email || '-',
-      address: this.paymentData.user.address ||'-',
-    };
+  private loadPaymentData(cartId: number) {
+    this.loadingPayment = true;
+
+    this.cartService.getBilling(cartId).subscribe({
+      next: (res: BillingResponse) => {
+        console.log(res);
+
+        this.billing = res;
+
+        this.billItems = res.items;
+
+        if (!this.cartItemIds.length) {
+          this.cartItemIds = res.items.map((item) => item.cart_item_id);
+        }
+
+        this.summary = res.summary;
+
+        this.customerInfo = {
+          name: res.user.username || '-',
+
+          phone: res.user.phone || '-',
+
+          email: res.user.email || '-',
+
+          address: res.user.address || '-',
+        };
+
+        this.loadingPayment = false;
+      },
+
+      error: (err) => {
+        console.log(err);
+
+        this.loadingPayment = false;
+      },
+    });
   }
 }

@@ -53,14 +53,8 @@
   align-items: center;
   background-color: #f8f1ed;
   border-radius: 30px;
-  padding: 10px 15px;
+  padding: 6px 8px 6px 15px;
   box-shadow: 0 4px 4px rgba(0, 0, 0, 0.15);
-
-  .search-icon {
-    color: #b89a7e;
-    margin-right: 8px;
-    font-size: 20px;
-  }
 
   input {
     border: none;
@@ -68,6 +62,29 @@
     background: transparent;
     font-family: inherit;
     font-size: 15px;
+    min-width: 160px;
+  }
+
+  button {
+    display: grid;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border: 0;
+    border-radius: 50%;
+    background: #603813;
+    color: #ffffff;
+    cursor: pointer;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+
+    &:hover {
+      background: #4b2a0e;
+    }
   }
 }
 .login-btn {
@@ -120,6 +137,35 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
     color: #3e2723;
     text-decoration: none;
+  }
+}
+
+.mobile-search-box {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  padding: 10px 0;
+
+  input,
+  button {
+    min-height: 40px;
+    border-radius: 8px;
+    font: inherit;
+  }
+
+  input {
+    border: 1px solid #b89a7e;
+    padding: 0 12px;
+    background: #f8f1ed;
+    color: #3e2723;
+  }
+
+  button {
+    border: 0;
+    padding: 0 14px;
+    background: #603813;
+    color: #ffffff;
+    cursor: pointer;
   }
 }
 

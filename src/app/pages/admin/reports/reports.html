@@ -1,0 +1,100 @@
+<header class="topbar">
+  <div>
+    <p>วิเคราะห์ข้อมูล</p>
+    <h1>รายงาน</h1>
+  </div>
+</header>
+<section class="panel">
+  <div class="panel-heading">
+    <h2>รายงานยอดการเช่าและรายได้</h2>
+    <button type="button" (click)="fetchReport()">รีเฟรชข้อมูล</button>
+  </div>
+
+  <div class="filter-wrap">
+    <label>
+      ประเภทรายงาน
+      <select [(ngModel)]="reportType" (change)="onTypeChange()">
+        <option value="day">รายวัน</option>
+        <option value="week">รายสัปดาห์</option>
+        <option value="month">รายเดือน</option>
+        <option value="year">รายปี</option>
+      </select>
+    </label>
+
+    <label *ngIf="reportType === 'day'">
+      เลือกวันที่
+      <input type="date" [(ngModel)]="selectedDate" />
+    </label>
+
+    <label *ngIf="reportType === 'week'">
+      วันเริ่มสัปดาห์
+      <input type="date" [(ngModel)]="weekStart" />
+    </label>
+
+    <label *ngIf="reportType === 'month'">
+      เลือกเดือน
+      <input type="month" [(ngModel)]="selectedMonth" />
+    </label>
+
+    <label *ngIf="reportType === 'year'">
+      เลือกปี
+      <input type="number" min="2000" max="2100" [(ngModel)]="selectedYear" />
+    </label>
+
+    <button class="apply-btn" type="button" (click)="fetchReport()">
+      ดูรายงาน
+    </button>
+  </div>
+
+  <p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="loading" *ngIf="loading">กำลังโหลดข้อมูลรายงาน...</p>
+
+  <div class="report-grid" *ngIf="!loading">
+    <article>
+      <span>จำนวนออเดอร์ทั้งหมด</span><strong>{{ summary.total_orders }}</strong>
+    </article>
+    <article>
+      <span>รายได้รวม</span><strong>{{ formatMoney(summary.total_income) }}</strong>
+    </article>
+    <article>
+      <span>ยอดมัดจำรวม</span><strong>{{ formatMoney(summary.total_deposit) }}</strong>
+    </article>
+    <article>
+      <span>ยอดคงเหลือรวม</span><strong>{{ formatMoney(summary.total_balances) }}</strong>
+    </article>
+  </div>
+
+  <div class="table-wrap" *ngIf="!loading">
+    <table>
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Member ID</th>
+          <th>วันเช่า</th>
+          <th>วันเริ่ม</th>
+          <th>วันสิ้นสุด</th>
+          <th>ประเภทวัน</th>
+          <th>ราคารวม</th>
+          <th>มัดจำ</th>
+          <th>คงเหลือ</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let row of items">
+          <td>#{{ row.order_id }}</td>
+          <td>{{ row.member_id }}</td>
+          <td>{{ formatDate(row.day_rental) }}</td>
+          <td>{{ formatDate(row.day_start) }}</td>
+          <td>{{ formatDate(row.day_end) }}</td>
+          <td>{{ row.day_type }}</td>
+          <td>{{ formatMoney(row.total_price) }}</td>
+          <td>{{ formatMoney(row.deposit) }}</td>
+          <td>{{ formatMoney(row.balances) }}</td>
+        </tr>
+        <tr *ngIf="items.length === 0">
+          <td colspan="9" class="empty">ไม่พบข้อมูลในช่วงเวลานี้</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>

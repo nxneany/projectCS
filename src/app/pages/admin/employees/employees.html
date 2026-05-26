@@ -1,0 +1,307 @@
+<header class="topbar">
+  <div>
+    <p>จัดการผู้ใช้งาน</p>
+    <h1>พนักงานร้าน</h1>
+  </div>
+
+  <label class="global-search">
+    <span class="material-symbols-outlined">search</span>
+
+    <input placeholder="ค้นหาพนักงาน" />
+  </label>
+</header>
+
+<section class="panel">
+  <div class="panel-heading">
+    <h2>เพิ่ม ลบ แก้ไข ค้นหาพนักงาน</h2>
+
+    <button type="button" (click)="openAddEmployeePopup()">
+      เพิ่มพนักงาน
+    </button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>รหัส</th>
+          <th>พนักงาน</th>
+          <th>เบอร์โทร</th>
+          <th>อีเมล</th>
+          <th>ที่อยู่</th>
+          <th>สำเนาบัตร</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let employee of employees">
+          <td>{{ employee.staffId }}</td>
+
+          <td class="person-cell">
+            <img [src]="employee.image" alt="" />
+
+            <span>{{ employee.fullName }}</span>
+          </td>
+
+          <td>{{ employee.phone }}</td>
+
+          <td>{{ employee.email }}</td>
+
+          <td>{{ employee.address }}</td>
+
+          <td>{{ employee.idCardImage }}</td>
+
+          <td class="row-actions">
+            <button
+              type="button"
+              (click)="openEditEmployeePopup(employee)"
+            >
+              แก้ไข
+            </button>
+
+            <button
+              type="button"
+              class="danger"
+              (click)="openDeleteConfirm(employee)"
+            >
+              ลบ
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div
+  class="admin-modal-backdrop"
+  *ngIf="isEmployeeFormOpen"
+  (click)="closeEmployeeFormPopup()"
+>
+  <section class="admin-modal" (click)="$event.stopPropagation()">
+    <div class="modal-heading">
+      <div>
+        <p>พนักงานร้าน</p>
+
+        <h2>
+          {{
+            editingStaffId
+              ? 'แก้ไขข้อมูลพนักงาน'
+              : 'เพิ่มพนักงานใหม่'
+          }}
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        (click)="closeEmployeeFormPopup()"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <form class="employee-form" (ngSubmit)="saveEmployee()">
+      <!-- PROFILE -->
+
+      <label class="wide-field">
+        รูปโปรไฟล์พนักงาน
+
+        <input
+          type="file"
+          accept="image/*"
+          (change)="onProfileSelected($event)"
+        />
+      </label>
+
+      <div class="profile-preview wide-field">
+        <img
+          *ngIf="employeeForm.profileImage"
+          [src]="employeeForm.profileImage"
+        />
+
+        <span *ngIf="!employeeForm.profileImage">
+          ยังไม่ได้เลือกรูปโปรไฟล์
+        </span>
+      </div>
+
+      <!-- USERNAME -->
+
+      <label>
+        Username
+
+        <input
+          type="text"
+          name="username"
+          [(ngModel)]="employeeForm.username"
+          required
+        />
+      </label>
+
+      <!-- PHONE -->
+
+      <label>
+        Phone
+
+        <input
+          type="tel"
+          name="phone"
+          [(ngModel)]="employeeForm.phone"
+          required
+        />
+      </label>
+
+      <!-- EMAIL -->
+
+      <label>
+        Email
+
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="employeeForm.email"
+          required
+        />
+      </label>
+
+      <!-- ADDRESS -->
+
+      <label class="wide-field">
+        ที่อยู่
+
+        <textarea
+          rows="3"
+          name="address"
+          [(ngModel)]="employeeForm.address"
+        ></textarea>
+      </label>
+
+      <!-- PASSWORD -->
+
+      <label>
+        Password
+
+        <input
+          type="password"
+          name="password"
+          [(ngModel)]="employeeForm.password"
+        />
+      </label>
+
+      <!-- CONFIRM -->
+
+      <label>
+        Confirm Password
+
+        <input
+          type="password"
+          name="confirmPassword"
+          [(ngModel)]="employeeForm.confirmPassword"
+        />
+      </label>
+
+      <!-- IDCARD -->
+
+      <label class="wide-field">
+        รูปภาพสำเนาบัตรประชาชน
+
+        <input
+          type="file"
+          name="idCardImage"
+          accept="image/*"
+          (change)="onIdCardSelected($event)"
+        />
+      </label>
+
+      <div class="id-card-preview wide-field">
+        <span class="material-symbols-outlined">badge</span>
+
+        <strong>
+          {{
+            employeeForm.idCardImage ||
+              'ยังไม่ได้เลือกรูปบัตรประชาชน'
+          }}
+        </strong>
+      </div>
+
+      <!-- ERROR -->
+
+      <p class="form-error" *ngIf="employeeFormError">
+        {{ employeeFormError }}
+      </p>
+
+      <!-- ACTIONS -->
+
+      <div class="modal-actions wide-field">
+        <button
+          type="button"
+          class="ghost-btn"
+          (click)="closeEmployeeFormPopup()"
+        >
+          ยกเลิก
+        </button>
+
+        <button type="submit">
+          {{
+            editingStaffId
+              ? 'บันทึกการแก้ไข'
+              : 'บันทึกพนักงาน'
+          }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+
+<div
+  class="admin-modal-backdrop"
+  *ngIf="employeeToDelete"
+  (click)="closeDeleteConfirm()"
+>
+  <section class="admin-modal confirm-modal" (click)="$event.stopPropagation()">
+    <div class="modal-heading">
+      <div>
+        <p>ยืนยันการลบ</p>
+
+        <h2>ลบพนักงานคนนี้?</h2>
+      </div>
+
+      <button
+        type="button"
+        class="modal-close"
+        (click)="closeDeleteConfirm()"
+      >
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <p class="confirm-text">
+      ต้องการลบข้อมูลพนักงาน
+
+      <strong>{{ employeeToDelete.fullName }}</strong>
+
+      รหัส {{ employeeToDelete.staffId }}
+
+      ใช่หรือไม่
+    </p>
+
+    <div class="modal-actions">
+      <button
+        type="button"
+        class="ghost-btn"
+        (click)="closeDeleteConfirm()"
+      >
+        ยกเลิก
+      </button>
+
+      <button
+        type="button"
+        class="danger-action"
+        (click)="confirmDeleteEmployee()"
+      >
+        ยืนยันการลบ
+      </button>
+    </div>
+  </section>
+</div>

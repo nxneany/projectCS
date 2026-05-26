@@ -16,13 +16,13 @@ export interface CategoryProduct {
 }
 // Variant ของสินค้า
 export interface ProductVariant {
-  variant_id: number;
-  size: string;
-  color: string;
-  quantity: number;
-  image_front: string;
-  image_back: string;
-  image_wear: string;
+  variant_id: number | null;
+  size: string | null;
+  color: string | null;
+  quantity: number | null;
+  image_front: string | null;
+  image_back: string | null;
+  image_wear: string | null;
 }
 
 // Product หลัก
@@ -32,8 +32,9 @@ export interface Product {
   description: string;
   price: number;
   category_id: number;
-  image_front: string;
+  image_front: string | null;
   variants: ProductVariant[];
+  rental_count?: number;
 }
 
 // Paginated Response
@@ -83,5 +84,24 @@ export class ProductService {
   // ดึงข้อมูลสินค้า ตาม id (หน้าสินค้าแต่ละอย่าง)
   getProductsId(id: number) {
     return this.http.get<Product>(`${this.apiBase}/products/${id}`);
+  }
+
+  // ค้นหาสินค้าจากชื่อสินค้า
+  searchProducts(name: string, page: number = 1, limit: number = 9) {
+    return this.http.get<PaginatedResponse<Product>>(
+      `${this.apiBase}/products/search?name=${encodeURIComponent(name)}&page=${page}&limit=${limit}`,
+    );
+  }
+
+  // ดึงข้อมูลสินค้าใกล้เคียง ตาม id สินค้าปัจจุบัน
+  getRelatedProducts(id: number) {
+    return this.http.get<Product[]>(`${this.apiBase}/products/${id}/related`);
+  }
+
+  // ดึงสินค้ายอดนิยม
+  getPopularProducts(limit: number = 4) {
+    return this.http.get<Product[]>(
+      `${this.apiBase}/products/popular?limit=${limit}`,
+    );
   }
 }

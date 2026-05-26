@@ -4,85 +4,172 @@
   <section class="status-panel">
     <div class="status-heading">
       <p>สถานะรายการ</p>
+
       <h1>ตรวจสอบรายการเช่าของฉัน</h1>
-      <span>ดูสถานะการตรวจสอบสลิปและรายละเอียดการชำระเงิน</span>
+
+      <span> ดูสถานะการตรวจสอบสลิปและรายละเอียดการชำระเงิน </span>
     </div>
 
-    <div class="order-list">
-      <section class="status-card" *ngFor="let order of orders" [class.is-expanded]="isExpanded(order.orderNo)">
+    <!-- loading -->
+    <div class="loading-box" *ngIf="loadingOrders">กำลังโหลดข้อมูล...</div>
+
+    <!-- empty -->
+    <div class="empty-box" *ngIf="!loadingOrders && orders.length === 0">
+      <span class="material-symbols-outlined"> inventory_2 </span>
+
+      <h2>ยังไม่มีรายการเช่า</h2>
+    </div>
+
+    <div class="order-list" *ngIf="!loadingOrders && orders.length > 0">
+      <section
+        class="status-card"
+        *ngFor="let order of orders"
+        [class.is-expanded]="isExpanded(order.order_id)"
+      >
         <button
           type="button"
           class="order-summary"
-          (click)="toggleOrder(order.orderNo)"
-          [attr.aria-expanded]="isExpanded(order.orderNo)">
+          (click)="toggleOrder(order.order_id)"
+          [attr.aria-expanded]="isExpanded(order.order_id)"
+        >
           <div>
             <span>เลขที่รายการ</span>
-            <strong>{{ order.orderNo }}</strong>
+
+            <strong> #{{ order.order_id }} </strong>
           </div>
 
           <div class="summary-right">
             <div class="status-badge">
-              <span class="material-symbols-outlined">{{ statusIcon(order) }}</span>
-              {{ statusLabel(order) }}
+              <span class="material-symbols-outlined">
+                {{ statusIcon(order.status) }}
+              </span>
+
+              {{ statusLabel(order.status) }}
             </div>
 
             <span class="material-symbols-outlined expand-icon">
-              {{ isExpanded(order.orderNo) ? 'expand_less' : 'expand_more' }}
+              {{ isExpanded(order.order_id) ? "expand_less" : "expand_more" }}
             </span>
           </div>
         </button>
 
-        <div class="status-content" *ngIf="isExpanded(order.orderNo)">
+        <div class="status-content" *ngIf="isExpanded(order.order_id)">
+          <!-- steps -->
           <div class="status-steps" aria-label="ขั้นตอนสถานะรายการ">
             <div class="step-item is-done">
-              <span class="material-symbols-outlined">receipt_long</span>
+              <span class="material-symbols-outlined"> receipt_long </span>
+
               <strong>ส่งรายการ</strong>
             </div>
 
             <div class="step-line is-active"></div>
 
-            <div class="step-item" [class.is-active]="order.paymentSlip.status === 'pending'" [class.is-done]="order.paymentSlip.status === 'approved'">
-              <span class="material-symbols-outlined">manage_search</span>
+            <div
+              class="step-item"
+              [class.is-active]="order.status === '1'"
+              [class.is-done]="order.status === '2'"
+            >
+              <span class="material-symbols-outlined"> manage_search </span>
+
               <strong>ตรวจสลิป</strong>
             </div>
 
-            <div class="step-line" [class.is-active]="order.paymentSlip.status === 'approved'"></div>
+            <div
+              class="step-line"
+              [class.is-active]="order.status === '2'"
+            ></div>
 
-            <div class="step-item" [class.is-done]="order.paymentSlip.status === 'approved'">
-              <span class="material-symbols-outlined">check_circle</span>
+            <div class="step-item" [class.is-done]="order.status === '2'">
+              <span class="material-symbols-outlined"> check_circle </span>
+
               <strong>ยืนยันสำเร็จ</strong>
             </div>
           </div>
 
+          <!-- status -->
           <div class="status-message">
-            <span class="material-symbols-outlined">info</span>
-            <p>{{ statusDetail(order) }}</p>
+            <span class="material-symbols-outlined"> info </span>
+
+            <p>
+              {{ statusDetail(order.status) }}
+            </p>
           </div>
 
+          <!-- detail -->
           <div class="detail-grid">
             <div>
               <span>สินค้า</span>
+
               <div class="product-name-list">
-                <strong *ngFor="let productName of order.productNames; let i = index">
-                  {{ i + 1 }}. {{ productName }}
+                <strong *ngFor="let item of order.items; let i = index">
+                  {{ i + 1 }}.
+                  {{ item.name }}
+
+                  ({{ item.size }})
                 </strong>
               </div>
             </div>
 
             <div>
+              <span>ยอดรวม</span>
+
+              <strong>
+                {{ formatPrice(order.total_price) }}
+              </strong>
+            </div>
+
+            <div>
               <span>ยอดมัดจำ</span>
-              <strong>{{ formatPrice(order.depositAmount) }}</strong>
+
+              <strong>
+                {{ formatPrice(order.deposit) }}
+              </strong>
+            </div>
+
+            <div>
+              <span>ยอดคงเหลือ</span>
+
+              <strong>
+                {{ formatPrice(order.balances) }}
+              </strong>
             </div>
 
             <div>
               <span>วันรับชุด</span>
-              <strong>{{ order.rentalStart }}</strong>
+
+              <strong>
+                {{ order.day_start | date: "dd/MM/yyyy" }}
+              </strong>
             </div>
 
             <div>
               <span>วันคืนชุด</span>
-              <strong>{{ order.rentalEnd }}</strong>
+
+              <strong>
+                {{ order.day_end | date: "dd/MM/yyyy" }}
+              </strong>
             </div>
+
+            <div>
+              <span>ระยะเวลาเช่า</span>
+
+              <strong>
+                {{ order.day_type }}
+              </strong>
+            </div>
+          </div>
+
+          <div class="payment-action" *ngIf="!order.status">
+            <button
+              type="button"
+              class="pay-now-btn"
+              [routerLink]="['/qr-payment']"
+              [queryParams]="{
+                order_id: order.order_id,
+              }"
+            >
+              ไปชำระเงิน
+            </button>
           </div>
         </div>
       </section>

@@ -1,0 +1,274 @@
+<header class="topbar">
+  <div>
+    <p>ลูกค้า</p>
+    <h1>สมาชิก</h1>
+  </div>
+
+  <label class="global-search">
+    <span class="material-symbols-outlined">search</span>
+
+    <input [(ngModel)]="searchText" placeholder="ค้นหาสมาชิก" />
+  </label>
+</header>
+
+<section class="panel">
+  <div class="panel-heading">
+    <h2>เพิ่ม ลบ แก้ไข ค้นหาสมาชิก</h2>
+
+    <button (click)="openAddPopup()">เพิ่มสมาชิก</button>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>รหัสสมาชิก</th>
+          <th>สมาชิก</th>
+          <th>เบอร์โทรศัพท์</th>
+          <th>อีเมล</th>
+          <th>ประวัติการเช่า</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let member of filteredMembers">
+          <td>{{ member.memberId }}</td>
+
+          <td class="person-cell">
+            <img [src]="member.image" />
+
+            <span>{{ member.fullName }}</span>
+          </td>
+
+          <td>{{ member.phone }}</td>
+
+          <td>{{ member.email }}</td>
+
+          <td>
+            <span class="member-status">
+              {{ member.rentalHistory }}
+            </span>
+          </td>
+
+          <td class="row-actions">
+            <button (click)="openViewPopup(member)">ดู</button>
+
+            <button (click)="openEditPopup(member)">แก้ไข</button>
+
+            <button class="danger" (click)="openDeletePopup(member)">ลบ</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- =========================
+     VIEW POPUP
+========================= -->
+
+<div class="modal-backdrop" *ngIf="selectedMember" (click)="closeViewPopup()">
+  <section class="member-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <p>ข้อมูลสมาชิก</p>
+
+        <h2>{{ selectedMember.fullName }}</h2>
+      </div>
+
+      <button class="close-btn" (click)="closeViewPopup()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="member-profile">
+      <img [src]="selectedMember.image" />
+
+      <div>
+        <span>รหัสสมาชิก</span>
+        <strong>{{ selectedMember.memberId }}</strong>
+      </div>
+
+      <div>
+        <span>เบอร์โทร</span>
+        <strong>{{ selectedMember.phone }}</strong>
+      </div>
+
+      <div>
+        <span>อีเมล</span>
+        <strong>{{ selectedMember.email }}</strong>
+      </div>
+
+      <div>
+        <span>ที่อยู่</span>
+        <strong>{{ selectedMember.address }}</strong>
+      </div>
+    </div>
+
+    <div class="order-history">
+      <h3>รายการออเดอร์ทั้งหมด</h3>
+
+      <article class="order-card" *ngFor="let order of selectedMember.orders">
+        <div class="order-top">
+          <div>
+            <strong>{{ order.orderId }}</strong>
+
+            <span>{{ order.rentDate }}</span>
+          </div>
+
+          <b>{{ formatPrice(order.total) }}</b>
+        </div>
+
+        <div class="order-item" *ngFor="let item of order.items">
+          <span>{{ item.productId }}</span>
+
+          <p>{{ item.detail }}</p>
+
+          <strong>
+            {{ item.quantity }} ชิ้น |
+            {{ formatPrice(item.price) }}
+          </strong>
+        </div>
+      </article>
+    </div>
+  </section>
+</div>
+
+<!-- =========================
+     EDIT POPUP
+========================= -->
+
+<div class="modal-backdrop" *ngIf="editingMember" (click)="closeEditPopup()">
+  <section class="member-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <p>แก้ไขสมาชิก</p>
+
+        <h2>{{ editingMember.fullName }}</h2>
+      </div>
+
+      <button class="close-btn" (click)="closeEditPopup()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="member-form">
+      <label>
+        ชื่อสมาชิก
+
+        <input [(ngModel)]="editingMember.fullName" />
+      </label>
+
+      <label>
+        เบอร์โทรศัพท์
+
+        <input [(ngModel)]="editingMember.phone" />
+      </label>
+
+      <label>
+        อีเมล
+
+        <input [(ngModel)]="editingMember.email" />
+      </label>
+
+      <label>
+        ที่อยู่
+
+        <input [(ngModel)]="editingMember.address" />
+      </label>
+    </div>
+
+    <div class="member-modal-actions">
+      <button class="ghost-btn" (click)="closeEditPopup()">ยกเลิก</button>
+
+      <button (click)="saveEditMember()">บันทึก</button>
+    </div>
+  </section>
+</div>
+
+<!-- =========================
+     DELETE POPUP
+========================= -->
+
+<div class="modal-backdrop" *ngIf="deleteMember" (click)="closeDeletePopup()">
+  <section class="delete-modal" (click)="$event.stopPropagation()">
+    <div class="delete-icon">
+      <span class="material-symbols-outlined"> delete </span>
+    </div>
+
+    <h3>ลบสมาชิก ?</h3>
+
+    <p>
+      ต้องการลบสมาชิก
+      <strong>{{ deleteMember.fullName }}</strong>
+      ใช่หรือไม่
+    </p>
+
+    <div class="member-modal-actions">
+      <button class="ghost-btn" (click)="closeDeletePopup()">ยกเลิก</button>
+
+      <button class="danger-btn" (click)="confirmDeleteMember()">
+        ยืนยันการลบ
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- =========================
+     ADD MEMBER POPUP
+========================= -->
+
+<div class="modal-backdrop" *ngIf="isAddPopupOpen" (click)="closeAddPopup()">
+  <section class="member-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div>
+        <p>สมาชิก</p>
+
+        <h2>เพิ่มสมาชิกใหม่</h2>
+      </div>
+
+      <button class="close-btn" (click)="closeAddPopup()">
+        <span class="material-symbols-outlined"> close </span>
+      </button>
+    </div>
+
+    <div class="member-form">
+      <label>
+        ชื่อสมาชิก
+
+        <input [(ngModel)]="newMember.fullName" />
+      </label>
+
+      <label>
+        เบอร์โทรศัพท์
+
+        <input [(ngModel)]="newMember.phone" />
+      </label>
+
+      <label>
+        อีเมล
+
+        <input [(ngModel)]="newMember.email" />
+      </label>
+
+      <label>
+        ที่อยู่
+
+        <input [(ngModel)]="newMember.address" />
+      </label>
+
+      <label>
+        Password
+
+        <input type="password" [(ngModel)]="newMember.password" />
+      </label>
+    </div>
+
+    <div class="member-modal-actions">
+      <button class="ghost-btn" (click)="closeAddPopup()">ยกเลิก</button>
+
+      <button (click)="saveNewMember()">เพิ่มสมาชิก</button>
+    </div>
+  </section>
+</div>

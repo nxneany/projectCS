@@ -9,7 +9,10 @@
           <p>ข้อมูลนี้ถูกดึงจากบัญชีผู้ใช้งานของคุณ</p>
         </div>
 
-        <div class="loading-info" *ngIf="isCustomerLoading; else customerDetail">
+        <div
+          class="loading-info"
+          *ngIf="isCustomerLoading; else customerDetail"
+        >
           กำลังโหลดข้อมูลลูกค้า...
         </div>
 
@@ -88,14 +91,20 @@
             </div>
 
             <div class="bill-meta-grid">
-              <span>รหัสสินค้า {{ item.product_id }} / Variant {{ item.variant_id }}</span>
+              <span
+                >รหัสสินค้า {{ item.product_id }} / Variant
+                {{ item.variant_id }}</span
+              >
               <span>ไซส์ {{ item.size }} | สี {{ item.color }}</span>
-              <span>{{ item.day_type }}: {{ formatDate(item.day_start) }} - {{ formatDate(item.day_end) }}</span>
+              <span
+                >{{ item.day_type }}: {{ formatDate(item.day_start) }} -
+                {{ formatDate(item.day_end) }}</span
+              >
             </div>
 
             <div class="bill-qty-row">
-              <span>{{ item.quantity }} x {{ formatPrice(item.price) }}</span>
-              <strong>{{ formatPrice(item.price_sum) }}</strong>
+              <span>จำนวน {{ item.quantity }} ชิ้น</span>
+              <strong>{{ formatPrice(item.price) }}</strong>
             </div>
           </div>
         </div>
@@ -125,13 +134,26 @@
         <strong>{{ formatPrice(summary.deposit) }}</strong>
       </div>
 
-      <p class="rent-hint" *ngIf="isCustomerLoading">กรุณารอสักครู่ ระบบกำลังโหลดข้อมูลลูกค้า</p>
-      <button type="button" class="rent-btn" [disabled]="isCustomerLoading" (click)="openAgreementPopup()">เช่า</button>
+      <p class="rent-hint" *ngIf="isCustomerLoading">
+        กรุณารอสักครู่ ระบบกำลังโหลดข้อมูลลูกค้า
+      </p>
+      <button
+        type="button"
+        class="rent-btn"
+        [disabled]="isCustomerLoading"
+        (click)="openAgreementPopup()"
+      >
+        เช่า
+      </button>
     </aside>
   </div>
 </main>
 
-<div class="agreement-backdrop" *ngIf="isAgreementPopupOpen" (click)="closeAgreementPopup()">
+<div
+  class="agreement-backdrop"
+  *ngIf="isAgreementPopupOpen"
+  (click)="closeAgreementPopup()"
+>
   <section class="agreement-popup" (click)="$event.stopPropagation()">
     <div class="agreement-header">
       <div>
@@ -139,7 +161,12 @@
         <p>กรุณาอ่านรายละเอียดก่อนกดยืนยันการเช่า</p>
       </div>
 
-      <button type="button" class="close-agreement" aria-label="Close" (click)="closeAgreementPopup()">
+      <button
+        type="button"
+        class="close-agreement"
+        aria-label="Close"
+        (click)="closeAgreementPopup()"
+      >
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
@@ -147,17 +174,45 @@
     <ul class="agreement-list">
       <li>ลูกค้าต้องชำระค่ามัดจำ 50% ของราคาสินค้า</li>
       <li>เมื่อมารับชุดให้ชำระอีก 50% ที่เหลือ</li>
-      <li>ลูกค้าต้องมารับชุดวันเริ่มต้นที่ลูกค้าเลือกเช่า และคืนชุดภายในวันที่สิ้นสุดที่ลูกค้าเลือกไว้</li>
-      <li>หากลูกค้าไม่มารับชุดตามวันที่กำหนด ทางร้านจะทำการยึดค่ามัดจำและยกเลิกการเช่าทันที</li>
-      <li>หากลูกค้าไม่คืนชุดตามวันที่กำหนด ทางร้านจะทำการคิดค่าปรับวันละ 20% ของราคาสินค้า</li>
-      <li>หากลูกค้ามีเจตนาไม่คืนชุด ทางร้านจะถือว่าเป็นการขโมย และทางร้านจะทำการดำเนินการทางกฎหมายทันที</li>
+      <li>
+        ลูกค้าต้องมารับชุดวันเริ่มต้นที่ลูกค้าเลือกเช่า
+        และคืนชุดภายในวันที่สิ้นสุดที่ลูกค้าเลือกไว้
+      </li>
+      <li>
+        หากลูกค้าไม่มารับชุดตามวันที่กำหนด
+        ทางร้านจะทำการยึดค่ามัดจำและยกเลิกการเช่าทันที
+      </li>
+      <li>
+        หากลูกค้าไม่คืนชุดตามวันที่กำหนด ทางร้านจะทำการคิดค่าปรับวันละ 20%
+        ของราคาสินค้า
+      </li>
+      <li>
+        หากลูกค้ามีเจตนาไม่คืนชุด ทางร้านจะถือว่าเป็นการขโมย
+        และทางร้านจะทำการดำเนินการทางกฎหมายทันที
+      </li>
     </ul>
 
-    <p class="agreement-note">หมายเหตุ: เมื่อชำระเงินแล้วลูกค้าไม่สามารถยกเลิกการเช่าและไม่สามารถขอเงินคืนได้</p>
+    <p class="agreement-note">
+      หมายเหตุ:
+      เมื่อชำระเงินแล้วลูกค้าไม่สามารถยกเลิกการเช่าและไม่สามารถขอเงินคืนได้
+    </p>
 
     <div class="agreement-actions">
-      <button type="button" class="cancel-agreement" (click)="closeAgreementPopup()">ยกเลิก</button>
-      <button type="button" class="confirm-agreement" (click)="confirmRental()">ยืนยัน</button>
+      <button
+        type="button"
+        class="cancel-agreement"
+        (click)="closeAgreementPopup()"
+      >
+        ยกเลิก
+      </button>
+      <button
+        type="button"
+        class="confirm-agreement"
+        (click)="confirmRental()"
+        [disabled]="isCustomerLoading"
+      >
+        {{ isCustomerLoading ? "กำลังสร้างออเดอร์..." : "ยืนยัน" }}
+      </button>
     </div>
   </section>
 </div>

@@ -65,7 +65,7 @@ export class Register {
       return;
     }
 
-    // ✅ ทำ hash ก่อนส่งขึ้นเซิร์ฟเวอร์
+    // ทำ hash ก่อนส่งขึ้นเซิร์ฟเวอร์
     const hashedPassword = await this.sha256(this.user.password);
 
     const payload = {

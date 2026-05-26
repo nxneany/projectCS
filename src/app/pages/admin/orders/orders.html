@@ -1,0 +1,101 @@
+<header class="topbar">
+  <div>
+    <p>รายการเช่า</p>
+    <h1>ออเดอร์ทั้งหมด</h1>
+  </div>
+  <label class="global-search"
+    ><span class="material-symbols-outlined">search</span
+    ><input placeholder="ค้นหาออเดอร์"
+  /></label>
+</header>
+<section class="panel">
+  <div class="panel-heading">
+    <h2>จำนวนออเดอร์และข้อมูลรายการเช่า</h2>
+    <span class="count-badge">{{ orders.length }} ออเดอร์</span>
+  </div>
+  <div class="order-cards">
+    <article class="order-card" *ngFor="let order of orders">
+      <div>
+        <strong>{{ order.orderNo }}</strong>
+        <p>{{ order.customerName }} | {{ order.date }}</p>
+      </div>
+      <span>{{ order.products }}</span>
+      <div class="order-money">
+        <b>รวม {{ formatPrice(order.total) }}</b
+        ><b>มัดจำ {{ formatPrice(order.deposit) }}</b
+        ><b>{{ order.duration }}</b>
+      </div>
+      <button type="button" class="detail-btn" (click)="openOrderDetail(order)">
+        ดูรายละเอียด
+      </button>
+    </article>
+  </div>
+</section>
+<div
+  class="admin-modal-backdrop"
+  *ngIf="selectedOrder"
+  (click)="closeOrderDetail()"
+>
+  <section
+    class="admin-modal order-detail-modal"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-heading">
+      <div>
+        <p>รายละเอียดออเดอร์</p>
+        <h2>{{ selectedOrder.orderNo }}</h2>
+      </div>
+      <button type="button" class="modal-close" (click)="closeOrderDetail()">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="order-detail-grid">
+      <div>
+        <span>รหัสสมาชิก</span><strong>{{ selectedOrder.customerId }}</strong>
+      </div>
+      <div>
+        <span>ชื่อลูกค้า</span><strong>{{ selectedOrder.customerName }}</strong>
+      </div>
+      <div>
+        <span>วันที่เช่า</span><strong>{{ selectedOrder.date }}</strong>
+      </div>
+      <div>
+        <span>ระยะเวลา</span><strong>{{ selectedOrder.duration }}</strong>
+      </div>
+      <div>
+        <span>ราคารวม</span
+        ><strong>{{ formatPrice(selectedOrder.total) }}</strong>
+      </div>
+      <div>
+        <span>ค่ามัดจำ</span
+        ><strong>{{ formatPrice(selectedOrder.deposit) }}</strong>
+      </div>
+    </div>
+
+    <section class="identity-section">
+      <h3>รูปถ่ายลูกค้าคู่กับบัตรประชาชน</h3>
+      <img
+        [src]="selectedOrder.identityPhoto"
+        [alt]="selectedOrder.customerName + ' identity photo'"
+      />
+    </section>
+
+    <section class="order-items-section">
+      <h3>รายการสินค้าในออเดอร์</h3>
+      <div class="order-item-list">
+        <article *ngFor="let item of selectedOrder.items">
+          <div>
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.productId }} | {{ item.detail }}</span>
+          </div>
+          <div class="order-item-money">
+            <b>จำนวน {{ item.quantity }}</b>
+            <b>{{ formatPrice(item.price) }}/ชิ้น</b>
+            <b>รวม {{ formatPrice(item.total) }}</b>
+          </div>
+        </article>
+      </div>
+    </section>
+  </section>
+</div>

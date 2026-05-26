@@ -4,6 +4,7 @@ import { RouterLink } from '@angular/router';
 import { Footer } from '../footer/footer';
 import { Header } from '../header/header';
 import { CartItem, CartService } from '../../service/cart.service';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -16,8 +17,14 @@ export class CartComponent implements OnInit {
   isConfirmPopupOpen = false;
   cartItems: CartItem[] = [];
   loadingCart = true;
+  showWarningPopup = false;
 
-  constructor(private cartService: CartService) {}
+  warningMessage = '';
+
+  constructor(
+    private cartService: CartService,
+    private router: Router,
+  ) {}
 
   ngOnInit() {
     this.loadCart();
@@ -109,5 +116,43 @@ export class CartComponent implements OnInit {
 
   closeConfirmPopup() {
     this.isConfirmPopupOpen = false;
+  }
+
+  goToPayment() {
+    if (!this.selectedItems.length) return;
+
+    const firstItem = this.selectedItems[0];
+
+    const isSameRentalDate = this.selectedItems.every(
+      (item) =>
+        item.day_start === firstItem.day_start &&
+        item.day_end === firstItem.day_end,
+    );
+
+    if (!isSameRentalDate) {
+      this.warningMessage =
+        'สินค้าที่เลือกมีวันเช่าไม่ตรงกัน กรุณาแยกสั่งเป็นคนละออเดอร์';
+
+      this.showWarningPopup = true;
+
+      return;
+    }
+
+    const selectedCartItemIds = this.selectedItems.map(
+      (item) => item.cart_item_id,
+    );
+
+    const cartId = this.selectedItems[0]?.cart_id;
+
+    this.router.navigate(['/payment'], {
+      queryParams: {
+        cart_id: cartId,
+        cart_item_ids: selectedCartItemIds.join(','),
+      },
+    });
+  }
+
+  closeWarningPopup() {
+    this.showWarningPopup = false;
   }
 }

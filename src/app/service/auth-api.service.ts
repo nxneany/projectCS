@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { AuthUser } from './auth.service';
+import { AuthRole, AuthUser } from './auth.service';
 
 export interface RegisterPayload {
   username: string;
@@ -15,6 +15,27 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface LoginApiUser {
+  role?: AuthRole;
+  id?: number;
+  member_id?: number;
+  staff_id?: number;
+  admin_id?: number;
+  username: string;
+  email: string;
+  phone?: string;
+  image_profile?: string;
+  address?: string;
+  url_idcard?: string;
+}
+
+export interface LoginResponse {
+  message: string;
+  role: AuthRole;
+  user?: LoginApiUser;
+  member?: LoginApiUser;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthApiService {
   private apiBase = environment.apiBaseUrl;
@@ -22,7 +43,7 @@ export class AuthApiService {
   constructor(private http: HttpClient) {}
 
   login(payload: LoginPayload) {
-    return this.http.post<{ message: string; member: AuthUser }>(`${this.apiBase}/login`, payload);
+    return this.http.post<LoginResponse>(`${this.apiBase}/login`, payload);
   }
 
   register(payload: RegisterPayload) {
