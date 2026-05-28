@@ -91,6 +91,22 @@
   padding: 28px;
 }
 
+.status-text {
+  margin: 0;
+  padding: 12px 28px 0;
+  color: #6f625c;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.status-text.error {
+  color: #c63c3c;
+}
+
+.status-text.success {
+  color: #247a4d;
+}
+
 .payment-editor label {
   display: grid;
   gap: 10px;
@@ -149,7 +165,9 @@
    QR BUTTON
 ========================= */
 
-.qr-admin button {
+.qr-upload {
+  display: grid;
+  place-items: center;
   min-width: 220px;
   height: 50px;
   border: 0;
@@ -163,6 +181,10 @@
   transition:
     transform 0.18s,
     box-shadow 0.18s;
+
+  input {
+    display: none;
+  }
 
   &:hover {
     transform: translateY(-2px);
@@ -203,7 +225,7 @@
     max-width: 260px;
   }
 
-  .qr-admin button {
+  .qr-upload {
     width: 100%;
   }
 }

@@ -7,7 +7,11 @@
   <label class="global-search">
     <span class="material-symbols-outlined">search</span>
 
-    <input placeholder="ค้นหาสินค้า" />
+    <input
+      placeholder="ค้นหาสินค้า"
+      [(ngModel)]="searchKeyword"
+      (input)="onSearchInput()"
+    />
   </label>
 </header>
 
@@ -21,10 +25,23 @@
   </div>
 
   <div class="category-strip">
-    <span *ngFor="let category of categories">
-      {{ category }}
+    <span
+      [class.active]="selectedCategoryId === null"
+      (click)="selectCategory(null)"
+    >
+      ทั้งหมด
+    </span>
+    <span
+      *ngFor="let category of categories"
+      [class.active]="selectedCategoryId === category.category_id"
+      (click)="selectCategory(category.category_id)"
+    >
+      {{ category.name }}
     </span>
   </div>
+
+  <p class="table-status" *ngIf="loading">กำลังโหลดข้อมูล...</p>
+  <p class="table-status error" *ngIf="errorMessage">{{ errorMessage }}</p>
 
   <div class="product-admin-grid">
     <article class="product-admin-card" *ngFor="let product of products">
@@ -68,11 +85,30 @@
         <button
           type="button"
           class="danger"
+          [disabled]="isDeleting"
+          (click)="deleteProduct(product)"
         >
-          ลบ
+          {{ isDeleting ? 'กำลังลบ...' : 'ลบ' }}
         </button>
       </div>
     </article>
+    <article class="empty-card" *ngIf="!loading && products.length === 0">
+      ไม่พบสินค้า
+    </article>
+  </div>
+
+  <div class="pagination" *ngIf="!loading && total > 0">
+    <div class="page-meta">
+      ทั้งหมด {{ total }} รายการ | หน้า {{ page }} / {{ totalPages }}
+    </div>
+    <div class="page-actions">
+      <button type="button" (click)="goPrevPage()" [disabled]="!hasPrevPage">
+        ก่อนหน้า
+      </button>
+      <button type="button" (click)="goNextPage()" [disabled]="!hasNextPage">
+        ถัดไป
+      </button>
+    </div>
   </div>
 </section>
 
@@ -110,17 +146,6 @@
       (ngSubmit)="saveProduct()"
     >
       <label>
-        รหัสสินค้า
-
-        <input
-          type="text"
-          name="productId"
-          [(ngModel)]="productForm.productId"
-          required
-        />
-      </label>
-
-      <label>
         ชื่อสินค้า
 
         <input
@@ -147,18 +172,18 @@
 
         <select
           name="category"
-          [(ngModel)]="productForm.category"
+          [(ngModel)]="productForm.categoryId"
           required
         >
-          <option value="" disabled>
+          <option [ngValue]="null" disabled>
             เลือกหมวดหมู่
           </option>
 
           <option
             *ngFor="let category of categories"
-            [value]="category"
+            [ngValue]="category.category_id"
           >
-            {{ category }}
+            {{ category.name }}
           </option>
         </select>
       </label>
@@ -268,20 +293,35 @@
       </label>
 
       <div class="product-image-summary wide-field">
-        <span>
-          ด้านหน้า:
-          {{ productForm.imageFrontName || 'ยังไม่ได้เลือก' }}
-        </span>
+        <article>
+          <strong>ด้านหน้า</strong>
+          <img
+            *ngIf="getImagePreview('front')"
+            [src]="getImagePreview('front')"
+            alt="front-preview"
+          />
+          <span *ngIf="!getImagePreview('front')">ยังไม่ได้เลือกรูป</span>
+        </article>
 
-        <span>
-          ด้านหลัง:
-          {{ productForm.imageBackName || 'ยังไม่ได้เลือก' }}
-        </span>
+        <article>
+          <strong>ด้านหลัง</strong>
+          <img
+            *ngIf="getImagePreview('back')"
+            [src]="getImagePreview('back')"
+            alt="back-preview"
+          />
+          <span *ngIf="!getImagePreview('back')">ยังไม่ได้เลือกรูป</span>
+        </article>
 
-        <span>
-          ตอนใช้สินค้า:
-          {{ productForm.imageWearName || 'ยังไม่ได้เลือก' }}
-        </span>
+        <article>
+          <strong>ตอนใช้สินค้า</strong>
+          <img
+            *ngIf="getImagePreview('wear')"
+            [src]="getImagePreview('wear')"
+            alt="wear-preview"
+          />
+          <span *ngIf="!getImagePreview('wear')">ยังไม่ได้เลือกรูป</span>
+        </article>
       </div>
 
       <p class="form-error" *ngIf="productFormError">
@@ -297,8 +337,8 @@
           ยกเลิก
         </button>
 
-        <button type="submit">
-          {{ editingProductId ? 'บันทึกการแก้ไข' : 'บันทึกสินค้า' }}
+        <button type="submit" [disabled]="isSaving">
+          {{ isSaving ? 'กำลังบันทึก...' : (editingProductId ? 'บันทึกการแก้ไข' : 'บันทึกสินค้า') }}
         </button>
       </div>
     </form>

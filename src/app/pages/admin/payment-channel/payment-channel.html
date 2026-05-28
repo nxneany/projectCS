@@ -6,17 +6,24 @@
 </header>
 <section class="panel">
   <div class="panel-heading">
-    <h2>แก้ไข ค้นหาช่องทางชำระเงิน</h2>
-    <button>บันทึก</button>
+    <h2>แก้ไข ช่องทางชำระเงิน</h2>
+    <button type="button" (click)="savePaymentChannel()" [disabled]="saving">
+      {{ saving ? 'กำลังบันทึก...' : 'บันทึก' }}
+    </button>
   </div>
+  <p class="status-text" *ngIf="loading">กำลังโหลดข้อมูล...</p>
+  <p class="status-text error" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="status-text success" *ngIf="successMessage">{{ successMessage }}</p>
   <div class="payment-editor">
     <label>ชื่อบัญชีธนาคาร<input [(ngModel)]="payment.accountName" /></label>
     <label>เลขบัญชี<input [(ngModel)]="payment.accountNumber" /></label>
     <label>พร้อมเพย์<input [(ngModel)]="payment.promptPay" /></label>
     <div class="qr-admin">
-      <img [src]="payment.qrCode" alt="QR payment" /><button>
+      <img *ngIf="payment.qrCode" [src]="payment.qrCode" alt="QR payment" />
+      <label class="qr-upload">
+        <input type="file" accept="image/*" (change)="onQrSelected($event)" />
         เปลี่ยนรูป QR Code
-      </button>
+      </label>
     </div>
   </div>
 </section>

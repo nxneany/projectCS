@@ -19,11 +19,27 @@
     </article>
   </div>
 
+  <p *ngIf="loading">กำลังโหลดข้อมูลภาพรวม...</p>
+  <p *ngIf="errorMessage">{{ errorMessage }}</p>
+
        <div class="two-column">
         <section class="panel">
           <div class="panel-heading"><h2>ออเดอร์ล่าสุด</h2><a routerLink="/admin/orders">ดูทั้งหมด</a></div>
           <div class="compact-list">
-            <article *ngFor="let order of orders"><div><strong>{{ order.orderNo }}</strong><span>{{ order.customerName }} | {{ order.products }}</span></div><b>{{ order.status }}</b></article>
+            <article *ngFor="let order of orders">
+              <div>
+                <strong>{{ order.order_code }}</strong>
+                <span>{{ order.username }} | {{ getOrderProducts(order) }}</span>
+              </div>
+              <b>{{ getOrderStatus(order) }}</b>
+            </article>
+            <article *ngIf="!loading && orders.length === 0">
+              <div>
+                <strong>ไม่มีข้อมูล</strong>
+                <span>ยังไม่มีออเดอร์ล่าสุด</span>
+              </div>
+              <b>-</b>
+            </article>
           </div>
         </section>
         <section class="panel">

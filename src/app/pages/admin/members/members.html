@@ -7,7 +7,11 @@
   <label class="global-search">
     <span class="material-symbols-outlined">search</span>
 
-    <input [(ngModel)]="searchText" placeholder="ค้นหาสมาชิก" />
+    <input
+      [(ngModel)]="searchText"
+      (input)="onSearchInput()"
+      placeholder="ค้นหาสมาชิก"
+    />
   </label>
 </header>
 
@@ -18,6 +22,12 @@
     <button (click)="openAddPopup()">เพิ่มสมาชิก</button>
   </div>
 
+  <p class="table-status" *ngIf="loading">กำลังโหลดข้อมูล...</p>
+
+  <p class="table-status error" *ngIf="errorMessage">
+    {{ errorMessage }}
+  </p>
+
   <div class="table-wrap">
     <table>
       <thead>
@@ -27,23 +37,31 @@
           <th>เบอร์โทรศัพท์</th>
           <th>อีเมล</th>
           <th>ประวัติการเช่า</th>
-          <th></th>
+          <th>จัดการ</th>
         </tr>
       </thead>
 
       <tbody>
         <tr *ngFor="let member of filteredMembers">
-          <td>{{ member.memberId }}</td>
-
-          <td class="person-cell">
-            <img [src]="member.image" />
-
-            <span>{{ member.fullName }}</span>
+          <td>
+            {{ member.memberId }}
           </td>
 
-          <td>{{ member.phone }}</td>
+          <td>
+            <div class="member-name">
+              <span>
+                {{ member.fullName }}
+              </span>
+            </div>
+          </td>
 
-          <td>{{ member.email }}</td>
+          <td>
+            {{ member.phone || "-" }}
+          </td>
+
+          <td>
+            {{ member.email }}
+          </td>
 
           <td>
             <span class="member-status">
@@ -51,13 +69,21 @@
             </span>
           </td>
 
-          <td class="row-actions">
-            <button (click)="openViewPopup(member)">ดู</button>
+          <td>
+            <div class="row-actions">
+              <button (click)="openViewPopup(member)">ดู</button>
 
-            <button (click)="openEditPopup(member)">แก้ไข</button>
+              <button (click)="openEditPopup(member)">แก้ไข</button>
 
-            <button class="danger" (click)="openDeletePopup(member)">ลบ</button>
+              <button class="danger" (click)="openDeletePopup(member)">
+                ลบ
+              </button>
+            </div>
           </td>
+        </tr>
+
+        <tr *ngIf="!loading && filteredMembers.length === 0">
+          <td colspan="6" class="empty-cell">ไม่พบข้อมูลสมาชิก</td>
         </tr>
       </tbody>
     </table>
@@ -74,35 +100,47 @@
       <div>
         <p>ข้อมูลสมาชิก</p>
 
-        <h2>{{ selectedMember.fullName }}</h2>
+        <h2>
+          {{ selectedMember.fullName }}
+        </h2>
       </div>
 
       <button class="close-btn" (click)="closeViewPopup()">
-        <span class="material-symbols-outlined">close</span>
+        <span class="material-symbols-outlined"> close </span>
       </button>
     </div>
 
     <div class="member-profile">
-      <img [src]="selectedMember.image" />
-
       <div>
         <span>รหัสสมาชิก</span>
-        <strong>{{ selectedMember.memberId }}</strong>
+
+        <strong>
+          {{ selectedMember.memberId }}
+        </strong>
       </div>
 
       <div>
         <span>เบอร์โทร</span>
-        <strong>{{ selectedMember.phone }}</strong>
+
+        <strong>
+          {{ selectedMember.phone || "-" }}
+        </strong>
       </div>
 
       <div>
         <span>อีเมล</span>
-        <strong>{{ selectedMember.email }}</strong>
+
+        <strong>
+          {{ selectedMember.email }}
+        </strong>
       </div>
 
       <div>
         <span>ที่อยู่</span>
-        <strong>{{ selectedMember.address }}</strong>
+
+        <strong>
+          {{ selectedMember.address }}
+        </strong>
       </div>
     </div>
 
@@ -112,18 +150,28 @@
       <article class="order-card" *ngFor="let order of selectedMember.orders">
         <div class="order-top">
           <div>
-            <strong>{{ order.orderId }}</strong>
+            <strong>
+              {{ order.orderId }}
+            </strong>
 
-            <span>{{ order.rentDate }}</span>
+            <span>
+              {{ order.rentDate }}
+            </span>
           </div>
 
-          <b>{{ formatPrice(order.total) }}</b>
+          <b>
+            {{ formatPrice(order.total) }}
+          </b>
         </div>
 
         <div class="order-item" *ngFor="let item of order.items">
-          <span>{{ item.productId }}</span>
+          <span>
+            {{ item.productId }}
+          </span>
 
-          <p>{{ item.detail }}</p>
+          <p>
+            {{ item.detail }}
+          </p>
 
           <strong>
             {{ item.quantity }} ชิ้น |
@@ -145,11 +193,13 @@
       <div>
         <p>แก้ไขสมาชิก</p>
 
-        <h2>{{ editingMember.fullName }}</h2>
+        <h2>
+          {{ editingMember.fullName }}
+        </h2>
       </div>
 
       <button class="close-btn" (click)="closeEditPopup()">
-        <span class="material-symbols-outlined">close</span>
+        <span class="material-symbols-outlined"> close </span>
       </button>
     </div>
 
@@ -201,7 +251,11 @@
 
     <p>
       ต้องการลบสมาชิก
-      <strong>{{ deleteMember.fullName }}</strong>
+
+      <strong>
+        {{ deleteMember.fullName }}
+      </strong>
+
       ใช่หรือไม่
     </p>
 

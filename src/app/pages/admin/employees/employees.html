@@ -7,7 +7,11 @@
   <label class="global-search">
     <span class="material-symbols-outlined">search</span>
 
-    <input placeholder="ค้นหาพนักงาน" />
+    <input
+      placeholder="ค้นหาพนักงาน"
+      [(ngModel)]="searchKeyword"
+      (input)="onSearchInput()"
+    />
   </label>
 </header>
 
@@ -15,9 +19,7 @@
   <div class="panel-heading">
     <h2>เพิ่ม ลบ แก้ไข ค้นหาพนักงาน</h2>
 
-    <button type="button" (click)="openAddEmployeePopup()">
-      เพิ่มพนักงาน
-    </button>
+    <button type="button" (click)="openAddEmployeePopup()">เพิ่มพนักงาน</button>
   </div>
 
   <div class="table-wrap">
@@ -50,13 +52,12 @@
 
           <td>{{ employee.address }}</td>
 
-          <td>{{ employee.idCardImage }}</td>
+          <td class="idcard-cell">
+            <img [src]="employee.idCardImage" alt="id-card" />
+          </td>
 
           <td class="row-actions">
-            <button
-              type="button"
-              (click)="openEditEmployeePopup(employee)"
-            >
+            <button type="button" (click)="openEditEmployeePopup(employee)">
               แก้ไข
             </button>
 
@@ -69,9 +70,14 @@
             </button>
           </td>
         </tr>
+        <tr *ngIf="!loading && employees.length === 0">
+          <td colspan="7" class="empty-cell">ไม่พบข้อมูลพนักงาน</td>
+        </tr>
       </tbody>
     </table>
   </div>
+  <p class="table-status" *ngIf="loading">กำลังโหลดข้อมูล...</p>
+  <p class="table-status error" *ngIf="errorMessage">{{ errorMessage }}</p>
 </section>
 
 <div
@@ -85,11 +91,7 @@
         <p>พนักงานร้าน</p>
 
         <h2>
-          {{
-            editingStaffId
-              ? 'แก้ไขข้อมูลพนักงาน'
-              : 'เพิ่มพนักงานใหม่'
-          }}
+          {{ editingStaffId ? "แก้ไขข้อมูลพนักงาน" : "เพิ่มพนักงานใหม่" }}
         </h2>
       </div>
 
@@ -105,7 +107,7 @@
     <form class="employee-form" (ngSubmit)="saveEmployee()">
       <!-- PROFILE -->
 
-      <label class="wide-field">
+      <label class="wide-field file-field">
         รูปโปรไฟล์พนักงาน
 
         <input
@@ -126,103 +128,106 @@
         </span>
       </div>
 
-      <!-- USERNAME -->
+      <div class="field-grid">
+        <!-- USERNAME -->
 
-      <label>
-        Username
+        <label>
+          Username
 
-        <input
-          type="text"
-          name="username"
-          [(ngModel)]="employeeForm.username"
-          required
-        />
-      </label>
+          <input
+            type="text"
+            name="username"
+            [(ngModel)]="employeeForm.username"
+            required
+          />
+        </label>
 
-      <!-- PHONE -->
+        <!-- PHONE -->
 
-      <label>
-        Phone
+        <label>
+          Phone
 
-        <input
-          type="tel"
-          name="phone"
-          [(ngModel)]="employeeForm.phone"
-          required
-        />
-      </label>
+          <input
+            type="tel"
+            name="phone"
+            [(ngModel)]="employeeForm.phone"
+            required
+          />
+        </label>
 
-      <!-- EMAIL -->
+        <!-- EMAIL -->
 
-      <label>
-        Email
+        <label>
+          Email
 
-        <input
-          type="email"
-          name="email"
-          [(ngModel)]="employeeForm.email"
-          required
-        />
-      </label>
+          <input
+            type="email"
+            name="email"
+            [(ngModel)]="employeeForm.email"
+            required
+          />
+        </label>
 
-      <!-- ADDRESS -->
+        <!-- ADDRESS -->
 
-      <label class="wide-field">
-        ที่อยู่
+        <label class="wide-field">
+          ที่อยู่
 
-        <textarea
-          rows="3"
-          name="address"
-          [(ngModel)]="employeeForm.address"
-        ></textarea>
-      </label>
+          <textarea
+            rows="3"
+            name="address"
+            [(ngModel)]="employeeForm.address"
+          ></textarea>
+        </label>
 
-      <!-- PASSWORD -->
+        <!-- PASSWORD -->
 
-      <label>
-        Password
+        <label>
+          Password
 
-        <input
-          type="password"
-          name="password"
-          [(ngModel)]="employeeForm.password"
-        />
-      </label>
+          <input
+            type="password"
+            name="password"
+            [(ngModel)]="employeeForm.password"
+          />
+        </label>
 
-      <!-- CONFIRM -->
+        <!-- CONFIRM -->
 
-      <label>
-        Confirm Password
+        <label>
+          Confirm Password
 
-        <input
-          type="password"
-          name="confirmPassword"
-          [(ngModel)]="employeeForm.confirmPassword"
-        />
-      </label>
+          <input
+            type="password"
+            name="confirmPassword"
+            [(ngModel)]="employeeForm.confirmPassword"
+          />
+        </label>
 
-      <!-- IDCARD -->
+        <!-- IDCARD -->
 
-      <label class="wide-field">
-        รูปภาพสำเนาบัตรประชาชน
+        <label class="wide-field">
+          รูปภาพสำเนาบัตรประชาชน
 
-        <input
-          type="file"
-          name="idCardImage"
-          accept="image/*"
-          (change)="onIdCardSelected($event)"
-        />
-      </label>
+          <input
+            type="file"
+            name="idCardImage"
+            accept="image/*"
+            (change)="onIdCardSelected($event)"
+          />
+        </label>
 
-      <div class="id-card-preview wide-field">
-        <span class="material-symbols-outlined">badge</span>
-
-        <strong>
-          {{
-            employeeForm.idCardImage ||
-              'ยังไม่ได้เลือกรูปบัตรประชาชน'
-          }}
-        </strong>
+        <div class="id-card-preview wide-field">
+          <img
+            *ngIf="employeeForm.idCardImage"
+            [src]="employeeForm.idCardImage"
+            alt="id-card-preview"
+          />
+          <div *ngIf="!employeeForm.idCardImage" class="id-card-empty">
+            <span class="material-symbols-outlined">badge</span>
+            <strong>ยังไม่ได้เลือกรูปบัตรประชาชน</strong>
+          </div>
+        </div>
       </div>
 
       <!-- ERROR -->
@@ -242,12 +247,8 @@
           ยกเลิก
         </button>
 
-        <button type="submit">
-          {{
-            editingStaffId
-              ? 'บันทึกการแก้ไข'
-              : 'บันทึกพนักงาน'
-          }}
+        <button type="submit" [disabled]="isSaving">
+          {{ isSaving ? "กำลังบันทึก..." : (editingStaffId ? "บันทึกการแก้ไข" : "บันทึกพนักงาน") }}
         </button>
       </div>
     </form>
@@ -267,11 +268,7 @@
         <h2>ลบพนักงานคนนี้?</h2>
       </div>
 
-      <button
-        type="button"
-        class="modal-close"
-        (click)="closeDeleteConfirm()"
-      >
+      <button type="button" class="modal-close" (click)="closeDeleteConfirm()">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
@@ -287,20 +284,17 @@
     </p>
 
     <div class="modal-actions">
-      <button
-        type="button"
-        class="ghost-btn"
-        (click)="closeDeleteConfirm()"
-      >
+      <button type="button" class="ghost-btn" (click)="closeDeleteConfirm()">
         ยกเลิก
       </button>
 
       <button
         type="button"
         class="danger-action"
+        [disabled]="isDeleting"
         (click)="confirmDeleteEmployee()"
       >
-        ยืนยันการลบ
+        {{ isDeleting ? "กำลังลบ..." : "ยืนยันการลบ" }}
       </button>
     </div>
   </section>

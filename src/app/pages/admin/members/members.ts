@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { environment } from '../../../../environments/environment';
 
 interface OrderItem {
   productId: string;
@@ -17,6 +19,7 @@ interface MemberOrder {
 }
 
 interface Member {
+  id: number;
   memberId: string;
   image: string;
   fullName: string;
@@ -27,81 +30,35 @@ interface Member {
   orders: MemberOrder[];
 }
 
+interface AdminMemberApiItem {
+  member_id: number;
+  username: string;
+  phone: string | null;
+  email: string;
+  image_profile: string | null;
+  total_orders: number;
+}
+
+interface AdminMemberResponse {
+  items: AdminMemberApiItem[];
+}
+
 @Component({
   selector: 'app-members',
   imports: [CommonModule, FormsModule],
   templateUrl: './members.html',
   styleUrl: './members.scss',
 })
-export class MembersComponent {
+export class MembersComponent implements OnInit {
+  private apiBase = environment.apiBaseUrl;
+  private uploadsBase = environment.uploadsBaseUrl;
+
+  loading = false;
+  errorMessage = '';
   searchText = '';
+  private searchTimer?: ReturnType<typeof setTimeout>;
 
-  membersData: Member[] = [
-    {
-      memberId: 'M-013',
-      image: 'assets/profile.png',
-      fullName: 'DFN Tv',
-      phone: '097-193-9481',
-      email: 'dfn31tv@gmail.com',
-      rentalHistory: '4 ออเดอร์',
-      address: 'สมุทรปราการ',
-      orders: [
-        {
-          orderId: 'ORD-20260520-001',
-          rentDate: '20 พ.ค. 2026',
-          total: 2400,
-          items: [
-            {
-              productId: 'P-001',
-              detail: 'ชุดไทยจักรี สีทอง ไซส์ S',
-              quantity: 2,
-              price: 1200,
-            },
-          ],
-        },
-        {
-          orderId: 'ORD-20260518-003',
-          rentDate: '18 พ.ค. 2026',
-          total: 1350,
-          items: [
-            {
-              productId: 'P-005',
-              detail: 'มงกุฎคริสตัลราชินี สีเงิน',
-              quantity: 1,
-              price: 1350,
-            },
-          ],
-        },
-      ],
-    },
-
-    {
-      memberId: 'M-014',
-      image: 'assets/profile.png',
-      fullName: 'Ananya S.',
-      phone: '099-911-1555',
-      email: 'ananya@gmail.com',
-      rentalHistory: '2 ออเดอร์',
-      address: 'กรุงเทพมหานคร',
-      orders: [
-        {
-          orderId: 'ORD-20260515-010',
-          rentDate: '15 พ.ค. 2026',
-          total: 3200,
-          items: [
-            {
-              productId: 'P-012',
-              detail: 'ชุดราตรีสีแดง ไซส์ M',
-              quantity: 1,
-              price: 3200,
-            },
-          ],
-        },
-      ],
-    },
-  ];
-
-  members: Member[] = [...this.membersData];
+  members: Member[] = [];
 
   selectedMember: Member | null = null;
 
@@ -119,16 +76,43 @@ export class MembersComponent {
     password: '',
   };
 
+  constructor(private http: HttpClient) {}
+
+  ngOnInit() {
+    this.loadMembers();
+  }
+
   get filteredMembers() {
-    if (!this.searchText.trim()) {
-      return this.members;
+    return this.members;
+  }
+
+  onSearchInput() {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadMembers(), 350);
+  }
+
+  loadMembers() {
+    this.loading = true;
+    this.errorMessage = '';
+
+    let params = new HttpParams();
+    if (this.searchText.trim()) {
+      params = params.set('search', this.searchText.trim());
     }
 
-    return this.members.filter(
-      (member) =>
-        member.memberId.toLowerCase().includes(this.searchText.toLowerCase()) ||
-        member.fullName.toLowerCase().includes(this.searchText.toLowerCase()),
-    );
+    this.http
+      .get<AdminMemberResponse>(`${this.apiBase}/admin/member`, { params })
+      .subscribe({
+        next: (res) => {
+          this.members = (res.items || []).map((item) => this.mapMember(item));
+          this.loading = false;
+        },
+        error: () => {
+          this.members = [];
+          this.loading = false;
+          this.errorMessage = 'โหลดข้อมูลสมาชิกไม่สำเร็จ';
+        },
+      });
   }
 
   openViewPopup(member: Member) {
@@ -215,6 +199,7 @@ export class MembersComponent {
 
     this.members = [
       {
+        id: this.members.length + 13,
         memberId: newId,
 
         image: 'assets/profile.png',
@@ -238,5 +223,27 @@ export class MembersComponent {
     this.closeAddPopup();
 
     alert('เพิ่มสมาชิกสำเร็จ');
+  }
+
+  private mapMember(item: AdminMemberApiItem): Member {
+    return {
+      id: item.member_id,
+      memberId: `M-${String(item.member_id).padStart(3, '0')}`,
+      image: this.getProfileImage(item.image_profile),
+      fullName: item.username || '-',
+      phone: item.phone || '-',
+      email: item.email || '-',
+      rentalHistory: `${item.total_orders || 0} ออเดอร์`,
+      address: '-',
+      orders: [],
+    };
+  }
+
+  private getProfileImage(image?: string | null) {
+    if (!image) return 'assets/profile.png';
+    if (image.startsWith('http://') || image.startsWith('https://')) {
+      return image;
+    }
+    return `${this.uploadsBase}/${image}`;
   }
 }

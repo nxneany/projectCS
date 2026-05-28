@@ -15,6 +15,14 @@ export interface PaymentChannel {
   admin_id_fk: number;
 }
 
+export interface UpdatePaymentChannelPayload {
+  name_account: string;
+  account_number: string;
+  promptpay: string;
+  admin_id_fk: number;
+  qr_code?: File | null;
+}
+
 
 @Injectable({ providedIn: 'root' })
 export class PaymentsService {
@@ -30,5 +38,17 @@ export class PaymentsService {
     // ดึงช่องทางการชำระเงิน
     getPaymentChannel() {
         return this.http.get<PaymentChannel>(`${this.apiBase}/payment-channel`);
+    }
+
+    updatePaymentChannel(payload: UpdatePaymentChannelPayload) {
+        const formData = new FormData();
+        formData.append('name_account', payload.name_account);
+        formData.append('account_number', payload.account_number);
+        formData.append('promptpay', payload.promptpay);
+        formData.append('admin_id_fk', String(payload.admin_id_fk));
+        if (payload.qr_code) {
+            formData.append('qr_code', payload.qr_code);
+        }
+        return this.http.put<PaymentChannel>(`${this.apiBase}/payment-channel`, formData);
     }
 }

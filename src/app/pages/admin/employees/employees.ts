@@ -1,8 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {
+  CreateStaffPayload,
+  StaffResponseItem,
+  StaffService,
+  UpdateStaffPayload,
+} from '../../../service/staff.service';
 
 interface Employee {
+  id: number;
   staffId: string;
   image: string;
   fullName: string;
@@ -19,8 +26,10 @@ interface EmployeeForm {
   password: string;
   confirmPassword: string;
   idCardImage: string;
+  idCardFile: File | null;
 
   profileImage: string;
+  profileImageFile: File | null;
 
   address: string;
 }
@@ -31,33 +40,20 @@ interface EmployeeForm {
   templateUrl: './employees.html',
   styleUrl: './employees.scss',
 })
-export class EmployeesComponent {
-  employeeData: Employee[] = [
-    {
-      staffId: 'EMP-001',
-      image: 'assets/profile.png',
-      fullName: 'อริดา ใจดี',
-      phone: '099-111-5555',
-      email: 'arida.staff@gmail.com',
-      address: 'บางแสน ชลบุรี',
-      idCardImage: 'id-card-001.jpg',
-    },
-    {
-      staffId: 'EMP-002',
-      image: 'assets/profile.png',
-      fullName: 'ธนกฤต สวัสดี',
-      phone: '088-222-4411',
-      email: 'tanakrit.staff@gmail.com',
-      address: 'บางนา กรุงเทพฯ',
-      idCardImage: 'id-card-002.jpg',
-    },
-  ];
+export class EmployeesComponent implements OnInit {
+  loading = false;
+  isSaving = false;
+  isDeleting = false;
+  errorMessage = '';
+  searchKeyword = '';
+  private searchTimer?: ReturnType<typeof setTimeout>;
 
-  employees: Employee[] = [...this.employeeData];
+  employees: Employee[] = [];
 
   isEmployeeFormOpen = false;
 
   editingStaffId = '';
+  editingId = 0;
 
   employeeToDelete: Employee | null = null;
 
@@ -65,12 +61,41 @@ export class EmployeesComponent {
 
   employeeForm: EmployeeForm = this.getEmptyEmployeeForm();
 
+  constructor(private staffService: StaffService) {}
+
+  ngOnInit() {
+    this.loadEmployees();
+  }
+
+  onSearchInput() {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadEmployees(), 350);
+  }
+
+  loadEmployees() {
+    this.loading = true;
+    this.errorMessage = '';
+    this.staffService.getStaff(this.searchKeyword).subscribe({
+      next: (res) => {
+        const rows = Array.isArray(res) ? res : (res?.data ?? []);
+        this.employees = rows.map((row) => this.mapStaffToEmployee(row));
+        this.loading = false;
+      },
+      error: () => {
+        this.loading = false;
+        this.errorMessage = 'โหลดข้อมูลพนักงานไม่สำเร็จ';
+        this.employees = [];
+      },
+    });
+  }
+
   openAddEmployeePopup() {
     this.employeeForm = this.getEmptyEmployeeForm();
 
     this.employeeFormError = '';
 
     this.editingStaffId = '';
+    this.editingId = 0;
 
     this.isEmployeeFormOpen = true;
   }
@@ -88,8 +113,10 @@ export class EmployeesComponent {
       confirmPassword: '',
 
       idCardImage: employee.idCardImage,
+      idCardFile: null,
 
       profileImage: employee.image,
+      profileImageFile: null,
 
       address: employee.address,
     };
@@ -97,6 +124,7 @@ export class EmployeesComponent {
     this.employeeFormError = '';
 
     this.editingStaffId = employee.staffId;
+    this.editingId = employee.id;
 
     this.isEmployeeFormOpen = true;
   }
@@ -105,9 +133,17 @@ export class EmployeesComponent {
     this.isEmployeeFormOpen = false;
 
     this.editingStaffId = '';
+    this.editingId = 0;
   }
 
-  saveEmployee() {
+  private async sha256(text: string): Promise<string> {
+    const data = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  async saveEmployee() {
     this.employeeFormError = '';
 
     if (
@@ -147,54 +183,71 @@ export class EmployeesComponent {
 
     // EDIT
     if (this.editingStaffId) {
-      this.employees = this.employees.map((employee) =>
-        employee.staffId === this.editingStaffId
-          ? {
-              ...employee,
+      if (!this.editingId) {
+        this.employeeFormError = 'ไม่พบรหัสพนักงานสำหรับแก้ไข';
+        return;
+      }
+      try {
+        const updatePayload: UpdateStaffPayload = {
+          username: this.employeeForm.username.trim(),
+          phone: this.employeeForm.phone.trim(),
+          email: this.employeeForm.email.trim(),
+          address: this.employeeForm.address.trim(),
+          image: this.employeeForm.profileImageFile,
+          url_idcard: this.employeeForm.idCardFile,
+        };
 
-              image: this.employeeForm.profileImage || employee.image,
+        if (this.employeeForm.password) {
+          updatePayload.password = await this.sha256(this.employeeForm.password);
+        }
 
-              fullName: this.employeeForm.username,
-
-              phone: this.employeeForm.phone,
-
-              email: this.employeeForm.email,
-
-              address: this.employeeForm.address,
-
-              idCardImage:
-                this.employeeForm.idCardImage || employee.idCardImage,
-            }
-          : employee,
-      );
-
-      this.closeEmployeeFormPopup();
-
+        this.isSaving = true;
+        this.staffService.updateStaff(this.editingId, updatePayload).subscribe({
+          next: () => {
+            this.isSaving = false;
+            this.closeEmployeeFormPopup();
+            this.loadEmployees();
+          },
+          error: (err) => {
+            this.isSaving = false;
+            this.employeeFormError =
+              err?.error?.error || 'แก้ไขพนักงานไม่สำเร็จ กรุณาลองใหม่';
+          },
+        });
+      } catch {
+        this.employeeFormError = 'ไม่สามารถแฮ็ชรหัสผ่านได้';
+      }
       return;
     }
 
-    // ADD
-    this.employees = [
-      {
-        staffId: `EMP-${String(this.employees.length + 1).padStart(3, '0')}`,
+    try {
+      const hashedPassword = await this.sha256(this.employeeForm.password);
+      const payload: CreateStaffPayload = {
+        username: this.employeeForm.username.trim(),
+        phone: this.employeeForm.phone.trim(),
+        email: this.employeeForm.email.trim(),
+        address: this.employeeForm.address.trim(),
+        password: hashedPassword,
+        image: this.employeeForm.profileImageFile,
+        url_idcard: this.employeeForm.idCardFile,
+      };
 
-        image: this.employeeForm.profileImage || 'assets/profile.png',
-
-        fullName: this.employeeForm.username,
-
-        phone: this.employeeForm.phone,
-
-        email: this.employeeForm.email,
-
-        address: this.employeeForm.address || '-',
-
-        idCardImage: this.employeeForm.idCardImage || '-',
-      },
-
-      ...this.employees,
-    ];
-
-    this.closeEmployeeFormPopup();
+      this.isSaving = true;
+      this.staffService.createStaff(payload).subscribe({
+        next: () => {
+          this.isSaving = false;
+          this.closeEmployeeFormPopup();
+          this.loadEmployees();
+        },
+        error: (err) => {
+          this.isSaving = false;
+          this.employeeFormError =
+            err?.error?.error || 'เพิ่มพนักงานไม่สำเร็จ กรุณาลองใหม่';
+        },
+      });
+    } catch {
+      this.employeeFormError = 'ไม่สามารถแฮ็ชรหัสผ่านได้';
+    }
   }
 
   onIdCardSelected(event: Event) {
@@ -202,7 +255,9 @@ export class EmployeesComponent {
 
     if (!input.files?.length) return;
 
-    this.employeeForm.idCardImage = input.files[0].name;
+    const file = input.files[0];
+    this.employeeForm.idCardFile = file;
+    this.employeeForm.idCardImage = URL.createObjectURL(file);
   }
 
   onProfileSelected(event: Event) {
@@ -212,6 +267,7 @@ export class EmployeesComponent {
 
     const file = input.files[0];
 
+    this.employeeForm.profileImageFile = file;
     this.employeeForm.profileImage = URL.createObjectURL(file);
   }
 
@@ -225,12 +281,20 @@ export class EmployeesComponent {
 
   confirmDeleteEmployee() {
     if (!this.employeeToDelete) return;
+    if (!this.employeeToDelete.id) return;
 
-    this.employees = this.employees.filter(
-      (employee) => employee.staffId !== this.employeeToDelete?.staffId,
-    );
-
-    this.closeDeleteConfirm();
+    this.isDeleting = true;
+    this.staffService.deleteStaff(this.employeeToDelete.id).subscribe({
+      next: () => {
+        this.isDeleting = false;
+        this.closeDeleteConfirm();
+        this.loadEmployees();
+      },
+      error: () => {
+        this.isDeleting = false;
+        this.errorMessage = 'ลบพนักงานไม่สำเร็จ กรุณาลองใหม่';
+      },
+    });
   }
 
   private getEmptyEmployeeForm(): EmployeeForm {
@@ -246,10 +310,26 @@ export class EmployeesComponent {
       confirmPassword: '',
 
       idCardImage: '',
+      idCardFile: null,
 
       profileImage: '',
+      profileImageFile: null,
 
       address: '',
+    };
+  }
+
+  private mapStaffToEmployee(row: StaffResponseItem): Employee {
+    const staffNo = row.staff_id ?? row.id ?? 0;
+    return {
+      id: row.staff_id ?? row.id ?? 0,
+      staffId: `EMP-${String(staffNo).padStart(3, '0')}`,
+      image: this.staffService.getImageUrl(row.image_profile),
+      fullName: row.username || '-',
+      phone: row.phone || '-',
+      email: row.email || '-',
+      address: row.address || '-',
+      idCardImage: this.staffService.getImageUrl(row.url_idcard),
     };
   }
 }

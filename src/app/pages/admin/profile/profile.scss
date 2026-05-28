@@ -82,6 +82,18 @@
   }
 }
 
+.status-text {
+  margin: 0;
+  padding: 10px 28px 0;
+  color: #6f625c;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.status-text.error {
+  color: #b53a3a;
+}
+
 /* =========================
    BUTTONS
 ========================= */
