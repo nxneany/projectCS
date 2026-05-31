@@ -37,7 +37,7 @@ export class Login implements AfterViewInit {   // ← ADD: implements
   ) {}
 
   private redirectByRole(role: AuthRole) {
-    if (role === 'admin' || role === 'staff' || role === 'employee') {
+    if (role === 'admin' || role === 'staff' || role === 'employee' || role === 'staf') {
       this.router.navigate(['/admin/overview']);
       return;
     }
@@ -53,6 +53,7 @@ export class Login implements AfterViewInit {   // ← ADD: implements
     }
 
     const role = (res.role ?? raw.role ?? 'member') as AuthRole;
+    const normalizedRole = role === 'employee' || role === 'staf' ? 'staff' : role;
     const fallbackId = raw.id ?? raw.member_id ?? raw.staff_id ?? raw.admin_id ?? 0;
     const memberId = raw.member_id ?? fallbackId;
 
@@ -60,13 +61,14 @@ export class Login implements AfterViewInit {   // ← ADD: implements
       member_id: memberId,
       username: raw.username,
       email: raw.email,
-      role,
+      role: normalizedRole,
       phone: raw.phone,
+      auth_provider: 'password',
     });
 
     this.isLoading = false;
     this.dialogRef.close();
-    this.redirectByRole(role);
+    this.redirectByRole(normalizedRole);
   }
 
   private exchangeCodeWithBackend(code: string) {
@@ -75,7 +77,7 @@ export class Login implements AfterViewInit {   // ← ADD: implements
 
   this.authApi.loginWithGoogleCode(code).subscribe({
     next: (res) => {
-      this.auth.login(res.member);
+      this.auth.login({ ...res.member, auth_provider: 'google' });
       this.isLoading = false;
       this.dialogRef.close();
       this.router.navigate(['/']);
@@ -147,7 +149,7 @@ export class Login implements AfterViewInit {   // ← ADD: implements
     this.isLoading = true; this.errorMessage = '';
     this.authApi.loginWithGoogleIdToken(idToken).subscribe({
       next: (res) => {
-        this.auth.login(res.member);
+        this.auth.login({ ...res.member, auth_provider: 'google' });
         this.isLoading = false;
         this.dialogRef.close();
         this.router.navigate(['/']);
@@ -179,6 +181,7 @@ export class Login implements AfterViewInit {   // ← ADD: implements
           username: 'Test User',
           email: this.mockEmail,
           role: 'member',
+          auth_provider: 'password',
         });
         this.isLoading = false;
         this.dialogRef.close();

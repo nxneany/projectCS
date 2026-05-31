@@ -159,8 +159,13 @@ export class ProfileComponent implements OnInit {
   private loadProfile() {
     const id = Number(localStorage.getItem('member_id'));
     const rawRole = localStorage.getItem('user_role');
-    this.userRole = rawRole === 'staff' ? 'staff' : 'admin';
-    this.roleForApi = rawRole === 'staff' ? 'staf' : 'admin';
+    const normalizedRole = rawRole === 'staff' || rawRole === 'staf' || rawRole === 'employee'
+      ? 'staff'
+      : 'admin';
+
+    localStorage.setItem('user_role', normalizedRole);
+    this.userRole = normalizedRole;
+    this.roleForApi = normalizedRole;
     this.profileId = id;
 
     if (!id) {

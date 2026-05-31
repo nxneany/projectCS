@@ -5,7 +5,11 @@
   </div>
   <label class="global-search"
     ><span class="material-symbols-outlined">search</span
-    ><input placeholder="ค้นหาออเดอร์"
+    ><input
+      type="text"
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearchInput()"
+      placeholder="ค้นหาเลขออเดอร์ เช่น 7"
   /></label>
 </header>
 <section class="panel">
@@ -14,9 +18,20 @@
     <span class="count-badge">{{ pendingIdentityOrders.length }} ออเดอร์</span>
   </div>
 
+  <div class="identity-state loading-state" *ngIf="loading">
+    <span class="material-symbols-outlined">progress_activity</span>
+    <p>กำลังโหลดรายการยืนยันตัวตน...</p>
+  </div>
+
+  <div class="identity-state error-state" *ngIf="!loading && errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    <p>{{ errorMessage }}</p>
+    <button type="button" (click)="loadPendingIdentityOrders()">ลองใหม่</button>
+  </div>
+
   <div
     class="identity-order-list"
-    *ngIf="pendingIdentityOrders.length > 0; else emptyIdentityOrders"
+    *ngIf="!loading && !errorMessage && pendingIdentityOrders.length > 0; else emptyIdentityOrders"
   >
     <article
       class="identity-order-card"
@@ -24,13 +39,14 @@
     >
       <div>
         <strong>{{ order.orderNo }}</strong>
-        <p>{{ order.customerName }} | {{ order.date }}</p>
-        <span>{{ order.products }} | {{ order.duration }}</span>
+        <p>{{ order.customerName }} | เช่า {{ order.date }}</p>
+        <span>สมาชิก #{{ order.memberId }} | {{ order.email }}</span>
+        <span>โทร {{ order.phone }} | รวม {{ formatPrice(order.totalPrice) }}</span>
       </div>
 
       <div class="identity-status">
         <span class="material-symbols-outlined">image_not_supported</span>
-        ยังไม่มีรูปยืนยันตัวตน
+        {{ order.status }}
       </div>
 
       <button type="button" class="detail-btn" (click)="openUploadPopup(order)">
@@ -40,7 +56,7 @@
   </div>
 
   <ng-template #emptyIdentityOrders>
-    <div class="identity-empty">
+    <div class="identity-empty" *ngIf="!loading && !errorMessage">
       <span class="material-symbols-outlined">verified</span>
       ไม่มีออเดอร์ที่รอเพิ่มรูปยืนยันตัวตน
     </div>
@@ -62,6 +78,7 @@
     type="button"
     class="modal-close"
     (click)="closeUploadPopup()"
+    [disabled]="uploading"
   >
     <span class="material-symbols-outlined">close</span>
   </button>
@@ -72,7 +89,10 @@
         <span>ลูกค้า</span><strong>{{ selectedOrder.customerName }}</strong>
       </div>
       <div>
-        <span>สินค้า</span><strong>{{ selectedOrder.products }}</strong>
+        <span>ยอดรวม</span><strong>{{ formatPrice(selectedOrder.totalPrice) }}</strong>
+      </div>
+      <div>
+        <span>ข้อมูลติดต่อ</span><strong>{{ selectedOrder.phone }} | {{ selectedOrder.email }}</strong>
       </div>
     </div>
 
@@ -88,16 +108,25 @@
       />
     </label>
 
+    <p class="upload-error" *ngIf="uploadErrorMessage">
+      {{ uploadErrorMessage }}
+    </p>
+
     <div class="modal-actions">
-      <button type="button" class="ghost-btn" (click)="closeUploadPopup()">
+      <button
+        type="button"
+        class="ghost-btn"
+        (click)="closeUploadPopup()"
+        [disabled]="uploading"
+      >
         ยกเลิก
       </button>
       <button
         type="button"
-        [disabled]="!selectedFileName"
+        [disabled]="!selectedFile || uploading"
         (click)="saveIdentityPhoto()"
       >
-        บันทึกรูป
+        {{ uploading ? 'กำลังบันทึก...' : 'บันทึกรูป' }}
       </button>
     </div>
   </section>

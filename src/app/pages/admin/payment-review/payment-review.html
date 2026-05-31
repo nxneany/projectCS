@@ -18,17 +18,48 @@
       <input
         type="text"
         [(ngModel)]="searchText"
-        placeholder="ค้นหาเลขออเดอร์ เช่น ORD-20260520-001"
+        (ngModelChange)="onSearchInput()"
+        placeholder="ค้นหาเลขออเดอร์ เช่น 12"
       />
     </label>
   </div>
 
+  <div class="state-box loading-state" *ngIf="loading">
+    <span class="material-symbols-outlined">progress_activity</span>
+    <p>กำลังโหลดรายการสลิป...</p>
+  </div>
+
+  <div class="state-box error-state" *ngIf="!loading && errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    <p>{{ errorMessage }}</p>
+    <button type="button" (click)="loadPaymentSlips()">ลองใหม่</button>
+  </div>
+
   <!-- LIST -->
-  <div class="review-grid" *ngIf="filteredPayments.length > 0; else emptyState">
-    <article class="review-card" *ngFor="let payment of filteredPayments">
-      <div class="slip-box">
-        <img [src]="payment.slipImage" [alt]="payment.orderNo" />
-      </div>
+  <div class="review-grid" *ngIf="!loading && !errorMessage && payments.length > 0; else emptyState">
+    <article class="review-card" *ngFor="let payment of payments">
+      <button
+        type="button"
+        class="slip-box"
+        [class.clickable]="payment.slipImage"
+        (click)="openSlipPreview(payment)"
+        [attr.aria-label]="'ดูรูปสลิปของ ' + payment.orderNo"
+      >
+        <img
+          *ngIf="payment.slipImage; else noSlipImage"
+          [src]="payment.slipImage"
+          [alt]="payment.orderNo"
+        />
+
+        <span class="zoom-badge" *ngIf="payment.slipImage">
+          <span class="material-symbols-outlined">zoom_in</span>
+          ดูรูปเต็ม
+        </span>
+
+        <ng-template #noSlipImage>
+          <span class="material-symbols-outlined">image_not_supported</span>
+        </ng-template>
+      </button>
 
       <div class="payment-info">
         <div class="review-status">
@@ -42,16 +73,39 @@
         <p>{{ payment.customerName }}</p>
 
         <span>
-          <span class="material-symbols-outlined">payments</span>
+          <span class="material-symbols-outlined">schedule</span>
           เวลาโอน {{ payment.transferTime }}
         </span>
 
+        <span>
+          <span class="material-symbols-outlined">badge</span>
+          สมาชิก #{{ payment.memberId }}
+        </span>
+
         <strong>{{ formatPrice(payment.amount) }}</strong>
+
+        <label class="amount-field">
+          <span class="material-symbols-outlined">payments</span>
+          <div>
+            <small>จำนวนเงินที่ตรวจแล้ว</small>
+            <input
+              type="number"
+              min="0"
+              step="1"
+              [(ngModel)]="payment.approveAmount"
+              placeholder="กรอกจำนวนเงิน"
+            />
+          </div>
+        </label>
       </div>
 
       <div class="button-group">
-        <button type="button" (click)="approvePayment(payment.orderNo)">
-          ยืนยันการโอน
+        <button
+          type="button"
+          (click)="approvePayment(payment)"
+          [disabled]="approvingOrderId === payment.orderId || !payment.approveAmount"
+        >
+          {{ approvingOrderId === payment.orderId ? 'กำลังยืนยัน...' : 'ยืนยันการโอน' }}
         </button>
 
         <button
@@ -67,7 +121,7 @@
 
   <!-- EMPTY -->
   <ng-template #emptyState>
-    <div class="empty-review">
+    <div class="empty-review" *ngIf="!loading && !errorMessage">
       <span class="material-symbols-outlined">receipt_long</span>
 
       <h3>ไม่พบรายการสลิป</h3>
@@ -76,6 +130,33 @@
     </div>
   </ng-template>
 </section>
+
+<!-- =========================
+     SLIP IMAGE PREVIEW
+========================= -->
+
+<div
+  class="image-preview-backdrop"
+  *ngIf="previewImageUrl"
+  (click)="closeSlipPreview()"
+>
+  <section class="image-preview-modal" (click)="$event.stopPropagation()">
+    <div class="image-preview-head">
+      <div>
+        <p>รูปสลิป</p>
+        <h3>{{ previewImageTitle }}</h3>
+      </div>
+
+      <button type="button" (click)="closeSlipPreview()" aria-label="ปิดรูปเต็ม">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="image-preview-frame">
+      <img [src]="previewImageUrl" [alt]="previewImageTitle" />
+    </div>
+  </section>
+</div>
 
 <!-- =========================
      SUCCESS POPUP

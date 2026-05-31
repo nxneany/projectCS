@@ -5,7 +5,11 @@
   </div>
   <label class="global-search"
     ><span class="material-symbols-outlined">search</span
-    ><input placeholder="ค้นหาออเดอร์"
+    ><input
+      type="text"
+      [(ngModel)]="searchText"
+      (ngModelChange)="onSearchInput()"
+      placeholder="ค้นหา order_id เช่น 14"
   /></label>
 </header>
 <section class="panel">
@@ -13,23 +17,70 @@
     <h2>จำนวนออเดอร์และข้อมูลรายการเช่า</h2>
     <span class="count-badge">{{ orders.length }} ออเดอร์</span>
   </div>
-  <div class="order-cards">
+
+  <div class="orders-state loading-state" *ngIf="loading">
+    <span class="material-symbols-outlined">progress_activity</span>
+    <p>กำลังโหลดออเดอร์...</p>
+  </div>
+
+  <div class="orders-state error-state" *ngIf="!loading && errorMessage">
+    <span class="material-symbols-outlined">error</span>
+    <p>{{ errorMessage }}</p>
+    <button type="button" (click)="loadOrders()">ลองใหม่</button>
+  </div>
+
+  <p class="status-error" *ngIf="statusErrorMessage">
+    {{ statusErrorMessage }}
+  </p>
+
+  <div class="order-cards" *ngIf="!loading && !errorMessage && orders.length > 0; else emptyOrders">
     <article class="order-card" *ngFor="let order of orders">
+      <div class="late-fee-ribbon" *ngIf="order.lateFees > 0">
+        ค่าปรับ {{ formatPrice(order.lateFees) }}
+      </div>
+
       <div>
         <strong>{{ order.orderNo }}</strong>
-        <p>{{ order.customerName }} | {{ order.date }}</p>
+        <p>{{ order.customerName }} | เช่า {{ order.date }}</p>
       </div>
       <span>{{ order.products }}</span>
       <div class="order-money">
         <b>รวม {{ formatPrice(order.total) }}</b
         ><b>มัดจำ {{ formatPrice(order.deposit) }}</b
-        ><b>{{ order.duration }}</b>
+        ><b>คงเหลือ {{ formatPrice(order.balance) }}</b
+        ><b>{{ order.duration }}</b
+        ><b>{{ order.status }}</b>
       </div>
-      <button type="button" class="detail-btn" (click)="openOrderDetail(order)">
-        ดูรายละเอียด
-      </button>
+      <div class="order-actions">
+        <button type="button" class="detail-btn" (click)="openOrderDetail(order)">
+          ดูรายละเอียด
+        </button>
+
+        <button
+          type="button"
+          class="status-action-btn"
+          *ngIf="canUpdateStatus(order)"
+          (click)="updateOrderStatus(order)"
+          [disabled]="statusUpdatingOrderId === order.id"
+          [class.cancel-action]="order.rawStatus === '2'"
+        >
+          {{
+            statusUpdatingOrderId === order.id
+              ? 'กำลังอัปเดต...'
+              : getStatusActionLabel(order)
+          }}
+        </button>
+      </div>
     </article>
   </div>
+
+  <ng-template #emptyOrders>
+    <div class="orders-empty" *ngIf="!loading && !errorMessage">
+      <span class="material-symbols-outlined">receipt_long</span>
+      <strong>ไม่พบออเดอร์</strong>
+      <p>ลองค้นหาด้วย order_id จริงจากฐานข้อมูลอีกครั้ง</p>
+    </div>
+  </ng-template>
 </section>
 <div
   class="admin-modal-backdrop"
@@ -50,44 +101,113 @@
       </button>
     </div>
 
-    <div class="order-detail-grid">
-      <div>
-        <span>รหัสสมาชิก</span><strong>{{ selectedOrder.customerId }}</strong>
-      </div>
-      <div>
-        <span>ชื่อลูกค้า</span><strong>{{ selectedOrder.customerName }}</strong>
-      </div>
-      <div>
-        <span>วันที่เช่า</span><strong>{{ selectedOrder.date }}</strong>
-      </div>
-      <div>
-        <span>ระยะเวลา</span><strong>{{ selectedOrder.duration }}</strong>
-      </div>
-      <div>
-        <span>ราคารวม</span
-        ><strong>{{ formatPrice(selectedOrder.total) }}</strong>
-      </div>
-      <div>
-        <span>ค่ามัดจำ</span
-        ><strong>{{ formatPrice(selectedOrder.deposit) }}</strong>
-      </div>
+    <div class="modal-state loading-state" *ngIf="detailLoading">
+      <span class="material-symbols-outlined">progress_activity</span>
+      <p>กำลังโหลดรายละเอียดออเดอร์...</p>
     </div>
 
-    <section class="identity-section">
-      <h3>รูปถ่ายลูกค้าคู่กับบัตรประชาชน</h3>
-      <img
-        [src]="selectedOrder.identityPhoto"
-        [alt]="selectedOrder.customerName + ' identity photo'"
-      />
-    </section>
+    <div class="modal-state error-state" *ngIf="!detailLoading && detailErrorMessage">
+      <span class="material-symbols-outlined">error</span>
+      <p>{{ detailErrorMessage }}</p>
+      <button type="button" (click)="openOrderDetail(selectedOrder)">ลองใหม่</button>
+    </div>
+
+    <div class="detail-layout">
+      <section class="detail-info-card">
+        <div class="detail-card-head">
+          <span class="material-symbols-outlined">receipt_long</span>
+          <div>
+            <p>ข้อมูลออเดอร์</p>
+            <h3>{{ selectedOrder.status }}</h3>
+          </div>
+        </div>
+
+        <div class="order-detail-grid">
+          <div>
+            <span>รหัสสมาชิก</span><strong>{{ selectedOrder.customerId }}</strong>
+          </div>
+          <div>
+            <span>ชื่อลูกค้า</span><strong>{{ selectedOrder.customerName }}</strong>
+          </div>
+          <div>
+            <span>โทรศัพท์</span><strong>{{ selectedOrder.phone }}</strong>
+          </div>
+          <div>
+            <span>อีเมล</span><strong>{{ selectedOrder.email }}</strong>
+          </div>
+          <div>
+            <span>วันที่ทำรายการ</span><strong>{{ selectedOrder.date }}</strong>
+          </div>
+          <div>
+            <span>วันเริ่มเช่า</span><strong>{{ selectedOrder.startDate }}</strong>
+          </div>
+          <div>
+            <span>วันคืนสินค้า</span><strong>{{ selectedOrder.endDate }}</strong>
+          </div>
+          <div>
+            <span>ระยะเวลา</span><strong>{{ selectedOrder.duration }}</strong>
+          </div>
+          <div>
+            <span>ราคารวม</span><strong>{{ formatPrice(selectedOrder.total) }}</strong>
+          </div>
+          <div>
+            <span>ค่ามัดจำ</span><strong>{{ formatPrice(selectedOrder.deposit) }}</strong>
+          </div>
+          <div>
+            <span>ยอดคงเหลือ</span><strong>{{ formatPrice(selectedOrder.balance) }}</strong>
+          </div>
+          <div>
+            <span>ค่าปรับล่าช้า</span><strong>{{ formatPrice(selectedOrder.lateFees) }}</strong>
+          </div>
+          <div>
+            <span>จำนวนสินค้า</span>
+            <strong>{{ selectedOrder.totalQuantity }} ชิ้น / {{ selectedOrder.totalItems }} รายการ</strong>
+          </div>
+        </div>
+      </section>
+
+      <section class="identity-section">
+        <div class="identity-heading">
+          <span class="material-symbols-outlined">assignment_ind</span>
+          <div>
+            <p>รูปยืนยันตัวตน</p>
+            <h3>ลูกค้าคู่กับบัตรประชาชน</h3>
+          </div>
+        </div>
+
+        <div class="identity-frame" *ngIf="selectedOrder.identityPhoto; else noIdentityPhoto">
+          <img
+            [src]="selectedOrder.identityPhoto"
+            [alt]="selectedOrder.customerName + ' identity photo'"
+          />
+        </div>
+
+        <ng-template #noIdentityPhoto>
+          <div class="identity-empty">
+            <span class="material-symbols-outlined">image_not_supported</span>
+            ยังไม่มีรูปยืนยันตัวตน
+          </div>
+        </ng-template>
+      </section>
+    </div>
 
     <section class="order-items-section">
       <h3>รายการสินค้าในออเดอร์</h3>
       <div class="order-item-list">
         <article *ngFor="let item of selectedOrder.items">
+          <div class="item-image" *ngIf="item.image; else noItemImage">
+            <img [src]="item.image" [alt]="item.name" />
+          </div>
+
+          <ng-template #noItemImage>
+            <div class="item-image empty">
+              <span class="material-symbols-outlined">image_not_supported</span>
+            </div>
+          </ng-template>
+
           <div>
             <strong>{{ item.name }}</strong>
-            <span>{{ item.productId }} | {{ item.detail }}</span>
+            <span>{{ item.productId }} | {{ item.description }} | {{ item.detail }}</span>
           </div>
           <div class="order-item-money">
             <b>จำนวน {{ item.quantity }}</b>
@@ -95,6 +215,9 @@
             <b>รวม {{ formatPrice(item.total) }}</b>
           </div>
         </article>
+        <div class="empty-order-items" *ngIf="selectedOrder.items.length === 0">
+          ไม่มีรายละเอียดสินค้าในออเดอร์นี้
+        </div>
       </div>
     </section>
   </section>

@@ -16,9 +16,13 @@
     <input
       type="text"
       [(ngModel)]="searchText"
+      (input)="onSearchInput()"
       placeholder="ค้นหาเลขออเดอร์ เช่น ORD-20260520-001"
     />
   </div>
+
+  <p class="table-status" *ngIf="loading">กำลังโหลดข้อมูล...</p>
+  <p class="table-status error" *ngIf="errorMessage">{{ errorMessage }}</p>
 
   <div class="order-list">
     <article class="order-card" *ngFor="let order of filteredOrders">
@@ -41,6 +45,10 @@
           ดูบิล
         </button>
       </div>
+    </article>
+
+    <article class="empty-card" *ngIf="!loading && filteredOrders.length === 0">
+      ไม่พบออเดอร์ที่ชำระเงินสำเร็จ
     </article>
   </div>
 </section>
@@ -95,6 +103,8 @@
 
     <div class="receipt-line"></div>
 
+    <p class="bill-loading" *ngIf="billLoading">กำลังโหลดข้อมูลบิล...</p>
+
     <div class="bill-items">
       <article
         class="bill-item"
@@ -117,6 +127,9 @@
 
           <strong>{{ formatPrice(item.price) }}</strong>
         </div>
+      </article>
+      <article class="bill-item empty-bill-item" *ngIf="selectedOrder.items.length === 0">
+        ไม่มีรายละเอียดสินค้าในข้อมูลบิลนี้
       </article>
     </div>
 

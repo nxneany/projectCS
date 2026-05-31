@@ -60,7 +60,20 @@ export class OverviewComponent {
   }
 
   getOrderStatus(order: OverviewLatestOrder) {
-    return order.status_label || 'ยังไม่ระบุสถานะ';
+    switch (order.status) {
+      case '1':
+        return 'จอง';
+      case '2':
+        return 'ชำระค่ามัดจำแล้ว';
+      case '3':
+        return 'ชำระเงินแล้ว';
+      case '4':
+        return 'คืนของแล้ว';
+      case '5':
+        return 'ยกเลิกการเช่า';
+      default:
+        return 'ยังไม่ระบุสถานะ';
+    }
   }
 
   formatMoney(value: number) {

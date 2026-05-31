@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
-export type BackofficeProfileRole = 'admin' | 'staf';
+export type BackofficeProfileRole = 'admin' | 'staff';
 
 export interface UserProfileResponse {
   id?: number;

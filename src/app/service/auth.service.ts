@@ -8,9 +8,10 @@ export interface AuthUser {
   email: string;
   role?: AuthRole;
   phone?: string;
+  auth_provider?: 'password' | 'google';
 }
 
-export type AuthRole = 'member' | 'admin' | 'staff' | 'employee';
+export type AuthRole = 'member' | 'admin' | 'staff' | 'employee' | 'staf';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -26,12 +27,13 @@ export class AuthService {
   constructor(private router: Router) {}
 
   login(user: AuthUser) {
-    const normalizedRole = user.role === 'employee' ? 'staff' : user.role ?? 'member';
+    const normalizedRole = this.normalizeRole(user.role);
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('member_id', String(user.member_id));
     localStorage.setItem('username', user.username);
     localStorage.setItem('email', user.email);
     localStorage.setItem('user_role', normalizedRole);
+    localStorage.setItem('auth_provider', user.auth_provider ?? 'password');
     if (user.phone) {
       localStorage.setItem('phone', user.phone);
     }
@@ -46,6 +48,7 @@ export class AuthService {
     localStorage.removeItem('email');
     localStorage.removeItem('phone');
     localStorage.removeItem('user_role');
+    localStorage.removeItem('auth_provider');
     localStorage.removeItem('role');
     this._isLoggedIn$.next(false);
 
@@ -61,9 +64,17 @@ export class AuthService {
 
   get roleSync(): AuthRole {
     const role = localStorage.getItem('user_role');
-    if (role === 'admin' || role === 'staff' || role === 'employee') {
-      return role;
+    if (role === 'admin' || role === 'staff' || role === 'employee' || role === 'staf') {
+      return this.normalizeRole(role);
     }
     return 'member';
+  }
+
+  private normalizeRole(role?: AuthRole | string): AuthRole {
+    if (role === 'employee' || role === 'staf') {
+      return 'staff';
+    }
+
+    return (role as AuthRole) ?? 'member';
   }
 }

@@ -1,6 +1,9 @@
 import { CommonModule, ViewportScroller } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../../service/auth.service';
+import { LatePaymentItem, OrderService } from '../../service/order.service';
 import { Product, ProductService } from '../../service/product.service';
 import { Footer } from "../footer/footer";
 import { Header } from "../header/header";
@@ -11,7 +14,7 @@ import { Header } from "../header/header";
   templateUrl: './main.html',
   styleUrl: './main.scss'
 })
-export class Main implements OnInit {
+export class Main implements OnInit, OnDestroy {
   dresses = [
     'assets/clothing/RT.jpg',
     'assets/clothing/FT.jpg',
@@ -29,15 +32,28 @@ export class Main implements OnInit {
   popularProducts: Product[] = [];
   popularLimit = 4;
   loadingPopular = true;
+  latePayments: LatePaymentItem[] = [];
+  latePaymentsLoading = false;
+  showLateAlert = true;
+  private authSub?: Subscription;
 
   constructor(
     private route: ActivatedRoute,
     private scroller: ViewportScroller,
-    private productService: ProductService
+    private productService: ProductService,
+    private orderService: OrderService,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
     this.loadPopularProducts(this.popularLimit);
+    this.authSub = this.auth.isLoggedIn$.subscribe((isLoggedIn) => {
+      if (isLoggedIn && localStorage.getItem('member_id')) {
+        this.loadLatePayments();
+      } else {
+        this.latePayments = [];
+      }
+    });
 
     // ตรวจสอบ fragment (เช่น #about)
     this.route.fragment.subscribe(fragment => {
@@ -46,6 +62,10 @@ export class Main implements OnInit {
         setTimeout(() => this.scroller.scrollToAnchor(fragment), 200);
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.authSub?.unsubscribe();
   }
 
   get visibleDresses() {
@@ -83,6 +103,48 @@ export class Main implements OnInit {
 
   formatPrice(price: number) {
     return `${price.toLocaleString('en-US')} บาท`;
+  }
+
+  formatMoney(value: number) {
+    return `${Number(value || 0).toLocaleString('th-TH')} ฿`;
+  }
+
+  formatDate(value: string) {
+    if (!value) {
+      return '-';
+    }
+
+    return new Intl.DateTimeFormat('th-TH', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    }).format(new Date(value));
+  }
+
+  closeLateAlert() {
+    this.showLateAlert = false;
+  }
+
+  private loadLatePayments() {
+    const memberId = Number(localStorage.getItem('member_id') || '0');
+    if (!memberId) {
+      this.latePayments = [];
+      return;
+    }
+
+    this.latePaymentsLoading = true;
+    this.showLateAlert = true;
+
+    this.orderService.getLatePayments(memberId).subscribe({
+      next: (res) => {
+        this.latePayments = res.items || [];
+        this.latePaymentsLoading = false;
+      },
+      error: () => {
+        this.latePayments = [];
+        this.latePaymentsLoading = false;
+      },
+    });
   }
 
   private loadPopularProducts(limit: number) {

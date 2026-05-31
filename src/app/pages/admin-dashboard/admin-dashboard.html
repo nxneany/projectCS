@@ -27,4 +27,12 @@
   <section class="workspace">
     <router-outlet></router-outlet>
   </section>
+
+  <div class="admin-loading-overlay" *ngIf="adminLoading.loading$ | async">
+    <div class="admin-loading-card">
+      <span class="material-symbols-outlined">progress_activity</span>
+      <strong>กำลังโหลดข้อมูล...</strong>
+      <p>กรุณารอสักครู่ ระบบกำลังดึงข้อมูลจาก API</p>
+    </div>
+  </div>
 </main>

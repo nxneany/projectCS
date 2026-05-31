@@ -88,52 +88,44 @@ export class OrderStatusComponent implements OnInit {
     return this.expandedOrderId === orderId;
   }
 
+  isPaidStatus(status: string | null) {
+    return status === '2' || status === '3' || status === '4' || status === '5';
+  }
+
   statusLabel(status: string | null) {
-    switch (status) {
-      case '1':
-        return 'รอตรวจสอบสลิป';
-
-      case '2':
-        return 'ชำระเงินสำเร็จ';
-
-      case '3':
-        return 'สลิปไม่ถูกต้อง';
-
-      default:
-        return 'ยังไม่ชำระเงิน';
+    if (this.isPaidStatus(status)) {
+      return 'ชำระเงินสำเร็จ';
     }
+
+    if (status === '1') {
+      return 'รอตรวจสอบสลิป';
+    }
+
+    return 'ยังไม่ชำระเงิน';
   }
 
   statusDetail(status: string | null) {
-    switch (status) {
-      case '1':
-        return 'ส่งสลิปเรียบร้อยแล้ว กรุณารอพนักงานตรวจสอบ';
-
-      case '2':
-        return 'พนักงานตรวจสอบสลิปเรียบร้อยแล้ว';
-
-      case '3':
-        return 'กรุณาอัปโหลดสลิปใหม่อีกครั้ง';
-
-      default:
-        return 'กรุณาชำระเงินเพื่อยืนยันรายการเช่า';
+    if (this.isPaidStatus(status)) {
+      return 'ชำระเงินสำเร็จแล้ว';
     }
+
+    if (status === '1') {
+      return 'ส่งสลิปเรียบร้อยแล้ว กรุณารอพนักงานตรวจสอบ';
+    }
+
+    return 'กรุณาชำระเงินเพื่อยืนยันรายการเช่า';
   }
 
   statusIcon(status: string | null) {
-    switch (status) {
-      case '1':
-        return 'schedule';
-
-      case '2':
-        return 'verified';
-
-      case '3':
-        return 'error';
-
-      default:
-        return 'payments';
+    if (this.isPaidStatus(status)) {
+      return 'verified';
     }
+
+    if (status === '1') {
+      return 'schedule';
+    }
+
+    return 'payments';
   }
 
   formatPrice(price: number) {

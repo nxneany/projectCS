@@ -2,6 +2,40 @@
 <app-header></app-header>
 <router-outlet></router-outlet>
 <div class="main-container">
+  <section
+    class="late-alert"
+    *ngIf="showLateAlert && !latePaymentsLoading && latePayments.length > 0"
+  >
+    <div class="late-alert-head">
+      <div>
+        <span class="material-symbols-outlined">notification_important</span>
+      </div>
+
+      <div>
+        <p>แจ้งเตือนรายการเช่าเลยกำหนด</p>
+        <h2>มีออเดอร์ที่ยังไม่ได้คืน {{ latePayments.length }} รายการ</h2>
+      </div>
+
+      <button type="button" (click)="closeLateAlert()" aria-label="ปิดแจ้งเตือน">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+
+    <div class="late-alert-list">
+      <article *ngFor="let item of latePayments">
+        <div>
+          <strong>{{ item.order_code }}</strong>
+          <span>{{ item.display_item || 'รายการเช่า' }} | ครบกำหนด {{ formatDate(item.day_end) }}</span>
+        </div>
+
+        <div class="late-alert-money">
+          <b>เกิน {{ item.overdue_days }} วัน</b>
+          <b>ค่าปรับ {{ formatMoney(item.late_fees) }}</b>
+          <b>ยอดค้าง {{ formatMoney(item.outstanding_amount) }}</b>
+        </div>
+      </article>
+    </div>
+  </section>
 
   <!-- ------------------- ขั้นตอนบริการ ------------------- -->
   <section class="steps">

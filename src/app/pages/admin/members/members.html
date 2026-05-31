@@ -111,6 +111,8 @@
     </div>
 
     <div class="member-profile">
+      <img class="member-avatar" [src]="selectedMember.image" />
+
       <div>
         <span>รหัสสมาชิก</span>
 
@@ -146,6 +148,7 @@
 
     <div class="order-history">
       <h3>รายการออเดอร์ทั้งหมด</h3>
+      <p class="detail-loading" *ngIf="detailLoading">กำลังโหลดรายละเอียด...</p>
 
       <article class="order-card" *ngFor="let order of selectedMember.orders">
         <div class="order-top">
@@ -175,10 +178,18 @@
 
           <strong>
             {{ item.quantity }} ชิ้น |
-            {{ formatPrice(item.price) }}
+            {{ formatPrice(item.total) }}
           </strong>
         </div>
+
+        <div class="order-item empty-order" *ngIf="order.items.length === 0">
+          ไม่มีรายละเอียดสินค้าในออเดอร์นี้
+        </div>
       </article>
+
+      <p class="detail-loading" *ngIf="!detailLoading && selectedMember.orders.length === 0">
+        ยังไม่มีประวัติออเดอร์
+      </p>
     </div>
   </section>
 </div>
@@ -204,6 +215,14 @@
     </div>
 
     <div class="member-form">
+      <div class="edit-profile-preview">
+        <img [src]="editingMember.image" />
+        <label>
+          รูปโปรไฟล์
+          <input type="file" accept="image/*" (change)="onEditImageSelected($event)" />
+        </label>
+      </div>
+
       <label>
         ชื่อสมาชิก
 
@@ -227,12 +246,24 @@
 
         <input [(ngModel)]="editingMember.address" />
       </label>
+
+      <label>
+        รหัสผ่านใหม่
+
+        <input type="password" [(ngModel)]="editPassword" />
+      </label>
     </div>
+
+    <p class="edit-error" *ngIf="editErrorMessage">
+      {{ editErrorMessage }}
+    </p>
 
     <div class="member-modal-actions">
       <button class="ghost-btn" (click)="closeEditPopup()">ยกเลิก</button>
 
-      <button (click)="saveEditMember()">บันทึก</button>
+      <button (click)="saveEditMember()" [disabled]="editSaving">
+        {{ editSaving ? 'กำลังบันทึก...' : 'บันทึก' }}
+      </button>
     </div>
   </section>
 </div>
@@ -262,8 +293,12 @@
     <div class="member-modal-actions">
       <button class="ghost-btn" (click)="closeDeletePopup()">ยกเลิก</button>
 
-      <button class="danger-btn" (click)="confirmDeleteMember()">
-        ยืนยันการลบ
+      <button
+        class="danger-btn"
+        (click)="confirmDeleteMember()"
+        [disabled]="deleteSaving"
+      >
+        {{ deleteSaving ? 'กำลังลบ...' : 'ยืนยันการลบ' }}
       </button>
     </div>
   </section>
@@ -282,7 +317,7 @@
         <h2>เพิ่มสมาชิกใหม่</h2>
       </div>
 
-      <button class="close-btn" (click)="closeAddPopup()">
+      <button class="close-btn" (click)="closeAddPopup()" [disabled]="addSaving">
         <span class="material-symbols-outlined"> close </span>
       </button>
     </div>
@@ -319,10 +354,18 @@
       </label>
     </div>
 
-    <div class="member-modal-actions">
-      <button class="ghost-btn" (click)="closeAddPopup()">ยกเลิก</button>
+    <p class="edit-error" *ngIf="addErrorMessage">
+      {{ addErrorMessage }}
+    </p>
 
-      <button (click)="saveNewMember()">เพิ่มสมาชิก</button>
+    <div class="member-modal-actions">
+      <button class="ghost-btn" (click)="closeAddPopup()" [disabled]="addSaving">
+        ยกเลิก
+      </button>
+
+      <button (click)="saveNewMember()" [disabled]="addSaving">
+        {{ addSaving ? 'กำลังเพิ่ม...' : 'เพิ่มสมาชิก' }}
+      </button>
     </div>
   </section>
 </div>

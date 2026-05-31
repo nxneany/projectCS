@@ -1,6 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {
+  CompletedOrderItem,
+  OrderReceiptResponse,
+  OrderService,
+} from '../../../service/order.service';
 
 interface BillItem {
   name: string;
@@ -13,6 +18,7 @@ interface BillItem {
 }
 
 interface OrderBill {
+  id: number;
   orderId: string;
   customerName: string;
   phone: string;
@@ -30,65 +36,62 @@ interface OrderBill {
   templateUrl: './walkin-bill.html',
   styleUrl: './walkin-bill.scss',
 })
-export class WalkinBillComponent {
+export class WalkinBillComponent implements OnInit {
+  loading = false;
+  billLoading = false;
+  errorMessage = '';
   searchText = '';
+  private searchTimer?: ReturnType<typeof setTimeout>;
 
   selectedOrder: OrderBill | null = null;
 
-  orders: OrderBill[] = [
-    {
-      orderId: 'ORD-20260520-001',
-      customerName: 'DFN Tv',
-      phone: '097-193-9481',
-      address: 'สมุทรปราการ',
-      total: 2400,
-      deposit: 1200,
-      status: 'ชำระเงินสำเร็จ',
-      createdAt: '20 พ.ค. 2026',
-      items: [
-        {
-          name: 'ชุดไทยจักรี',
-          size: 'S',
-          color: 'ทอง',
-          quantity: 2,
-          price: 1200,
-          startDate: '20 พ.ค. 2026',
-          endDate: '24 พ.ค. 2026',
-        },
-      ],
-    },
+  orders: OrderBill[] = [];
 
-    {
-      orderId: 'ORD-20260518-003',
-      customerName: 'Ananya S.',
-      phone: '099-911-1555',
-      address: 'กรุงเทพมหานคร',
-      total: 1350,
-      deposit: 675,
-      status: 'ชำระเงินสำเร็จ',
-      createdAt: '18 พ.ค. 2026',
-      items: [
-        {
-          name: 'มงกุฎคริสตัลราชินี',
-          size: '36',
-          color: 'เงิน',
-          quantity: 1,
-          price: 1350,
-          startDate: '18 พ.ค. 2026',
-          endDate: '22 พ.ค. 2026',
-        },
-      ],
-    },
-  ];
+  constructor(private orderService: OrderService) {}
+
+  ngOnInit() {
+    this.loadCompletedOrders();
+  }
 
   get filteredOrders() {
-    return this.orders.filter((order) =>
-      order.orderId.toLowerCase().includes(this.searchText.toLowerCase()),
-    );
+    return this.orders;
+  }
+
+  onSearchInput() {
+    if (this.searchTimer) clearTimeout(this.searchTimer);
+    this.searchTimer = setTimeout(() => this.loadCompletedOrders(), 350);
+  }
+
+  loadCompletedOrders() {
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.orderService.getCompletedOrders(this.searchText).subscribe({
+      next: (res) => {
+        this.orders = (res.items || []).map((item) => this.mapOrder(item));
+        this.loading = false;
+      },
+      error: () => {
+        this.orders = [];
+        this.loading = false;
+        this.errorMessage = 'โหลดรายการออเดอร์ไม่สำเร็จ';
+      },
+    });
   }
 
   openBill(order: OrderBill) {
     this.selectedOrder = order;
+    this.billLoading = true;
+
+    this.orderService.getOrderReceipt(order.id).subscribe({
+      next: (res) => {
+        this.selectedOrder = this.mapReceipt(res);
+        this.billLoading = false;
+      },
+      error: () => {
+        this.billLoading = false;
+      },
+    });
   }
 
   closeBill() {
@@ -104,5 +107,52 @@ export class WalkinBillComponent {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })} ฿`;
+  }
+
+  private mapOrder(item: CompletedOrderItem): OrderBill {
+    const total = Number(item.total_price || 0);
+    return {
+      id: item.order_id,
+      orderId: `ORD-${String(item.order_id).padStart(3, '0')}`,
+      customerName: item.username || `สมาชิก #${item.member_id}`,
+      phone: '-',
+      address: '-',
+      total,
+      deposit: total,
+      status: item.status === '3' ? 'ชำระเงินสำเร็จ' : item.status,
+      createdAt: this.formatDate(item.day_rental),
+      items: [],
+    };
+  }
+
+  private mapReceipt(res: OrderReceiptResponse): OrderBill {
+    return {
+      id: res.order.order_id,
+      orderId: `ORD-${String(res.order.order_id).padStart(3, '0')}`,
+      customerName: res.member.username || `สมาชิก #${res.member.member_id}`,
+      phone: res.member.phone || '-',
+      address: res.member.address || '-',
+      total: Number(res.order.total_price || 0),
+      deposit: Number(res.order.deposit || 0),
+      status: 'ชำระเงินสำเร็จ',
+      createdAt: this.formatDate(res.order.day_rental),
+      items: (res.items || []).map((item) => ({
+        name: item.name,
+        size: item.size,
+        color: item.color,
+        quantity: item.quantity,
+        price: Number(item.price_sum || item.price || 0),
+        startDate: this.formatDate(res.order.day_start),
+        endDate: this.formatDate(res.order.day_end),
+      })),
+    };
+  }
+
+  private formatDate(value: string) {
+    return new Date(value).toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
   }
 }

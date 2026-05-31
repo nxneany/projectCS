@@ -1,14 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { environment } from '../../../../environments/environment';
+import {
+  AdminMemberDetailResponse,
+  AdminMemberListItem,
+  MemberService,
+} from '../../../service/member.service';
 
 interface OrderItem {
   productId: string;
   detail: string;
   quantity: number;
   price: number;
+  total: number;
 }
 
 interface MemberOrder {
@@ -30,19 +34,6 @@ interface Member {
   orders: MemberOrder[];
 }
 
-interface AdminMemberApiItem {
-  member_id: number;
-  username: string;
-  phone: string | null;
-  email: string;
-  image_profile: string | null;
-  total_orders: number;
-}
-
-interface AdminMemberResponse {
-  items: AdminMemberApiItem[];
-}
-
 @Component({
   selector: 'app-members',
   imports: [CommonModule, FormsModule],
@@ -50,10 +41,8 @@ interface AdminMemberResponse {
   styleUrl: './members.scss',
 })
 export class MembersComponent implements OnInit {
-  private apiBase = environment.apiBaseUrl;
-  private uploadsBase = environment.uploadsBaseUrl;
-
   loading = false;
+  detailLoading = false;
   errorMessage = '';
   searchText = '';
   private searchTimer?: ReturnType<typeof setTimeout>;
@@ -63,10 +52,17 @@ export class MembersComponent implements OnInit {
   selectedMember: Member | null = null;
 
   editingMember: Member | null = null;
+  editPassword = '';
+  editImageFile: File | null = null;
+  editErrorMessage = '';
+  editSaving = false;
 
   deleteMember: Member | null = null;
+  deleteSaving = false;
 
   isAddPopupOpen = false;
+  addSaving = false;
+  addErrorMessage = '';
 
   newMember = {
     fullName: '',
@@ -76,7 +72,7 @@ export class MembersComponent implements OnInit {
     password: '',
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private memberService: MemberService) {}
 
   ngOnInit() {
     this.loadMembers();
@@ -95,28 +91,32 @@ export class MembersComponent implements OnInit {
     this.loading = true;
     this.errorMessage = '';
 
-    let params = new HttpParams();
-    if (this.searchText.trim()) {
-      params = params.set('search', this.searchText.trim());
-    }
-
-    this.http
-      .get<AdminMemberResponse>(`${this.apiBase}/admin/member`, { params })
-      .subscribe({
-        next: (res) => {
-          this.members = (res.items || []).map((item) => this.mapMember(item));
-          this.loading = false;
-        },
-        error: () => {
-          this.members = [];
-          this.loading = false;
-          this.errorMessage = 'โหลดข้อมูลสมาชิกไม่สำเร็จ';
-        },
-      });
+    this.memberService.getAdminMembers(this.searchText).subscribe({
+      next: (res) => {
+        this.members = (res.items || []).map((item) => this.mapMember(item));
+        this.loading = false;
+      },
+      error: () => {
+        this.members = [];
+        this.loading = false;
+        this.errorMessage = 'โหลดข้อมูลสมาชิกไม่สำเร็จ';
+      },
+    });
   }
 
   openViewPopup(member: Member) {
     this.selectedMember = member;
+    this.detailLoading = true;
+
+    this.memberService.getAdminMemberDetail(member.id).subscribe({
+      next: (res) => {
+        this.selectedMember = this.mapMemberDetail(res);
+        this.detailLoading = false;
+      },
+      error: () => {
+        this.detailLoading = false;
+      },
+    });
   }
 
   closeViewPopup() {
@@ -125,22 +125,64 @@ export class MembersComponent implements OnInit {
 
   openEditPopup(member: Member) {
     this.editingMember = { ...member };
+    this.editPassword = '';
+    this.editImageFile = null;
+    this.editErrorMessage = '';
   }
 
   closeEditPopup() {
     this.editingMember = null;
+    this.editPassword = '';
+    this.editImageFile = null;
+    this.editErrorMessage = '';
   }
 
   saveEditMember() {
     if (!this.editingMember) return;
 
-    this.members = this.members.map((member) =>
-      member.memberId === this.editingMember?.memberId
-        ? this.editingMember
-        : member,
-    );
+    if (
+      !this.editingMember.fullName.trim() ||
+      !this.editingMember.email.trim()
+    ) {
+      this.editErrorMessage = 'กรุณากรอกชื่อสมาชิกและอีเมล';
+      return;
+    }
 
-    this.closeEditPopup();
+    const formData = new FormData();
+    formData.append('username', this.editingMember.fullName.trim());
+    formData.append('phone', this.cleanValue(this.editingMember.phone));
+    formData.append('email', this.editingMember.email.trim());
+    formData.append('address', this.cleanValue(this.editingMember.address));
+    if (this.editPassword.trim()) {
+      formData.append('password', this.editPassword.trim());
+    }
+    if (this.editImageFile) {
+      formData.append('image', this.editImageFile);
+    }
+
+    this.editSaving = true;
+    this.memberService
+      .updateMemberFormData(this.editingMember.id, formData)
+      .subscribe({
+        next: () => {
+          this.editSaving = false;
+          this.closeEditPopup();
+          this.loadMembers();
+        },
+        error: (err) => {
+          this.editSaving = false;
+          this.editErrorMessage =
+            err?.error?.error || 'แก้ไขข้อมูลสมาชิกไม่สำเร็จ';
+        },
+      });
+  }
+
+  onEditImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length || !this.editingMember) return;
+
+    this.editImageFile = input.files[0];
+    this.editingMember.image = URL.createObjectURL(this.editImageFile);
   }
 
   openDeletePopup(member: Member) {
@@ -154,11 +196,18 @@ export class MembersComponent implements OnInit {
   confirmDeleteMember() {
     if (!this.deleteMember) return;
 
-    this.members = this.members.filter(
-      (member) => member.memberId !== this.deleteMember?.memberId,
-    );
-
-    this.closeDeletePopup();
+    this.deleteSaving = true;
+    this.memberService.deleteAdminMember(this.deleteMember.id).subscribe({
+      next: () => {
+        this.deleteSaving = false;
+        this.closeDeletePopup();
+        this.loadMembers();
+      },
+      error: () => {
+        this.deleteSaving = false;
+        this.errorMessage = 'ลบสมาชิกไม่สำเร็จ';
+      },
+    });
   }
 
   formatPrice(price: number) {
@@ -174,15 +223,20 @@ export class MembersComponent implements OnInit {
       address: '',
       password: '',
     };
+    this.addErrorMessage = '';
+    this.addSaving = false;
 
     this.isAddPopupOpen = true;
   }
 
   closeAddPopup() {
+    if (this.addSaving) return;
+
     this.isAddPopupOpen = false;
+    this.addErrorMessage = '';
   }
 
-  saveNewMember() {
+  async saveNewMember() {
     if (
       !this.newMember.fullName.trim() ||
       !this.newMember.phone.trim() ||
@@ -190,46 +244,71 @@ export class MembersComponent implements OnInit {
       !this.newMember.address.trim() ||
       !this.newMember.password.trim()
     ) {
-      alert('กรุณากรอกข้อมูลให้ครบ');
-
+      this.addErrorMessage = 'กรุณากรอกข้อมูลให้ครบ';
       return;
     }
 
-    const newId = `M-${String(this.members.length + 13).padStart(3, '0')}`;
+    if (this.newMember.password.length < 6) {
+      this.addErrorMessage = 'รหัสผ่านควรมีอย่างน้อย 6 ตัวอักษร';
+      return;
+    }
 
-    this.members = [
-      {
-        id: this.members.length + 13,
-        memberId: newId,
+    const phoneOk = /^0\d{8,9}$/.test(
+      this.newMember.phone.replace(/[^0-9]/g, ''),
+    );
+    if (!phoneOk) {
+      this.addErrorMessage = 'รูปแบบเบอร์โทรไม่ถูกต้อง';
+      return;
+    }
 
-        image: 'assets/profile.png',
+    const hashedPassword = await this.sha256(this.newMember.password);
 
-        fullName: this.newMember.fullName,
+    this.addSaving = true;
+    this.addErrorMessage = '';
 
-        phone: this.newMember.phone,
-
-        email: this.newMember.email,
-
-        address: this.newMember.address,
-
-        rentalHistory: '0 ออเดอร์',
-
-        orders: [],
-      },
-
-      ...this.members,
-    ];
-
-    this.closeAddPopup();
-
-    alert('เพิ่มสมาชิกสำเร็จ');
+    this.memberService
+      .createMember({
+        username: this.newMember.fullName.trim(),
+        phone: this.newMember.phone.trim(),
+        email: this.newMember.email.trim(),
+        address: this.newMember.address.trim(),
+        password: hashedPassword,
+      })
+      .subscribe({
+        next: () => {
+          this.addSaving = false;
+          this.closeAddPopup();
+          this.loadMembers();
+        },
+        error: (err) => {
+          this.addSaving = false;
+          this.addErrorMessage =
+            err?.error?.error || 'เพิ่มสมาชิกไม่สำเร็จ กรุณาลองใหม่อีกครั้ง';
+        },
+      });
   }
 
-  private mapMember(item: AdminMemberApiItem): Member {
+  private async sha256(text: string): Promise<string> {
+    const data = new TextEncoder().encode(text);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  formatDate(value: string) {
+    return new Date(value).toLocaleDateString('th-TH', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
+  }
+
+  private mapMember(item: AdminMemberListItem): Member {
     return {
       id: item.member_id,
       memberId: `M-${String(item.member_id).padStart(3, '0')}`,
-      image: this.getProfileImage(item.image_profile),
+      image: this.memberService.getProfileImageUrl(item.image_profile || undefined),
       fullName: item.username || '-',
       phone: item.phone || '-',
       email: item.email || '-',
@@ -239,11 +318,34 @@ export class MembersComponent implements OnInit {
     };
   }
 
-  private getProfileImage(image?: string | null) {
-    if (!image) return 'assets/profile.png';
-    if (image.startsWith('http://') || image.startsWith('https://')) {
-      return image;
-    }
-    return `${this.uploadsBase}/${image}`;
+  private mapMemberDetail(res: AdminMemberDetailResponse): Member {
+    return {
+      id: res.member.member_id,
+      memberId: `M-${String(res.member.member_id).padStart(3, '0')}`,
+      image: this.memberService.getProfileImageUrl(
+        res.member.image_profile || undefined,
+      ),
+      fullName: res.member.username || '-',
+      phone: res.member.phone || '-',
+      email: res.member.email || '-',
+      rentalHistory: `${res.orders.length} ออเดอร์`,
+      address: res.member.address || '-',
+      orders: res.orders.map((order) => ({
+        orderId: `ORD-${String(order.order_id).padStart(3, '0')}`,
+        rentDate: this.formatDate(order.day_rental),
+        total: Number(order.total_price || 0),
+        items: (order.items || []).map((item) => ({
+          productId: `#${item.order_item_id}`,
+          detail: `${item.name} | ${item.size} | ${item.color}`,
+          quantity: item.quantity,
+          price: Number(item.price || 0),
+          total: Number(item.price_sum || 0),
+        })),
+      })),
+    };
+  }
+
+  private cleanValue(value: string) {
+    return value === '-' ? '' : value.trim();
   }
 }

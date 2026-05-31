@@ -11,7 +11,6 @@ export class AuthGuard implements CanActivate, CanActivateChild {
     '/admin/employees',
     '/admin/products',
     '/admin/payment-channel',
-    '/admin/reports',
   ]);
 
   constructor(private router: Router) {}

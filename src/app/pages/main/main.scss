@@ -6,6 +6,114 @@
   padding: 20px;
 }
 
+.late-alert {
+  max-width: 1180px;
+  margin: 18px auto 34px;
+  border: 1px solid #f0c6a8;
+  border-radius: 24px;
+  padding: 20px;
+  background:
+    radial-gradient(circle at top left, rgb(255 219 189 / 72%), transparent 34%),
+    linear-gradient(135deg, #fff7ed 0%, #fffdf9 100%);
+  box-shadow: 0 18px 42px rgb(154 79 31 / 12%);
+}
+
+.late-alert-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  > div:first-child {
+    display: grid;
+    place-items: center;
+    width: 54px;
+    height: 54px;
+    border-radius: 18px;
+    background: #c2410c;
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgb(194 65 12 / 22%);
+  }
+
+  p,
+  h2 {
+    margin: 0;
+  }
+
+  p {
+    color: #9a3412;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  h2 {
+    color: #3e2723;
+    font-size: 24px;
+  }
+
+  button {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff2e8;
+    color: #9a3412;
+    cursor: pointer;
+  }
+}
+
+.late-alert-list {
+  display: grid;
+  gap: 12px;
+
+  article {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 16px;
+    align-items: center;
+    border: 1px solid #f3d2bc;
+    border-radius: 18px;
+    padding: 16px;
+    background: rgb(255 255 255 / 74%);
+  }
+
+  strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #3e2723;
+    font-size: 18px;
+    font-weight: 900;
+  }
+
+  span {
+    color: #7c4a32;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+.late-alert-money {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+
+  b {
+    display: inline-flex;
+    align-items: center;
+    min-height: 36px;
+    border-radius: 999px;
+    padding: 0 12px;
+    background: #fff2e8;
+    color: #9a3412;
+    font-size: 13px;
+    font-weight: 900;
+  }
+}
+
 /* ------------------- STEPS SECTION ------------------- */
 .steps {
   text-align: center;
@@ -77,6 +185,17 @@
       width: 70px;
       height: 70px;
     }
+  }
+}
+
+@media (max-width: 768px) {
+  .late-alert-head,
+  .late-alert-list article {
+    grid-template-columns: 1fr;
+  }
+
+  .late-alert-money {
+    justify-content: flex-start;
   }
 }
 

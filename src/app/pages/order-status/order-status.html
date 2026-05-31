@@ -67,7 +67,7 @@
             <div
               class="step-item"
               [class.is-active]="order.status === '1'"
-              [class.is-done]="order.status === '2'"
+              [class.is-done]="isPaidStatus(order.status)"
             >
               <span class="material-symbols-outlined"> manage_search </span>
 
@@ -76,10 +76,10 @@
 
             <div
               class="step-line"
-              [class.is-active]="order.status === '2'"
+              [class.is-active]="isPaidStatus(order.status)"
             ></div>
 
-            <div class="step-item" [class.is-done]="order.status === '2'">
+            <div class="step-item" [class.is-done]="isPaidStatus(order.status)">
               <span class="material-symbols-outlined"> check_circle </span>
 
               <strong>ยืนยันสำเร็จ</strong>

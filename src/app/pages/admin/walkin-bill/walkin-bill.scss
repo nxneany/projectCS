@@ -66,6 +66,28 @@
   padding: 0 24px 24px;
 }
 
+.table-status {
+  margin: 0;
+  padding: 0 24px 16px;
+  color: #7c6a61;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.table-status.error {
+  color: #c63c3c;
+}
+
+.empty-card {
+  padding: 24px;
+  border: 1px dashed #e0d0c7;
+  border-radius: 16px;
+  color: #7c6a61;
+  font-weight: 700;
+  text-align: center;
+  background: #fffaf6;
+}
+
 .order-card {
   display: flex;
   align-items: center;
@@ -234,6 +256,12 @@
     font-size: 14px;
     line-height: 1.6;
   }
+}
+
+.empty-bill-item {
+  display: block;
+  color: #7c6a61;
+  font-weight: 700;
 }
 
 .item-price {

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AdminLoadingService } from '../../service/admin-loading.service';
 import { AuthService } from '../../service/auth.service';
 
 type BackofficeRole = 'admin' | 'employee';
@@ -39,6 +40,7 @@ export class AdminDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private router: Router,
     private auth: AuthService,
+    public adminLoading: AdminLoadingService,
   ) {}
 
   private readonly preventBackHandler = () => {
