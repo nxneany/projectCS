@@ -1,7 +1,7 @@
 import { CommonModule, ViewportScroller } from '@angular/common';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { AuthService } from '../../service/auth.service';
 import { LatePaymentItem, OrderService } from '../../service/order.service';
 import { Product, ProductService } from '../../service/product.service';
@@ -15,6 +15,7 @@ import { Header } from "../header/header";
   styleUrl: './main.scss'
 })
 export class Main implements OnInit, OnDestroy {
+  isLoggedIn$!: Observable<boolean>;
   dresses = [
     'assets/clothing/RT.jpg',
     'assets/clothing/FT.jpg',
@@ -43,7 +44,9 @@ export class Main implements OnInit, OnDestroy {
     private productService: ProductService,
     private orderService: OrderService,
     private auth: AuthService
-  ) {}
+  ) {
+    this.isLoggedIn$ = this.auth.isLoggedIn$;
+  }
 
   ngOnInit(): void {
     this.loadPopularProducts(this.popularLimit);

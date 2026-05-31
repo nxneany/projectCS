@@ -137,10 +137,13 @@
       <p class="rent-hint" *ngIf="isCustomerLoading">
         กรุณารอสักครู่ ระบบกำลังโหลดข้อมูลลูกค้า
       </p>
+      <p class="rent-hint" *ngIf="!loadingPayment && !billItems.length">
+        ไม่พบรายการสินค้าที่เลือก กรุณากลับไปเลือกสินค้าใหม่อีกครั้ง
+      </p>
       <button
         type="button"
         class="rent-btn"
-        [disabled]="isCustomerLoading"
+        [disabled]="isCustomerLoading || loadingPayment || !billItems.length"
         (click)="openAgreementPopup()"
       >
         เช่า
@@ -209,7 +212,7 @@
         type="button"
         class="confirm-agreement"
         (click)="confirmRental()"
-        [disabled]="isCustomerLoading"
+        [disabled]="isCustomerLoading || !billItems.length"
       >
         {{ isCustomerLoading ? "กำลังสร้างออเดอร์..." : "ยืนยัน" }}
       </button>

@@ -37,10 +37,6 @@ export class PaymentReviewComponent implements OnInit {
 
   successMessage = '';
 
-  showDeletePopup = false;
-
-  selectedDeleteOrderNo = '';
-
   previewImageUrl = '';
 
   previewImageTitle = '';
@@ -120,12 +116,6 @@ export class PaymentReviewComponent implements OnInit {
     });
   }
 
-  rejectPayment(orderNo: string) {
-    this.payments = this.payments.filter(
-      (payment) => payment.orderNo !== orderNo,
-    );
-  }
-
   formatPrice(price: number) {
     return `${price.toLocaleString('en-US')} ฿`;
   }
@@ -144,12 +134,6 @@ export class PaymentReviewComponent implements OnInit {
     }).format(new Date(dateValue));
   }
 
-  openDeletePopup(orderNo: string) {
-    this.selectedDeleteOrderNo = orderNo;
-
-    this.showDeletePopup = true;
-  }
-
   openSlipPreview(payment: PaymentReview) {
     if (!payment.slipImage) {
       return;
@@ -162,28 +146,6 @@ export class PaymentReviewComponent implements OnInit {
   closeSlipPreview() {
     this.previewImageUrl = '';
     this.previewImageTitle = '';
-  }
-
-  closeDeletePopup() {
-    this.showDeletePopup = false;
-
-    this.selectedDeleteOrderNo = '';
-  }
-
-  confirmDeletePayment() {
-    this.payments = this.payments.filter(
-      (payment) => payment.orderNo !== this.selectedDeleteOrderNo,
-    );
-
-    this.closeDeletePopup();
-
-    this.successMessage = 'ลบรายการเรียบร้อยแล้ว';
-
-    this.showSuccessPopup = true;
-
-    setTimeout(() => {
-      this.showSuccessPopup = false;
-    }, 2200);
   }
 
   private mapPaymentSlip(item: PaymentSlipItem): PaymentReview {

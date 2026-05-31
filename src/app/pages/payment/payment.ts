@@ -119,10 +119,13 @@ export class PaymentComponent implements OnInit {
   }
 
   confirmRental() {
-    this.isCustomerLoading = true;
     const cartItemIds = this.cartItemIds.length
       ? this.cartItemIds
       : this.billItems.map((item) => item.cart_item_id);
+
+    if (!cartItemIds.length) return;
+
+    this.isCustomerLoading = true;
 
     this.cartService.addOrder(this.cartId, cartItemIds).subscribe({
       next: (res: CreateOrderResponse) => {
@@ -171,13 +174,17 @@ export class PaymentComponent implements OnInit {
 
         this.billing = res;
 
-        this.billItems = res.items;
+        const selectedItems = this.filterSelectedItems(res.items);
+
+        this.billItems = selectedItems;
 
         if (!this.cartItemIds.length) {
-          this.cartItemIds = res.items.map((item) => item.cart_item_id);
+          this.cartItemIds = selectedItems.map((item) => item.cart_item_id);
         }
 
-        this.summary = res.summary;
+        this.summary = this.cartItemIds.length
+          ? this.createSelectedSummary(selectedItems)
+          : res.summary;
 
         this.customerInfo = {
           name: res.user.username || '-',
@@ -198,5 +205,24 @@ export class PaymentComponent implements OnInit {
         this.loadingPayment = false;
       },
     });
+  }
+
+  private filterSelectedItems(items: BillItem[]) {
+    if (!this.cartItemIds.length) return items;
+
+    const selectedIds = new Set(this.cartItemIds.map(Number));
+
+    return items.filter((item) => selectedIds.has(Number(item.cart_item_id)));
+  }
+
+  private createSelectedSummary(items: BillItem[]): PaymentSummary {
+    const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0), 0);
+
+    return {
+      subtotal,
+      deposit: subtotal / 2,
+      grand_total: subtotal,
+      total_items: items.length,
+    };
   }
 }

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
+import { AuthService } from '../../service/auth.service';
 import { PaginatedResponse, Product, ProductService } from '../../service/product.service';
 import { Footer } from '../footer/footer';
 import { Header } from '../header/header';
@@ -12,6 +14,7 @@ import { Header } from '../header/header';
   styleUrl: './search-results.scss',
 })
 export class SearchResultsComponent implements OnInit {
+  isLoggedIn$!: Observable<boolean>;
   keyword = '';
   products: Product[] = [];
   loading = true;
@@ -25,7 +28,10 @@ export class SearchResultsComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private productService: ProductService,
-  ) {}
+    private authService: AuthService,
+  ) {
+    this.isLoggedIn$ = this.authService.isLoggedIn$;
+  }
 
   ngOnInit() {
     this.route.queryParamMap.subscribe((params) => {

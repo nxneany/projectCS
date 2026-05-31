@@ -42,24 +42,31 @@
 
     <!-- 🔹 ล็อกอินแล้ว -->
     <!-- ช่วงไอคอนตอนล็อกอิน -->
-<ng-template #loggedInIcons>
-  <button mat-icon-button class="icon-btn" aria-label="Cart" routerLink="/cart">
-    <mat-icon>shopping_cart</mat-icon>
-  </button>
-  <button mat-icon-button class="icon-btn" aria-label="Order status" routerLink="/order-status">
-    <mat-icon>receipt_long</mat-icon>
-  </button>
-   <button mat-icon-button class="icon-btn" aria-label="Profile" (click)="openProfile()">
-    <mat-icon>account_circle</mat-icon>
-  </button>
-  <button mat-icon-button class="icon-btn" aria-label="Menu" (click)="openCategories()">
-  <mat-icon>list</mat-icon>
-</button>
-
-
-</ng-template>
+    <ng-template #loggedInIcons>
+      <button mat-icon-button class="icon-btn" aria-label="Cart" routerLink="/cart">
+        <mat-icon>shopping_cart</mat-icon>
+      </button>
+      <button mat-icon-button class="icon-btn" aria-label="Order status" routerLink="/order-status">
+        <mat-icon>receipt_long</mat-icon>
+      </button>
+      <button mat-icon-button class="icon-btn" aria-label="Profile" (click)="openProfile()">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <button mat-icon-button class="icon-btn" aria-label="Categories" (click)="openCategories()">
+        <mat-icon>list</mat-icon>
+      </button>
+    </ng-template>
 
   </div>
+
+  <button
+    mat-icon-button
+    type="button"
+    class="menu-icon"
+    aria-label="เปิดเมนู"
+    (click)="toggleMenu()">
+    <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
+  </button>
 </mat-toolbar>
 
 <!-- เมนูสำหรับมือถือ -->
@@ -73,16 +80,19 @@
     <button type="submit">ค้นหา</button>
   </form>
 
-  <a routerLink="/">หน้าหลัก</a>
-  <a [routerLink]="(isLoggedIn$ | async) ? '/clothing-m' : '/clothing'">รายการชุด</a>
-  <a [routerLink]="(isLoggedIn$ | async) ? '/accessories-m' : '/accessories'">Accessories</a>
+  <a routerLink="/" (click)="isMenuOpen = false">หน้าหลัก</a>
+  <a [routerLink]="(isLoggedIn$ | async) ? '/clothing-m' : '/clothing'" (click)="isMenuOpen = false">รายการชุด</a>
+  <a [routerLink]="(isLoggedIn$ | async) ? '/accessories-m' : '/accessories'" (click)="isMenuOpen = false">Accessories</a>
   <a (click)="scrollToFooter()">เกี่ยวกับเรา</a>
 
   <ng-container *ngIf="!(isLoggedIn$ | async); else loggedMobile">
     <a (click)="openLoginDialog()">เข้าสู่ระบบ</a>
   </ng-container>
   <ng-template #loggedMobile>
-    <a routerLink="/order-status">สถานะรายการ</a>
+    <a routerLink="/cart" (click)="isMenuOpen = false">ตะกร้าสินค้า</a>
+    <a routerLink="/order-status" (click)="isMenuOpen = false">สถานะรายการ</a>
+    <a (click)="openProfile()">โปรไฟล์</a>
+    <a (click)="openCategories()">หมวดหมู่</a>
     <a (click)="logout()">ออกจากระบบ</a>
   </ng-template>
 </div>

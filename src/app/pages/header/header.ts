@@ -34,7 +34,10 @@ export class Header {
     this.isLoggedIn$ = this.auth.isLoggedIn$;
   }
 
-  openLoginDialog() { this.dialog.open(Login); }
+  openLoginDialog() {
+    this.isMenuOpen = false;
+    this.dialog.open(Login);
+  }
 
   logout() {
     this.auth.logout();
@@ -71,11 +74,15 @@ export class Header {
   }
 
   scrollToFooter() {
+    this.isMenuOpen = false;
+
     const footerElement = document.getElementById('about');
     if (footerElement) footerElement.scrollIntoView({ behavior: 'smooth' });
   }
 
   openProfile() {
+    this.isMenuOpen = false;
+
     const username = localStorage.getItem('username') || '';
     const email = localStorage.getItem('email') || '';
     const phone = localStorage.getItem('phone') || '';

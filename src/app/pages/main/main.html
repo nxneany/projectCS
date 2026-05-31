@@ -104,7 +104,7 @@
             <span>ถูกเช่า {{ product.rental_count || 0 }} ครั้ง</span>
           </div>
 
-          <a [routerLink]="detailLink(product)">เลือกเช่า</a>
+          <a *ngIf="isLoggedIn$ | async" [routerLink]="detailLink(product)">เลือกเช่า</a>
         </article>
       </div>
     </ng-container>

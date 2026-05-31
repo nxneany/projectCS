@@ -19,7 +19,7 @@
           <span>ไซส์: {{ getSizes(product) }}</span>
         </div>
 
-        <a [routerLink]="detailLink(product)">เลือกเช่า</a>
+        <a *ngIf="isLoggedIn$ | async" [routerLink]="detailLink(product)">เลือกเช่า</a>
       </article>
     </section>
 

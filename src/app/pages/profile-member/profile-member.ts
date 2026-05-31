@@ -6,7 +6,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
 
 import { AuthService } from '../../service/auth.service';
 import { Member, MemberService } from '../../service/member.service';
@@ -30,7 +29,6 @@ export class ProfileMember implements OnInit {
     private dialogRef: MatDialogRef<ProfileMember>,
     private memberService: MemberService,
     private auth: AuthService,
-    private router: Router,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {}
 
@@ -60,11 +58,6 @@ export class ProfileMember implements OnInit {
   }
 
   close() { this.dialogRef.close(); }
-
-  toggleEdit() {
-    this.dialogRef.close();
-    this.router.navigate(['/edit-profile']); // ไปหน้าแก้ไขข้อมูล
-  }
 
   logout() {
     this.auth.logout();
