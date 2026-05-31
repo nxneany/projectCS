@@ -8,6 +8,7 @@ import {
   AdminOrderItem,
   OrderService,
 } from '../../../service/order.service';
+import { formatOrderNo } from '../../../utils/order-format';
 
 interface OrderViewItem {
   productId: string;
@@ -189,7 +190,7 @@ export class OrdersComponent implements OnInit {
   private mapOrder(order: AdminOrder): OrderView {
     return {
       id: order.order_id,
-      orderNo: order.order_code || `ORD-${order.order_id}`,
+      orderNo: formatOrderNo(order.order_id),
       rawStatus: order.status,
       customerId: `M-${String(order.member_id).padStart(3, '0')}`,
       customerName: order.member_name || '-',
@@ -217,7 +218,7 @@ export class OrdersComponent implements OnInit {
 
     return {
       id: order.order_id,
-      orderNo: order.order_code || `ORD-${order.order_id}`,
+      orderNo: formatOrderNo(order.order_id),
       rawStatus: order.status,
       customerId:
         order.member?.member_code ||

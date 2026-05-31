@@ -6,6 +6,7 @@ import {
   OrderReceiptResponse,
   OrderService,
 } from '../../../service/order.service';
+import { formatOrderNo } from '../../../utils/order-format';
 
 interface BillItem {
   name: string;
@@ -113,7 +114,7 @@ export class WalkinBillComponent implements OnInit {
     const total = Number(item.total_price || 0);
     return {
       id: item.order_id,
-      orderId: `ORD-${String(item.order_id).padStart(3, '0')}`,
+      orderId: formatOrderNo(item.order_id),
       customerName: item.username || `สมาชิก #${item.member_id}`,
       phone: '-',
       address: '-',
@@ -128,7 +129,7 @@ export class WalkinBillComponent implements OnInit {
   private mapReceipt(res: OrderReceiptResponse): OrderBill {
     return {
       id: res.order.order_id,
-      orderId: `ORD-${String(res.order.order_id).padStart(3, '0')}`,
+      orderId: formatOrderNo(res.order.order_id),
       customerName: res.member.username || `สมาชิก #${res.member.member_id}`,
       phone: res.member.phone || '-',
       address: res.member.address || '-',

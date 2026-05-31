@@ -6,6 +6,7 @@ import {
   AdminMemberListItem,
   MemberService,
 } from '../../../service/member.service';
+import { formatOrderNo } from '../../../utils/order-format';
 
 interface OrderItem {
   productId: string;
@@ -331,7 +332,7 @@ export class MembersComponent implements OnInit {
       rentalHistory: `${res.orders.length} ออเดอร์`,
       address: res.member.address || '-',
       orders: res.orders.map((order) => ({
-        orderId: `ORD-${String(order.order_id).padStart(3, '0')}`,
+        orderId: formatOrderNo(order.order_id),
         rentDate: this.formatDate(order.day_rental),
         total: Number(order.total_price || 0),
         items: (order.items || []).map((item) => ({

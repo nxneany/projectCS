@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { OverviewLatestOrder, OverviewService, OverviewSummary } from '../../../service/overview.service';
+import { formatOrderNo } from '../../../utils/order-format';
 
 @Component({
   selector: 'app-overview',
@@ -57,6 +58,10 @@ export class OverviewComponent {
       return '-';
     }
     return order.items.map((item) => `${item.name} x${item.quantity}`).join(', ');
+  }
+
+  getOrderNo(order: OverviewLatestOrder) {
+    return formatOrderNo(order.order_id);
   }
 
   getOrderStatus(order: OverviewLatestOrder) {

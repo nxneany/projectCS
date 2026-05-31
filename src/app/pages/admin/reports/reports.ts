@@ -8,6 +8,7 @@ import {
   ReportSummary,
   ReportType,
 } from '../../../service/report.service';
+import { formatOrderNo } from '../../../utils/order-format';
 
 @Component({
   selector: 'app-reports',
@@ -71,6 +72,10 @@ export class ReportsComponent {
       month: 'short',
       day: 'numeric',
     });
+  }
+
+  formatOrderNo(orderId: number | string) {
+    return formatOrderNo(orderId);
   }
 
   private buildRequestParams(): { type: ReportType; query: Record<string, string> } {

@@ -28,7 +28,7 @@
           <div class="compact-list">
             <article *ngFor="let order of orders">
               <div>
-                <strong>{{ order.order_code }}</strong>
+                <strong>{{ getOrderNo(order) }}</strong>
                 <span>{{ order.username }} | {{ getOrderProducts(order) }}</span>
               </div>
               <b>{{ getOrderStatus(order) }}</b>

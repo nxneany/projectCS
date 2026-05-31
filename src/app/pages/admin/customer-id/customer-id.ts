@@ -5,6 +5,7 @@ import {
   OrderService,
   PendingCustomerVerificationItem,
 } from '../../../service/order.service';
+import { formatOrderNo } from '../../../utils/order-format';
 
 interface CustomerIdentityOrder {
   orderId: number;
@@ -160,7 +161,7 @@ export class CustomerIdComponent implements OnInit {
   private mapPendingOrder(item: PendingCustomerVerificationItem): CustomerIdentityOrder {
     return {
       orderId: item.order_id,
-      orderNo: `ORD-${item.order_id}`,
+      orderNo: formatOrderNo(item.order_id),
       customerName: item.username || `สมาชิก #${item.member_id}`,
       memberId: item.member_id,
       phone: item.phone || '-',

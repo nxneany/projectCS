@@ -81,7 +81,7 @@
       </thead>
       <tbody>
         <tr *ngFor="let row of items">
-          <td>#{{ row.order_id }}</td>
+          <td>{{ formatOrderNo(row.order_id) }}</td>
           <td>{{ row.member_id }}</td>
           <td>{{ formatDate(row.day_rental) }}</td>
           <td>{{ formatDate(row.day_start) }}</td>

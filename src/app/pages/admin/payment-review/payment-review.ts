@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PaymentsService, PaymentSlipItem } from '../../../service/payments.service';
+import { formatOrderNo } from '../../../utils/order-format';
 
 interface PaymentReview {
   paymentId: number;
@@ -153,7 +154,7 @@ export class PaymentReviewComponent implements OnInit {
       paymentId: item.payment_id,
       orderId: item.order_id,
       memberId: item.member_id,
-      orderNo: `ORD-${item.order_id}`,
+      orderNo: formatOrderNo(item.order_id),
       customerName: item.username || `สมาชิก #${item.member_id}`,
       slipImage: this.paymentsService.getPaymentSlipImageUrl(item.slip),
       transferTime: this.formatDateTime(item.time),
