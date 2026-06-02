@@ -1,9 +1,9 @@
 <header class="topbar"><div><p>{{ roleLabel }}</p><h1>ข้อมูลส่วนตัว</h1></div></header>
     <section class="screen"><section class="panel">
-      <div class="panel-heading"><h2>ข้อมูล{{ roleLabel }}</h2><div class="button-group"><button type="button" (click)="openEditProfilePopup()">แก้ไข</button></div></div>
+      <div class="panel-heading"><h2>ข้อมูล{{ roleLabel }}</h2><div class="button-group"><button type="button" *ngIf="!loading && !errorMessage" (click)="openEditProfilePopup()">แก้ไข</button></div></div>
       <p class="status-text" *ngIf="loading">กำลังโหลดข้อมูล...</p>
       <p class="status-text error" *ngIf="errorMessage">{{ errorMessage }}</p>
-      <div class="profile-view">
+      <div class="profile-view" *ngIf="!loading && !errorMessage">
         <img [src]="profile.image" alt="owner profile">
         <div>
           <span>ชื่อ-นามสกุล</span>

@@ -17,6 +17,7 @@ export interface AdminMemberListItem {
   username: string;
   phone: string | null;
   email: string;
+  address: string | null;
   image_profile: string | null;
   total_orders: number;
 }

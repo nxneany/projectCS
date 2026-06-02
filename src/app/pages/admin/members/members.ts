@@ -320,7 +320,7 @@ export class MembersComponent implements OnInit {
       phone: item.phone || '-',
       email: item.email || '-',
       rentalHistory: `${item.total_orders || 0} ออเดอร์`,
-      address: '-',
+      address: item.address || '',
       orders: [],
     };
   }

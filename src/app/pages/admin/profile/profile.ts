@@ -19,10 +19,10 @@ export class ProfileComponent implements OnInit {
 
   profile = {
     image: 'assets/logob.png',
-    fullName: 'ภูมิภัทร์ นาดี',
-    phone: '097-193-9481',
-    email: 'owner@dressmeup.com',
-    password: '********',
+    fullName: '',
+    phone: '',
+    email: '',
+    password: '',
   };
   isProfilePopupOpen = false;
   profileFormError = '';
