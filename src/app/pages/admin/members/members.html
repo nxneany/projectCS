@@ -224,33 +224,56 @@
       </div>
 
       <label>
-        ชื่อสมาชิก
+        Username / ชื่อสมาชิก
 
-        <input [(ngModel)]="editingMember.fullName" />
+        <input
+          name="editUsername"
+          autocomplete="username"
+          [(ngModel)]="editingMember.fullName"
+        />
       </label>
 
       <label>
         เบอร์โทรศัพท์
 
-        <input [(ngModel)]="editingMember.phone" />
+        <input
+          name="editPhone"
+          type="tel"
+          autocomplete="tel"
+          [(ngModel)]="editingMember.phone"
+        />
       </label>
 
       <label>
         อีเมล
 
-        <input [(ngModel)]="editingMember.email" />
+        <input
+          name="editEmail"
+          type="email"
+          autocomplete="email"
+          [(ngModel)]="editingMember.email"
+        />
       </label>
 
       <label>
         ที่อยู่
 
-        <input [(ngModel)]="editingMember.address" />
+        <input
+          name="editAddress"
+          autocomplete="street-address"
+          [(ngModel)]="editingMember.address"
+        />
       </label>
 
       <label>
         รหัสผ่านใหม่
 
-        <input type="password" [(ngModel)]="editPassword" />
+        <input
+          name="editPassword"
+          type="password"
+          autocomplete="new-password"
+          [(ngModel)]="editPassword"
+        />
       </label>
     </div>
 

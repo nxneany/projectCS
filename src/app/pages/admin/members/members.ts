@@ -141,21 +141,27 @@ export class MembersComponent implements OnInit {
   saveEditMember() {
     if (!this.editingMember) return;
 
-    if (
-      !this.editingMember.fullName.trim() ||
-      !this.editingMember.email.trim()
-    ) {
-      this.editErrorMessage = 'กรุณากรอกชื่อสมาชิกและอีเมล';
+    const username = this.editingMember.fullName.trim();
+    const email = this.editingMember.email.trim();
+    const password = this.editPassword.trim();
+
+    if (!username || !email) {
+      this.editErrorMessage = 'กรุณากรอก username และอีเมล';
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      this.editErrorMessage = 'กรุณากรอกอีเมลให้ถูกต้อง';
       return;
     }
 
     const formData = new FormData();
-    formData.append('username', this.editingMember.fullName.trim());
+    formData.append('username', username);
     formData.append('phone', this.cleanValue(this.editingMember.phone));
-    formData.append('email', this.editingMember.email.trim());
+    formData.append('email', email);
     formData.append('address', this.cleanValue(this.editingMember.address));
-    if (this.editPassword.trim()) {
-      formData.append('password', this.editPassword.trim());
+    if (password) {
+      formData.append('password', password);
     }
     if (this.editImageFile) {
       formData.append('image', this.editImageFile);
