@@ -29,6 +29,10 @@
       </button>
     </form>
 
+    <button mat-icon-button class="icon-btn category-btn" aria-label="Categories" (click)="openCategories()">
+      <mat-icon>list</mat-icon>
+    </button>
+
     <!-- 🔹 ยังไม่ล็อกอิน -->
     <ng-container *ngIf="!(isLoggedIn$ | async); else loggedInIcons">
       <button
@@ -51,9 +55,6 @@
       </button>
       <button mat-icon-button class="icon-btn" aria-label="Profile" (click)="openProfile()">
         <mat-icon>account_circle</mat-icon>
-      </button>
-      <button mat-icon-button class="icon-btn" aria-label="Categories" (click)="openCategories()">
-        <mat-icon>list</mat-icon>
       </button>
     </ng-template>
 
@@ -84,6 +85,7 @@
   <a [routerLink]="(isLoggedIn$ | async) ? '/clothing-m' : '/clothing'" (click)="isMenuOpen = false">รายการชุด</a>
   <a [routerLink]="(isLoggedIn$ | async) ? '/accessories-m' : '/accessories'" (click)="isMenuOpen = false">Accessories</a>
   <a (click)="scrollToFooter()">เกี่ยวกับเรา</a>
+  <a (click)="openCategories()">หมวดหมู่</a>
 
   <ng-container *ngIf="!(isLoggedIn$ | async); else loggedMobile">
     <a (click)="openLoginDialog()">เข้าสู่ระบบ</a>
@@ -92,7 +94,6 @@
     <a routerLink="/cart" (click)="isMenuOpen = false">ตะกร้าสินค้า</a>
     <a routerLink="/order-status" (click)="isMenuOpen = false">สถานะรายการ</a>
     <a (click)="openProfile()">โปรไฟล์</a>
-    <a (click)="openCategories()">หมวดหมู่</a>
     <a (click)="logout()">ออกจากระบบ</a>
   </ng-template>
 </div>

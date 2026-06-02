@@ -65,7 +65,7 @@
         </span>
       </div>
 
-      <a [routerLink]="detailLink(product)">
+      <a *ngIf="isLoggedIn$ | async" [routerLink]="detailLink(product)">
         เลือกเช่า
       </a>
 
@@ -149,4 +149,3 @@
 </main>
 
 <app-footer></app-footer>
-

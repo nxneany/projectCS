@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
+import { Observable } from 'rxjs';
+import { AuthService } from '../../service/auth.service';
 import { Category, CategoryService } from '../../service/category.service';
 import { CategoryProduct, PaginatedResponse, Product, ProductService, ProductType } from '../../service/product.service';
 import { Footer } from '../footer/footer';
@@ -13,6 +15,7 @@ import { Header } from '../header/header';
   styleUrl: './category-products.scss'
 })
 export class CategoryProductsComponent implements OnInit {
+  isLoggedIn$!: Observable<boolean>;
   categoryId = 0;
   selectedSize = 'ทั้งหมด';
   categories: Category[] = [];
@@ -28,8 +31,11 @@ export class CategoryProductsComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private categoryService: CategoryService,
-    private productService: ProductService
-  ) {}
+    private productService: ProductService,
+    private authService: AuthService,
+  ) {
+    this.isLoggedIn$ = this.authService.isLoggedIn$;
+  }
 
   ngOnInit() {
     this.watchCategoryId();

@@ -133,6 +133,15 @@
   color: #3e2723;
 }
 
+.category-btn {
+  background: rgba(248, 241, 237, 0.74);
+  border: 1px solid rgba(96, 56, 19, 0.14);
+
+  &:hover {
+    background: #f8f1ed;
+  }
+}
+
 
 
 /* ไอคอนเมนูมือถือ */
