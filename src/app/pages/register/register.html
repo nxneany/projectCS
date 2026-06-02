@@ -9,6 +9,20 @@
     <h2>Welcome !</h2>
 
     <form (ngSubmit)="onSubmit()">
+      <div class="profile-upload">
+        <img
+          [src]="selectedImagePreview"
+          alt="Profile preview"
+          (error)="onImageError($event)"
+        />
+
+        <label>
+          <mat-icon>photo_camera</mat-icon>
+          {{ selectedImageName || 'เลือกรูปโปรไฟล์' }}
+          <input type="file" accept="image/*" (change)="onImageSelected($event)" />
+        </label>
+      </div>
+
       <div class="input-group">
         <label><mat-icon>person</mat-icon> User name :</label>
         <input type="text" [(ngModel)]="user.name" name="name" placeholder="ชื่อของคุณ" required />

@@ -25,6 +25,9 @@ export class Register {
   };
 
   isLoading = false;
+  selectedImageFile: File | null = null;
+  selectedImagePreview = 'assets/default-avatar.jpg';
+  selectedImageName = '';
 
   constructor(
     private router: Router,
@@ -35,6 +38,19 @@ export class Register {
   closeRegister() {
     this.router.navigate(['/']);
     this.loginService.reopenLogin();
+  }
+
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    this.selectedImageFile = input.files[0];
+    this.selectedImageName = this.selectedImageFile.name;
+    this.selectedImagePreview = URL.createObjectURL(this.selectedImageFile);
+  }
+
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src = 'assets/default-avatar.jpg';
   }
 
   // ⬇️ helper สำหรับทำ SHA-256 (ไม่มี salt/pepper)
@@ -68,12 +84,14 @@ export class Register {
     // ทำ hash ก่อนส่งขึ้นเซิร์ฟเวอร์
     const hashedPassword = await this.sha256(this.user.password);
 
-    const payload = {
-      username: this.user.name.trim(),
-      phone: this.user.phone.trim(),
-      email: this.user.email.trim(),
-      password: hashedPassword
-    };
+    const payload = new FormData();
+    payload.append('username', this.user.name.trim());
+    payload.append('phone', this.user.phone.trim());
+    payload.append('email', this.user.email.trim());
+    payload.append('password', hashedPassword);
+    if (this.selectedImageFile) {
+      payload.append('image', this.selectedImageFile);
+    }
 
     this.isLoading = true;
 

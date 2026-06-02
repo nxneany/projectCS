@@ -577,8 +577,54 @@ td:nth-child(6) {
   }
 }
 
-.member-form label:last-child {
+.member-form > label:last-of-type {
   grid-column: span 2;
+}
+
+.password-edit-box {
+  grid-column: span 2;
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #eadbd2;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffdfb 0%, #fff7f1 100%);
+}
+
+.password-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: fit-content;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 14px;
+  background: #603813;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+
+  .material-symbols-outlined {
+    font-size: 20px;
+  }
+}
+
+.password-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+
+  label {
+    min-width: 0;
+  }
+
+  input {
+    box-sizing: border-box;
+    width: 100%;
+  }
 }
 
 .edit-profile-preview {
@@ -604,6 +650,12 @@ td:nth-child(6) {
   label {
     display: grid;
     gap: 8px;
+  }
+}
+
+@media (max-width: 720px) {
+  .password-fields {
+    grid-template-columns: 1fr;
   }
 }
 

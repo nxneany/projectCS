@@ -265,16 +265,38 @@
         />
       </label>
 
-      <label>
-        รหัสผ่านใหม่
+      <div class="password-edit-box">
+        <button type="button" class="password-toggle-btn" (click)="toggleEditPassword()">
+          <span class="material-symbols-outlined">
+            {{ isEditPasswordOpen ? 'lock_open' : 'lock' }}
+          </span>
+          {{ isEditPasswordOpen ? 'ไม่แก้ไขรหัสผ่าน' : 'แก้ไขรหัสผ่าน' }}
+        </button>
 
-        <input
-          name="editPassword"
-          type="password"
-          autocomplete="new-password"
-          [(ngModel)]="editPassword"
-        />
-      </label>
+        <div class="password-fields" *ngIf="isEditPasswordOpen">
+          <label>
+            รหัสผ่านใหม่
+
+            <input
+              name="editPassword"
+              type="password"
+              autocomplete="new-password"
+              [(ngModel)]="editPassword"
+            />
+          </label>
+
+          <label>
+            ยืนยันรหัสผ่าน
+
+            <input
+              name="editConfirmPassword"
+              type="password"
+              autocomplete="new-password"
+              [(ngModel)]="editConfirmPassword"
+            />
+          </label>
+        </div>
+      </div>
     </div>
 
     <p class="edit-error" *ngIf="editErrorMessage">

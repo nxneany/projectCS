@@ -167,6 +167,23 @@ export class Login implements AfterViewInit {   // ← ADD: implements
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
   }
 
+  private getBackendErrorMessage(err: any) {
+    if (typeof err?.error === 'string') {
+      return err.error;
+    }
+
+    return (
+      err?.error?.error ||
+      err?.error?.message ||
+      err?.message ||
+      'อีเมลหรือรหัสผ่านไม่ถูกต้อง'
+    );
+  }
+
+  private showLoginError(message: string) {
+    this.errorMessage = message;
+  }
+
   // ====== (ไม่แก้) อีเมล/รหัสผ่านแบบเดิม ======
   closeDialog() { this.dialogRef.close(); }
 
@@ -197,7 +214,7 @@ export class Login implements AfterViewInit {   // ← ADD: implements
         },
         error: (err) => {
           this.isLoading = false;
-          this.errorMessage = err?.error?.error || 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+          this.showLoginError(this.getBackendErrorMessage(err));
         }
       });
     } catch (e) {

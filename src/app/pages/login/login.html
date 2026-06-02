@@ -14,6 +14,10 @@
     <label>Password :</label>
     <input type="password" [(ngModel)]="password" name="password" required />
 
+    <p class="login-error" *ngIf="errorMessage">
+      {{ errorMessage }}
+    </p>
+
     <button type="submit" class="login-btn" [disabled]="isLoading">{{ isLoading ? 'กำลังโหลด...' : 'เข้าสู่ระบบ' }}</button>
   </form>
 

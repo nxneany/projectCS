@@ -1,115 +1,184 @@
-
 .login-modal {
-  position: fixed; 
+  position: fixed;
   top: 50%;
   left: 50%;
+  z-index: 1000;
+  width: min(620px, calc(100vw - 32px));
+  max-height: 92vh;
+  overflow-y: auto;
   transform: translate(-50%, -50%);
-  width: 650px;
-  height: 550px;
-  background: #fff;
+  background: #fffdfb;
+  border-radius: 24px;
+  box-shadow: 0 24px 70px rgba(45, 36, 32, 0.28);
   text-align: center;
   font-family: 'Inter', sans-serif;
-  z-index: 1000; 
-
   box-sizing: border-box;
+}
 
-  .login-header {
-    background-color: #d9c3aa;
-    padding: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-    display: flex;
-    justify-content: center;
+.login-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 112px;
+  padding: 14px 56px 12px;
+  background: linear-gradient(180deg, #dbc2a8 0%, #d2b693 100%);
+  box-shadow: 0 5px 16px rgba(45, 36, 32, 0.12);
 
-    .logo {
-      width: 150px;
-      height: auto;
-    }
+  .logo {
+    width: min(230px, 58vw);
+    height: auto;
+    display: block;
+  }
+}
+
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border-radius: 50%;
+  color: #1f1916;
+  cursor: pointer;
+  font-size: 34px;
+  transition:
+    background 0.18s ease,
+    transform 0.18s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.45);
+    transform: rotate(4deg);
+  }
+}
+
+h2 {
+  margin: 26px 0 4px;
+  color: #1f1916;
+  font-size: clamp(38px, 6vw, 56px);
+  font-weight: 900;
+  line-height: 1;
+}
+
+p {
+  margin: 0 24px 24px;
+  color: #4c403a;
+  font-size: clamp(17px, 2.3vw, 22px);
+  font-weight: 700;
+}
+
+form {
+  display: grid;
+  gap: 14px;
+  width: min(460px, calc(100% - 48px));
+  margin: 0 auto;
+  text-align: left;
+
+  label {
+    color: #1f1916;
+    font-size: 18px;
+    font-weight: 900;
   }
 
-  h2 {
-    font-size: 32px;
-    margin: 20px 0 5px;
-    font-weight: 800;
-  }
+  input {
+    width: 100%;
+    height: 54px;
+    padding: 0 16px;
+    border: 1px solid #d2cbc6;
+    border-radius: 10px;
+    background: #f8f6f5;
+    box-sizing: border-box;
+    color: #1f1916;
+    font: inherit;
+    font-size: 18px;
+    outline: none;
+    transition:
+      border-color 0.18s ease,
+      box-shadow 0.18s ease,
+      background 0.18s ease;
 
-  p {
-    font-size: 14px;
-    color: #333;
-    margin-bottom: 20px;
-  }
-
-  form {
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center; // input และปุ่มอยู่กลาง
-    gap: 15px;
-
-    label {
-      margin-left: 85px;
-      font-weight: 600;
-      font-size: 14px;
-      align-self: flex-start; // ชิดซ้าย
-      padding-left: 5px; // ระยะจากขอบซ้ายเล็กน้อย
-    }
-
-    input {
-      width: 70%;
-      padding: 8px;
-      background: #6b5e520e;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-      // ตัวอักษร input อยู่กลาง
-    }
-
-    .login-btn {
-      width: 30%;
-      background: #362618;
-      color: #fff;
-      font-size: 16px;
-      border: none;
-      padding: 10px 0;
-      border-radius: 4px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: 0.3s;
-
-      &:hover {
-        background: #654a33;
-      }
+    &:focus {
+      border-color: #8f6049;
+      background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(143, 96, 73, 0.12);
     }
   }
+}
 
-  .links {
-    display: flex;
-    margin-left: 85px;
-    gap: 310px;
-    margin-top: 10px;
-    font-size: 13px;
-    padding: 0 5px; // ระยะขอบเล็กน้อย
+.login-error {
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border: 1px solid #f0aaaa;
+  border-radius: 12px;
+  background: #fff1f1;
+  box-sizing: border-box;
+  color: #b83232;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.35;
+}
 
-    a {
-      color: #000;
-      text-decoration: underline;
-    }
+.login-btn {
+  justify-self: center;
+  width: min(220px, 100%);
+  min-height: 54px;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 10px;
+  background: #3e2819;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 24px;
+  font-weight: 900;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+
+  &:hover:not(:disabled) {
+    background: #5a3822;
+    box-shadow: 0 12px 22px rgba(62, 40, 25, 0.2);
+    transform: translateY(-1px);
   }
 
-  .divider {
-  margin: 15px 0;
-  color: #555;
-  width: 30%;       // กำหนดความกว้างที่เหมาะสม
-  text-align: center;
+  &:disabled {
+    background: #9d9d9d;
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+}
+
+.links {
+  width: min(460px, calc(100% - 48px));
+  margin: 16px auto 0;
+  text-align: left;
+  font-size: 18px;
+  font-weight: 800;
+
+  a {
+    color: #1f1916;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+}
+
+.divider {
   position: relative;
-  margin-left: auto; // ทำให้กลาง
-  margin-right: auto;
+  width: min(240px, 55%);
+  margin: 24px auto 16px;
+  color: #5c514b;
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
 
   &::before,
   &::after {
     content: '';
     position: absolute;
     top: 50%;
-    width: 40%;
+    width: 36%;
     height: 2px;
     background: #c6aa93;
   }
@@ -117,78 +186,100 @@
   &::before {
     left: 0;
   }
+
   &::after {
     right: 0;
   }
 }
 
 .google-btn {
-  display: flex;
-  font-size: 12px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  width: 30%;
-  margin: 0 auto;   // ทำให้กลางแนวนอน
-  background: #6b5e520e;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
-  font-weight: 500;
+  gap: 12px;
+  width: min(300px, calc(100% - 48px));
+  min-height: 48px;
+  margin: 0 auto 28px;
+  padding: 8px 16px;
+  border: 1px solid #d4d8dd;
+  border-radius: 14px;
+  background: #fbfafa;
+  box-sizing: border-box;
+  color: #1f1916;
   cursor: pointer;
-  transition: 0.3s;
+  font-size: 18px;
+  font-weight: 900;
+  transition:
+    background 0.18s ease,
+    box-shadow 0.18s ease,
+    transform 0.18s ease;
 
   img {
-    width: 30px;
+    width: 24px;
+    height: 24px;
   }
 
-  &:hover {
-    background: #f5f5f5;
+  &:hover:not(.disabled) {
+    background: #ffffff;
+    box-shadow: 0 10px 22px rgba(45, 36, 32, 0.12);
+    transform: translateY(-1px);
   }
-}
 
-.close-btn {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  color: #110a0a;
-  cursor: pointer;
-  font-size: 26px; // ขนาด icon ปรับตามต้องการ
-}
-
-.google-btn {
-  display: inline-flex; align-items: center; gap: 10px;
-  width: 25%; justify-content: center;
-  padding: 10px 14px; border: 1px solid #dadce0; border-radius: 8px;
-  background: #d5c7be44; font-weight: 600; cursor: pointer;
-  transition: 0.3s;
-  
-  img { width: 18px; height: 18px; }
-  
-  &:hover { 
-    background: #f8f9fa; 
-  }
-  
   &.disabled {
     opacity: 0.6;
     cursor: not-allowed;
     background: #e0e0e0;
-    
-    &:hover {
-      background: #e0e0e0;
-    }
   }
 }
 
-}
+@media (max-width: 520px) {
+  .login-modal {
+    width: min(100vw - 18px, 420px);
+    border-radius: 18px;
+  }
 
-// Disabled button styles
-.login-modal form .login-btn:disabled {
-  background: #9d9d9d;
-  cursor: not-allowed;
-  opacity: 0.7;
-  
-  &:hover {
-    background: #9d9d9d;
+  .login-header {
+    min-height: 86px;
+    padding: 12px 48px 10px;
+  }
+
+  .close-btn {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 30px;
+  }
+
+  h2 {
+    margin-top: 20px;
+  }
+
+  p {
+    margin-bottom: 18px;
+  }
+
+  form {
+    width: calc(100% - 32px);
+    gap: 11px;
+
+    label {
+      font-size: 16px;
+    }
+
+    input {
+      height: 48px;
+      font-size: 16px;
+    }
+  }
+
+  .login-btn {
+    min-height: 50px;
+    font-size: 20px;
+  }
+
+  .links,
+  .google-btn {
+    width: calc(100% - 32px);
   }
 }

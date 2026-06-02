@@ -46,7 +46,7 @@ export class AuthApiService {
     return this.http.post<LoginResponse>(`${this.apiBase}/login`, payload);
   }
 
-  register(payload: RegisterPayload) {
+  register(payload: RegisterPayload | FormData) {
     return this.http.post<{ message: string; member_id: number }>(`${this.apiBase}/register`, payload);
   }
 

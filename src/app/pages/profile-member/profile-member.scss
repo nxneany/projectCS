@@ -69,6 +69,11 @@ $muted-border: #e7ded6;
 
 .w-100 { width: 100%; }
 
+.password-mask {
+  letter-spacing: 0.16em;
+  font-weight: 800;
+}
+
 /* ===== Actions / Buttons ===== */
 .actions {
   margin-top: auto;

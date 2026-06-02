@@ -53,7 +53,9 @@ export class MembersComponent implements OnInit {
   selectedMember: Member | null = null;
 
   editingMember: Member | null = null;
+  isEditPasswordOpen = false;
   editPassword = '';
+  editConfirmPassword = '';
   editImageFile: File | null = null;
   editErrorMessage = '';
   editSaving = false;
@@ -126,24 +128,36 @@ export class MembersComponent implements OnInit {
 
   openEditPopup(member: Member) {
     this.editingMember = { ...member };
+    this.isEditPasswordOpen = false;
     this.editPassword = '';
+    this.editConfirmPassword = '';
     this.editImageFile = null;
     this.editErrorMessage = '';
   }
 
   closeEditPopup() {
     this.editingMember = null;
+    this.isEditPasswordOpen = false;
     this.editPassword = '';
+    this.editConfirmPassword = '';
     this.editImageFile = null;
     this.editErrorMessage = '';
   }
 
-  saveEditMember() {
+  toggleEditPassword() {
+    this.isEditPasswordOpen = !this.isEditPasswordOpen;
+    this.editPassword = '';
+    this.editConfirmPassword = '';
+    this.editErrorMessage = '';
+  }
+
+  async saveEditMember() {
     if (!this.editingMember) return;
 
     const username = this.editingMember.fullName.trim();
     const email = this.editingMember.email.trim();
     const password = this.editPassword.trim();
+    const confirmPassword = this.editConfirmPassword.trim();
 
     if (!username || !email) {
       this.editErrorMessage = 'กรุณากรอก username และอีเมล';
@@ -155,13 +169,31 @@ export class MembersComponent implements OnInit {
       return;
     }
 
+    if (this.isEditPasswordOpen) {
+      if (!password || !confirmPassword) {
+        this.editErrorMessage = 'กรุณากรอกรหัสผ่านและยืนยันรหัสผ่าน';
+        return;
+      }
+
+      if (password.length < 6) {
+        this.editErrorMessage = 'รหัสผ่านควรมีอย่างน้อย 6 ตัวอักษร';
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        this.editErrorMessage = 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';
+        return;
+      }
+    }
+
     const formData = new FormData();
     formData.append('username', username);
     formData.append('phone', this.cleanValue(this.editingMember.phone));
     formData.append('email', email);
     formData.append('address', this.cleanValue(this.editingMember.address));
-    if (password) {
-      formData.append('password', password);
+    if (this.isEditPasswordOpen && password) {
+      const hashedPassword = await this.sha256(password);
+      formData.append('password', hashedPassword);
     }
     if (this.editImageFile) {
       formData.append('image', this.editImageFile);

@@ -34,6 +34,14 @@
     </mat-form-field>
   </div>
 
+  <!-- password -->
+  <div class="field">
+    <div class="field-label"><mat-icon class="field-icon">lock</mat-icon><span>รหัสผ่าน :</span></div>
+    <mat-form-field appearance="fill" class="w-100 flat-field">
+      <input matInput class="password-mask" value="********" disabled>
+    </mat-form-field>
+  </div>
+
   <!-- Actions -->
   <div class="actions" *ngIf="!editMode">
     <button mat-raised-button class="btn-logout" (click)="logout()">
@@ -66,6 +74,11 @@
     <div class="field">
       <div class="field-label skeleton" style="height: 16px; width: 45%;"></div>
       <div class="skeleton" style="height: 60px; width: 100%; margin-top: 8px;"></div>
+    </div>
+
+    <div class="field">
+      <div class="field-label skeleton" style="height: 16px; width: 38%;"></div>
+      <div class="skeleton" style="height: 40px; width: 100%; margin-top: 8px;"></div>
     </div>
   </div>
 </ng-template>

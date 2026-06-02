@@ -48,6 +48,43 @@
     gap: 25px;
     width: 100%;        /* ให้ form กว้างเต็ม form-section */
     max-width: 600px;   /* แต่จำกัดความกว้าง form เพื่อให้อยู่กลาง */
+
+    .profile-upload {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 14px 16px;
+      border: 1px dashed #9e8068;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.42);
+
+      img {
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #ffffff;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+      }
+
+      label {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: #4d2b00;
+        color: #ffffff;
+        font-weight: 800;
+        cursor: pointer;
+
+        input {
+          display: none;
+        }
+      }
+    }
     
     .input-group {
       display: flex;
