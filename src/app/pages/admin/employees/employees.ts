@@ -180,6 +180,34 @@ export class EmployeesComponent implements OnInit {
 
       return;
     }
+    if (this.employeeForm.password !== this.employeeForm.confirmPassword) {
+  this.employeeFormError = 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';
+  return;
+}
+
+// << -- เพิ่มการตรวจสอบรูปแบบอีเมลและเบอร์โทร -- >>
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const phonePattern = /^0[0-9]{9}$/;
+
+if (!emailPattern.test(this.employeeForm.email.trim())) {
+  this.employeeFormError = 'รูปแบบอีเมลไม่ถูกต้อง';
+  return;
+}
+
+if (!phonePattern.test(this.employeeForm.phone.trim())) {
+  this.employeeFormError =
+    'เบอร์โทรศัพท์ต้องเป็นตัวเลข 10 หลัก และขึ้นต้นด้วย 0';
+  return;
+}
+
+if (
+  this.employeeForm.password &&
+  this.employeeForm.password.length < 6
+) {
+  this.employeeFormError = 'รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร';
+  return;
+}
+
 
     // EDIT
     if (this.editingStaffId) {
