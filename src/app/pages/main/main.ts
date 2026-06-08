@@ -17,16 +17,16 @@ import { Header } from "../header/header";
 export class Main implements OnInit, OnDestroy {
   isLoggedIn$!: Observable<boolean>;
   dresses = [
-    'assets/clothing/RT.jpg',
-    'assets/clothing/FT.jpg',
+    'assets/clothing/F1.jpg',
+    'assets/clothing/F2.jpg',
     'assets/clothing/TY.jpg',
-    'assets/clothing/RP.jpg',
-    'assets/clothing/RP2.jpg',
-    'assets/clothing/RP3.jpg',
-    'assets/clothing/WP1.jpg',
-    'assets/clothing/WP2.jpg',
-    'assets/clothing/PP1.jpg',
-    'assets/clothing/OP1.jpg',
+    'assets/clothing/F3.jpg',
+    'assets/clothing/F4.png',
+    'assets/clothing/F5.jpg',
+    'assets/clothing/F6.jpg',
+    'assets/clothing/F7.jpg',
+    'assets/clothing/F11.jpg',
+    
   ];
 
   currentIndex = 0;
