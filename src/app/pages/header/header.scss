@@ -25,10 +25,11 @@
   gap: 10px;
   cursor: pointer;
 
-  .logo-img {
+   .logo-img {
     display: block;
-    height: clamp(54px, 8vw, 100px);
+    height: clamp(40px, 5vw, 60px);
     width: auto;
+    object-fit: contain;
   }
 }
 
