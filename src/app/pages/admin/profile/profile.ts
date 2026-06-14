@@ -38,7 +38,15 @@ export class ProfileComponent implements OnInit {
     return this.userRole === 'staff' ? 'พนักงาน' : 'ผู้ดูแลระบบ';
   }
 
+  get canEditProfile() {
+    return this.userRole === 'admin';
+  }
+
   openEditProfilePopup() {
+    if (!this.canEditProfile) {
+      return;
+    }
+
     this.profileForm = this.getProfileForm();
     this.profileFormError = '';
     this.isProfilePopupOpen = true;
@@ -46,6 +54,10 @@ export class ProfileComponent implements OnInit {
 
   closeEditProfilePopup() {
     this.isProfilePopupOpen = false;
+  }
+
+  onPhoneInput(value: string) {
+    this.profileForm.phone = value.replace(/\D/g, '').slice(0, 10);
   }
 
   private async sha256(text: string): Promise<string> {
@@ -58,18 +70,41 @@ export class ProfileComponent implements OnInit {
   async saveProfile() {
     this.profileFormError = '';
 
+    const fullName = this.profileForm.fullName.trim();
+    const phone = this.profileForm.phone.trim();
+    const email = this.profileForm.email.trim();
+    const password = this.profileForm.password.trim();
+    const confirmPassword = this.profileForm.confirmPassword.trim();
+
     if (
-      !this.profileForm.fullName.trim() ||
-      !this.profileForm.phone.trim() ||
-      !this.profileForm.email.trim()
+      !fullName ||
+      !phone ||
+      !email
     ) {
       this.profileFormError = 'กรุณากรอกข้อมูลให้ครบ';
       return;
     }
 
+    const phoneOk = /^0\d{8,9}$/.test(phone.replace(/[^0-9]/g, ''));
+    if (!phoneOk) {
+      this.profileFormError = 'รูปแบบเบอร์โทรไม่ถูกต้อง';
+      return;
+    }
+
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    if (!emailOk) {
+      this.profileFormError = 'กรุณากรอกอีเมลให้ถูกต้อง';
+      return;
+    }
+
+    if ((password || confirmPassword) && password.length < 6) {
+      this.profileFormError = 'รหัสผ่านควรมีอย่างน้อย 6 ตัวอักษร';
+      return;
+    }
+
     if (
-      (this.profileForm.password || this.profileForm.confirmPassword) &&
-      this.profileForm.password !== this.profileForm.confirmPassword
+      (password || confirmPassword) &&
+      password !== confirmPassword
     ) {
       this.profileFormError = 'รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน';
       return;
@@ -83,12 +118,12 @@ export class ProfileComponent implements OnInit {
     try {
       this.loading = true;
       const formData = new FormData();
-      formData.append('username', this.profileForm.fullName.trim());
-      formData.append('phone', this.profileForm.phone.trim());
-      formData.append('email', this.profileForm.email.trim());
+      formData.append('username', fullName);
+      formData.append('phone', phone);
+      formData.append('email', email);
 
-      if (this.profileForm.password) {
-        const hashedPassword = await this.sha256(this.profileForm.password);
+      if (password) {
+        const hashedPassword = await this.sha256(password);
         formData.append('password', hashedPassword);
       }
 
@@ -106,10 +141,10 @@ export class ProfileComponent implements OnInit {
 
             this.profile = {
               image: updatedImage,
-              fullName: this.profileForm.fullName,
-              phone: this.profileForm.phone,
-              email: this.profileForm.email,
-              password: this.profileForm.password
+              fullName,
+              phone,
+              email,
+              password: password
                 ? '********'
                 : this.profile.password,
             };

@@ -16,8 +16,37 @@
   <p class="status-text success" *ngIf="successMessage">{{ successMessage }}</p>
   <div class="payment-editor">
     <label>ชื่อบัญชีธนาคาร<input [(ngModel)]="payment.accountName" /></label>
-    <label>เลขบัญชี<input [(ngModel)]="payment.accountNumber" /></label>
-    <label>พร้อมเพย์<input [(ngModel)]="payment.promptPay" /></label>
+    <label>
+      เลขบัญชี
+      <input
+        type="tel"
+        inputmode="numeric"
+        maxlength="13"
+        placeholder="678-3-31492-8"
+        [class.input-error]="accountNumberHasInvalidInput"
+        [(ngModel)]="payment.accountNumber"
+        (ngModelChange)="onAccountNumberInput($event)"
+      />
+      <small [class.error-hint]="accountNumberHasInvalidInput">
+        {{ accountNumberHasInvalidInput ? 'เลขบัญชีกรอกได้เฉพาะตัวเลขเท่านั้น' : 'กรอกตัวเลข ระบบจะใส่ขีดให้อัตโนมัติ' }}
+      </small>
+    </label>
+    <label>
+      พร้อมเพย์
+      <input
+        type="tel"
+        inputmode="numeric"
+        pattern="[0-9]*"
+        maxlength="13"
+        placeholder="0971939481"
+        [class.input-error]="promptPayHasInvalidInput"
+        [(ngModel)]="payment.promptPay"
+        (ngModelChange)="onPromptPayInput($event)"
+      />
+      <small [class.error-hint]="promptPayHasInvalidInput">
+        {{ promptPayHasInvalidInput ? 'พร้อมเพย์กรอกได้เฉพาะตัวเลขเท่านั้น' : 'กรอกเฉพาะตัวเลข ไม่ต้องใส่ขีด' }}
+      </small>
+    </label>
     <div class="qr-admin">
       <img *ngIf="payment.qrCode" [src]="payment.qrCode" alt="QR payment" />
       <label class="qr-upload">

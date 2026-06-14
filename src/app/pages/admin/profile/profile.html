@@ -1,6 +1,6 @@
 <header class="topbar"><div><p>{{ roleLabel }}</p><h1>ข้อมูลส่วนตัว</h1></div></header>
     <section class="screen"><section class="panel">
-      <div class="panel-heading"><h2>ข้อมูล{{ roleLabel }}</h2><div class="button-group"><button type="button" *ngIf="!loading && !errorMessage" (click)="openEditProfilePopup()">แก้ไข</button></div></div>
+      <div class="panel-heading"><h2>ข้อมูล{{ roleLabel }}</h2><div class="button-group"><button type="button" *ngIf="canEditProfile && !loading && !errorMessage" (click)="openEditProfilePopup()">แก้ไข</button></div></div>
       <p class="status-text" *ngIf="loading">กำลังโหลดข้อมูล...</p>
       <p class="status-text error" *ngIf="errorMessage">{{ errorMessage }}</p>
       <div class="profile-view" *ngIf="!loading && !errorMessage">
@@ -49,27 +49,38 @@
 
           <label>
             ชื่อ-นามสกุล
-            <input type="text" name="fullName" [(ngModel)]="profileForm.fullName" required>
+            <input type="text" name="fullName" autocomplete="name" [(ngModel)]="profileForm.fullName" required>
           </label>
 
           <label>
             เบอร์โทรศัพท์
-            <input type="tel" name="phone" [(ngModel)]="profileForm.phone" required>
+            <input
+              type="tel"
+              name="phone"
+              autocomplete="tel"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              maxlength="10"
+              placeholder="0991234567"
+              [(ngModel)]="profileForm.phone"
+              (ngModelChange)="onPhoneInput($event)"
+              required
+            >
           </label>
 
           <label>
             อีเมล
-            <input type="email" name="email" [(ngModel)]="profileForm.email" required>
+            <input type="email" name="email" autocomplete="email" placeholder="example@email.com" [(ngModel)]="profileForm.email" required>
           </label>
 
           <label>
             รหัสผ่าน
-            <input type="password" name="password" [(ngModel)]="profileForm.password">
+            <input type="password" name="password" autocomplete="new-password" minlength="6" placeholder="อย่างน้อย 6 ตัวอักษร" [(ngModel)]="profileForm.password">
           </label>
 
           <label>
             ยืนยันรหัสผ่าน
-            <input type="password" name="confirmPassword" [(ngModel)]="profileForm.confirmPassword">
+            <input type="password" name="confirmPassword" autocomplete="new-password" minlength="6" placeholder="กรอกรหัสผ่านอีกครั้ง" [(ngModel)]="profileForm.confirmPassword">
           </label>
 
           <p class="form-error" *ngIf="profileFormError">{{ profileFormError }}</p>

@@ -56,7 +56,7 @@ export class ClothingRentalComponent implements OnInit {
   }
 
   get totalPrice() {
-    return (this.dress?.price ?? 0) * this.quantity;
+    return (this.dress?.price ?? 0) * this.quantity * this.selectedDuration;
   }
 
   get relatedDresses() {

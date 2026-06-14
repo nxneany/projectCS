@@ -113,6 +113,16 @@
   color: #51443f;
   font-size: 14px;
   font-weight: 700;
+
+  small {
+    color: #8a756b;
+    font-size: 12px;
+    font-weight: 700;
+  }
+
+  .error-hint {
+    color: #c63c3c;
+  }
 }
 
 .payment-editor input {
@@ -132,6 +142,11 @@
     outline: none;
     border-color: #b5856f;
     box-shadow: 0 0 0 4px rgb(181 133 111 / 14%);
+  }
+
+  &.input-error {
+    border-color: #d14b4b;
+    background: #fff5f5;
   }
 }
 
