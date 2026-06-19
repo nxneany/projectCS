@@ -220,14 +220,22 @@
         >
           <div class="variant-grid">
             <label>
-              ไซส์
+  ไซส์
 
-              <input
-                type="text"
-                [(ngModel)]="variant.size"
-                [name]="'size' + i"
-              />
-            </label>
+  <select
+    [(ngModel)]="variant.size"
+    [name]="'size' + i"
+  >
+    <option value="">-- เลือกไซส์ --</option>
+    <option value="XS">XS</option>
+    <option value="S">S</option>
+    <option value="M">M</option>
+    <option value="L">L</option>
+    <option value="XL">XL</option>
+    <option value="XXL">XXL</option>
+    <option value="Free size">Free size</option>
+  </select>
+</label>
 
             <label>
               สี
